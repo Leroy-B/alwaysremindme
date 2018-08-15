@@ -62,7 +62,7 @@
 	}
 
 	-(void)showSourceCode {
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/Leroy-B/tweakProjects/tree/master/customcc"] options:@{} completionHandler:nil];
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/Leroy-B/alwaysremindme"] options:@{} completionHandler:nil];
 	}
 
 	-(void)showBitcoin {

@@ -1,3 +1,9 @@
+/*
+TODO:
+	- bug: slider for font size changes color ?!?
+
+*/
+
 #import <UIKit/UIKit.h>
 #import "libcolorpicker.h"
 
@@ -84,7 +90,7 @@ static void loadPreferences() {
 			NSLog(@"AlwaysRemindMe LOG: befor enableWherePref: %d", enableWherePref);
 			if ((enableWherePref == 0) || (enableWherePref == 2)) {
 				NSLog(@"AlwaysRemindMe LOG: after enableWherePref: %d", enableWherePref);
-				
+
 				UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameXPref, frameYPref, frameWPref, frameHPref)];
 				[txtToDisplayPrefLabel setTextColor:LCPParseColorString(fontColorPref, nil)];//TODO change for colorpicker var
 				[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(fontBackgroundColorPref, nil)];//TODO change for colorpicker var

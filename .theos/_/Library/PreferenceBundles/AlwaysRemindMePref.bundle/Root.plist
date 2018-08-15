@@ -69,7 +69,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Font Size and Color</string>
+			<string>Font Size</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -94,6 +94,12 @@
 			<real>24</real>
 			<key>segmentCount</key>
 			<integer>13</integer>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Font Color</string>
 		</dict>
 		<dict>
 			<key>cell</key>
