@@ -21,23 +21,27 @@
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabel = @"default text";
+static NSString *twTextLabel = @"AlwaysRemindMe by Leroy";
 static int twFramePosChoice = 1;
+
 static CGFloat twFrameX = 0;
-static CGFloat twFrameY = 0;
-static CGFloat frameX = 0;
-static CGFloat frameY = 0;
-static CGFloat twFrameW = 100;
+static CGFloat twFrameY = 20;
+static CGFloat twFrameW = 200;
 static CGFloat twFrameH = 20;
+
+
+
 
 
 
 static bool twIsBackgroundEnabled = YES;
 static CGFloat twFontSize = 14;
-static NSString *twFontColor = @"#000000";
-static NSString *twBackgroundColor = @"#ffffff";
-static NSString *twFontColorDefault = @"#000000";
-static NSString *twBackgroundColorDefault = @"#ffffff";
+static CGFloat twFontSizeCustom = 14;
+
+static NSString *twFontColor = @"blackColor";
+static NSString *twBackgroundColor = @"whiteColor";
+static NSString *twFontColorDefault = @"blackColor";
+static NSString *twBackgroundColorDefault = @"whiteColor";
 
 static void loadPrefs() {
 
@@ -57,6 +61,7 @@ static void loadPrefs() {
 		twBackgroundColor		= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
 		twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
 		twFontSize				= ([prefs objectForKey:@"pfFontSize"] ? [[prefs objectForKey:@"pfFontSize"] floatValue] : twFontSize);
+		twFontSizeCustom		= ([prefs objectForKey:@"pfFontSizeCustom"] ? [[prefs objectForKey:@"pfFontSizeCustom"] floatValue] : twFontSizeCustom);
     }
 	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
     [prefs release];
@@ -72,7 +77,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			twFrameX = (screenWidth/2) - (twFrameW/2);
 			twFrameY = screenHeight-95;
 			break;
-		case 25:
+		case -999:
 			
 			
 			break;
@@ -83,14 +88,18 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 	}
 	
-	UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameX, frameY, twFrameW, twFontSize+5)];
-	[txtToDisplayPrefLabel setTextColor:LCPParseColorString(twFontColor, twFontColorDefault)];
+	UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
+	[txtToDisplayPrefLabel setTextColor:[UIColor blackColor]];
 	if(twIsBackgroundEnabled) {
-		[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(twBackgroundColor, twBackgroundColorDefault)];
+		[txtToDisplayPrefLabel setBackgroundColor:[UIColor [twBackgroundColor UIColorValue]]];
 	} else {
-		[txtToDisplayPrefLabel setBackgroundColor: [UIColor clearColor]];
+		[txtToDisplayPrefLabel setBackgroundColor:[UIColor clearColor]];
 	}
-	[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
+	if(twFontSize == -999) {
+		[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
+	} else {
+		[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
+	}
 	[currentView addSubview:txtToDisplayPrefLabel];
 	txtToDisplayPrefLabel.text = twTextLabel;
 }
@@ -118,10 +127,10 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
+@class SBHomeScreenViewController; @class SBLockScreenViewControllerBase; 
 static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$loadView)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
-#line 99 "Tweak.xm"
+#line 108 "Tweak.xm"
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -130,9 +139,10 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
-		NSLog(@"AlwaysRemindMe LOG: 'twIsEnabled': %d", twIsEnabled);
+
+		NSLog(@"AlwaysRemindMe LOG: LS 'twIsEnabled': %d", twIsEnabled);
 		if(twIsEnabled) {
-			NSLog(@"AlwaysRemindMe LOG: 'twWhichScreenChoice': %d", twWhichScreenChoice);
+			NSLog(@"AlwaysRemindMe LOG: LS 'twWhichScreenChoice': %d", twWhichScreenChoice);
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
 				UIView* selfView = self.view;
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
@@ -144,15 +154,17 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)
 
 
 
+
 	static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
 		_logos_orig$_ungrouped$SBHomeScreenViewController$loadView(self, _cmd);
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
-		NSLog(@"AlwaysRemindMe LOG: 'twIsEnabled': %d", twIsEnabled);
+
+		NSLog(@"AlwaysRemindMe LOG: SB 'twIsEnabled': %d", twIsEnabled);
 		if(twIsEnabled) {
-			NSLog(@"AlwaysRemindMe LOG: 'twWhichScreenChoice': %d", twWhichScreenChoice);
+			NSLog(@"AlwaysRemindMe LOG: SB 'twWhichScreenChoice': %d", twWhichScreenChoice);
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
 				UIView* selfView = self.view;
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
@@ -161,12 +173,13 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)
 	}
 
 
+
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_fe62b06b(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_29b31af0(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	    loadPrefs();
@@ -175,4 +188,4 @@ static __attribute__((constructor)) void _logosLocalCtor_fe62b06b(int __unused a
 }
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(loadView), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$loadView, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$loadView);} }
-#line 150 "Tweak.xm"
+#line 163 "Tweak.xm"
