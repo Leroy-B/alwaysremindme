@@ -12,7 +12,7 @@
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
@@ -20,7 +20,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>enableTweakPref</string>
+			<string>pfTweakIsEnabled</string>
 			<key>label</key>
 			<string>Enable tweak</string>
 		</dict>
@@ -29,7 +29,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>AlwaysRemindMe Locations</string>
+			<string>Text and Locations</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -39,7 +39,23 @@
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel</string>
+			<key>label</key>
+			<string>Custom 'text' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
@@ -47,7 +63,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>enableWherePref</string>
+			<string>pfWhichScreenChoice</string>
 			<key>validValues</key>
 			<array>
 				<integer>0</integer>
@@ -73,7 +89,7 @@
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
@@ -81,7 +97,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>fontSizePref</string>
+			<string>pfFontSize</string>
 			<key>validValues</key>
 			<array>
 				<integer>11</integer>
@@ -107,7 +123,7 @@
 		</dict>
 		<!-- <dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSSliderCell</string>
 			<key>default</key>
@@ -138,7 +154,7 @@
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
@@ -146,7 +162,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>enableWherePref</string>
+			<string>pfFramePosChoice</string>
 			<key>validValues</key>
 			<array>
 				<integer>1</integer>
@@ -170,7 +186,7 @@
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
@@ -180,13 +196,13 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>frameYPref</string>
+			<string>pfFrameY</string>
 			<key>label</key>
 			<string>Custom 'y' value:</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
@@ -194,7 +210,7 @@
 			<key>defaults</key>
 			<string>com.leroy.CustomCCPreferences</string>
 			<key>key</key>
-			<string>frameXPref</string>
+			<string>pfFrameX</string>
 			<key>label</key>
 			<string>Custom 'x' value:</string>
 		</dict>
@@ -213,11 +229,11 @@
 			<key>libcolorpicker</key>
 			<dict>
 				<key>PostNotification</key>
-				<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+				<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 				<key>defaults</key>
 				<string>com.leroy.AlwaysRemindMePref</string>
 				<key>key</key>
-				<string>fontColorPref</string>
+				<string>pfFontColor</string>
 				<key>fallback</key>
 				<string>#000000</string>
 				<key>alpha</key>
@@ -227,7 +243,7 @@
 			<string>Font color</string>
 		</dict>
 		<!-- Font Size and Color end -->
-		<!-- Background start -->
+		<!-- BackgroundColor start -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
@@ -242,11 +258,11 @@
 			<key>libcolorpicker</key>
 			<dict>
 				<key>PostNotification</key>
-				<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+				<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 				<key>defaults</key>
 				<string>com.leroy.AlwaysRemindMePref</string>
 				<key>key</key>
-				<string>fontBackgroundColorPref</string>
+				<string>pfBackgroundColor</string>
 				<!-- <key>fallback</key>
 				<string>#000000</string> -->
 				<key>alpha</key>
@@ -255,7 +271,7 @@
 			<key>label</key>
 			<string>Background color</string>
 		</dict>
-		<!-- Background end -->
+		<!-- BackgroundColor end -->
 		<!-- actions start -->
 		<dict>
 			<key>cell</key>

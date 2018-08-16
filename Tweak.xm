@@ -14,71 +14,83 @@ TODO:
 @interface SBHomeScreenViewController : UIViewController
 @end
 
-#define PLIST_PATH "/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"
-#define PreferencesChangedNotification "com.leroy.AlwaysRemindMe/preferencesChanged"
-
 //define var
-static NSUserDefaults *preferences;
+// static NSUserDefaults *preferences;
 
-static bool enableTweakPref = NO;
-static int enableWherePref;
+static bool twIsEnabled = NO;
+static int twWhichScreenChoice = 0;
 
-static NSString *txtToDisplayPref;
-static CGFloat frameXPref;
-static CGFloat frameYPref;
-static CGFloat frameX;
-static CGFloat frameY;
-static bool enableBackgroundPref = NO;
-static CGFloat frameWPref;
-static CGFloat frameHPref;
+static NSString *twTextLabel = @"default text";
+static int twFramePosChoice = 1;
+static CGFloat twFrameX = 0;
+static CGFloat twFrameY = 0;
+static CGFloat frameX = 0;
+static CGFloat frameY = 0;
+//static bool enableBackgroundPref = NO;
+static CGFloat twFrameW = 100;
+static CGFloat twFrameH = 20;
 // static CGFloat frameW;
 // static CGFloat frameH;
 
-static CGFloat fontSizePref;
-static NSString *fontColorPref;
-static NSString *fontBackgroundColorPref;
+static CGFloat twFontSize = 14;
+static NSString *twFontColor = @"#000000";
+static NSString *twBackgroundColor = @"#ffffff";
+static NSString *twFontColorDefault = @"#000000";
+static NSString *twBackgroundColorDefault = @"#ffffff";
 
+static void loadPrefs() {
 
-static void loadPreferences() {
+	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
+    if(prefs){
+		twIsEnabled			= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
+		twWhichScreenChoice = ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
+		twTextLabel			= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabel);
 
-	preferences = [[NSUserDefaults alloc] initWithSuiteName:@"com.leroy.AlwaysRemindMePref"];
-	[preferences registerDefaults:@{
+		twFramePosChoice	= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
+		twFrameX			= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
+		twFrameY			= ([prefs objectForKey:@"pfFrameY"] ? [[prefs objectForKey:@"pfFrameY"] floatValue] : twFrameY);
+		twFrameH			= ([prefs objectForKey:@"pfFrameH"] ? [[prefs objectForKey:@"pfFrameH"] floatValue] : twFrameH);
+		twFrameW			= ([prefs objectForKey:@"pfFrameW"] ? [[prefs objectForKey:@"pfFrameW"] floatValue] : twFrameW);
 
-		@"enableTweakPref"					: @NO,
-		@"enableWherePref"					: [NSNumber numberWithInteger:0],
+		twBackgroundColor	= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
+		twFontColor			= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
+    }
+	for(int i = 0; i < [prefs count]; i++){
+		NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
+	}
 
-		@"txtToDisplayPref"					: @"AlwaysRemindMe by LeroyB",
-		@"enableBackgroundPref"			: @NO,
-
-		@"frameXPref"								: [NSNumber numberWithFloat:0],
-		@"frameYPref"								: [NSNumber numberWithFloat:0],
-		@"frameWPref"								: [NSNumber numberWithFloat:100],
-		@"frameHPref"								: [NSNumber numberWithFloat:20],
-
-		@"fontSizePref"							: [NSNumber numberWithFloat:14],
-		@"fontColorPref"						: @"",
-		@"fontBackgroundColorPref"	: @"",
-
-	}];
-	NSLog(@"AlwaysRemindMe LOG: define enableWherePref: %d", enableWherePref);
-
-	enableTweakPref 					= [preferences boolForKey:@"enableTweakPref"];
-	enableWherePref 					= [preferences integerForKey:@"enableWherePref"];
-	NSLog(@"AlwaysRemindMe LOG: init enableWherePref: %d", enableWherePref);
-
-	txtToDisplayPref					= [preferences objectForKey:@"txtToDisplayPref"];
-	enableBackgroundPref 			= [preferences boolForKey:@"enableBackgroundPref"];
-
-	frameXPref								= [preferences floatForKey:@"frameXPref"];
-	frameYPref								= [preferences floatForKey:@"frameYPref"];
-	frameWPref								= [preferences floatForKey:@"frameWPref"];
-	frameHPref								= [preferences floatForKey:@"frameHPref"];
-
-	fontSizePref							= [preferences floatForKey:@"fontSizePref"];
-	fontColorPref							= [preferences objectForKey:@"fontColorPref"];
-	fontBackgroundColorPref		= [preferences objectForKey:@"fontBackgroundColorPref"];
-
+    [prefs release];
 }
+
+static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
+	switch (twFramePosChoice) {
+		case 1://below StatusBar
+			twFrameX = (screenWidth/2) - (twFrameW/2);
+			twFrameY = 20;
+			break;
+		case 2://above dock
+			twFrameX = (screenWidth/2) - (twFrameW/2);
+			twFrameY = screenHeight-95;
+			break;
+		case 25:// custom
+			// twFrameX = pfFrameX;
+			// twFrameY = pfFrameY;
+			break;
+		default:
+			NSLog(@"AlwaysRemindMe ERROR: switch -> twFramePosChoice is default");
+			twFrameX = (screenWidth/2) - (twFrameW/2);
+			twFrameY = 20;
+			break;
+	}
+	//switch position end
+	UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameX, frameY, twFrameW, twFontSize+5)];
+	[txtToDisplayPrefLabel setTextColor:LCPParseColorString(twFontColor, twFontColorDefault)];
+	[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(twBackgroundColor, twBackgroundColorDefault)];
+	[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
+	[currentView addSubview:txtToDisplayPrefLabel];
+	txtToDisplayPrefLabel.text = twTextLabel;
+}
+
 
 //setting text on LS
 %hook SBLockScreenViewControllerBase
@@ -90,58 +102,12 @@ static void loadPreferences() {
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
-
-		if(enableTweakPref) {
-			NSLog(@"AlwaysRemindMe LOG: befor enableWherePref: %d", enableWherePref);
-			if ((enableWherePref == 0) || (enableWherePref == 2)) {
-				NSLog(@"AlwaysRemindMe LOG: after enableWherePref: %d", enableWherePref);
-				//switch position start
-				switch (enableWherePref) {
-					case 1:
-						frameX = (screenWidth/2) - (frameWPref/2);
-						frameY = 20;
-						break;
-					case 2:
-						frameX = (screenWidth/2) - (frameWPref/2);
-						frameY = screenHeight-95;
-						break;
-					case 25:
-						frameX = frameXPref;
-						frameY = frameYPref;
-						break;
-					default:
-						NSLog(@"AlwaysRemindMe ERROR: switch -> enableWherePref is default");
-						frameX = (screenWidth/2) - (frameWPref/2);
-						frameY = 20;
-						break;
-				}
-				//switch position end
-
-				switch (enableWherePref) {
-					case 1:
-						frameX = screenWidth/2;
-						frameY = 20;
-						break;
-					case 2:
-						frameX = screenWidth/2;
-						frameY = screenHeight-95;
-						break;
-					case 25:
-						frameX = frameXPref;
-						frameY = frameYPref;
-						break;
-					default:
-						NSLog(@"AlwaysRemindMe ERROR: switch -> enableWherePref is default");
-						frameX = screenWidth/2;
-						frameY = 20;
-						break;
-				}
-				UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameX, frameY, frameWPref, frameHPref)];
-				[txtToDisplayPrefLabel setTextColor:LCPParseColorString(fontColorPref, nil)];//TODO change for colorpicker var
-				[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(fontBackgroundColorPref, nil)];//TODO change for colorpicker var
-				[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: fontSizePref]];
-				[self.view addSubview:txtToDisplayPrefLabel];
-				txtToDisplayPrefLabel.text = txtToDisplayPref;
+		NSLog(@"AlwaysRemindMe LOG: 'twIsEnabled': %d", twIsEnabled);
+		if(twIsEnabled) {
+			NSLog(@"AlwaysRemindMe LOG: 'twWhichScreenChoice': %d", twWhichScreenChoice);
+			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
+				UIView* selfView = self.view;
+				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
 			}
 		}
 	}
@@ -150,32 +116,17 @@ static void loadPreferences() {
 
 //setting text on SB
 %hook SBHomeScreenViewController
-	- (void)loadView {
-		%orig;
-	    NSLog(@"AlwaysRemindMe LOG: orig called in SBHomeScreenViewController: viewDidLoad");
-		if(enableTweakPref) {
-			NSLog(@"AlwaysRemindMe LOG: SB befor enableWherePref: %d", enableWherePref);
-			if ((enableWherePref == 0) || (enableWherePref == 2)) {
-				NSLog(@"AlwaysRemindMe LOG: SB after enableWherePref: %d", enableWherePref);
-				UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameXPref, frameYPref, frameWPref, frameHPref)];
-				[txtToDisplayPrefLabel setTextColor:LCPParseColorString(fontColorPref, nil)];//TODO change for colorpicker var
-				[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(fontBackgroundColorPref, nil)];//TODO change for colorpicker var
-				[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: fontSizePref]];
-				[self.view addSubview:txtToDisplayPrefLabel];
-				txtToDisplayPrefLabel.text = txtToDisplayPref;
-			}
-		}
-	}
 %end
 
+static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+    loadPrefs();
+	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
+}
+
 %ctor {
-	@autoreleasepool{
-		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
-		NULL,
-		(CFNotificationCallback)loadPreferences,
-		CFSTR(PreferencesChangedNotification),
-		NULL,
-		CFNotificationSuspensionBehaviorDeliverImmediately);
-		loadPreferences();
+	@autoreleasepool {
+	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	    loadPrefs();
+		NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'CFNotificationCenterAddObserver'");
 	}
 }

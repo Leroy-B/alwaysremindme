@@ -19,7 +19,7 @@ CustomCC_EXTRA_FRAMEWORKS += CepheiPrefs
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
-	@echo "Thanks for installing AlwaysRemindMe :)"
+	@echo "Thank you for installing AlwaysRemindMe :)"
 	install.exec "killall -9 SpringBoard"
 SUBPROJECTS += alwaysremindmepref
 include $(THEOS_MAKE_PATH)/aggregate.mk

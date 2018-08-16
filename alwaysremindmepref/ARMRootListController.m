@@ -104,7 +104,7 @@
 	}
 
 	-(void)respring{
-		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.leroy.customcc.list"]){//TODO change me
+		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.leroy.alwaysremindme.list"]){//TODO change me
 			pid_t pid;
 			int status;
 			const char* argv[] = {"killall", "SpringBoard", NULL};
