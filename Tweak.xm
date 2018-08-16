@@ -26,12 +26,12 @@ static CGFloat twFrameX = 0;
 static CGFloat twFrameY = 0;
 static CGFloat frameX = 0;
 static CGFloat frameY = 0;
-//static bool enableBackgroundPref = NO;
 static CGFloat twFrameW = 100;
 static CGFloat twFrameH = 20;
 // static CGFloat frameW;
 // static CGFloat frameH;
 
+static bool twIsBackgroundEnabled = YES;
 static CGFloat twFontSize = 14;
 static NSString *twFontColor = @"#000000";
 static NSString *twBackgroundColor = @"#ffffff";
@@ -42,23 +42,22 @@ static void loadPrefs() {
 
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
     if(prefs){
-		twIsEnabled			= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
-		twWhichScreenChoice = ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
-		twTextLabel			= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabel);
+		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
+		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
+		twTextLabel				= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabel);
 
-		twFramePosChoice	= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
-		twFrameX			= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
-		twFrameY			= ([prefs objectForKey:@"pfFrameY"] ? [[prefs objectForKey:@"pfFrameY"] floatValue] : twFrameY);
-		twFrameH			= ([prefs objectForKey:@"pfFrameH"] ? [[prefs objectForKey:@"pfFrameH"] floatValue] : twFrameH);
-		twFrameW			= ([prefs objectForKey:@"pfFrameW"] ? [[prefs objectForKey:@"pfFrameW"] floatValue] : twFrameW);
+		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
+		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
+		twFrameY				= ([prefs objectForKey:@"pfFrameY"] ? [[prefs objectForKey:@"pfFrameY"] floatValue] : twFrameY);
+		twFrameH				= ([prefs objectForKey:@"pfFrameH"] ? [[prefs objectForKey:@"pfFrameH"] floatValue] : twFrameH);
+		twFrameW				= ([prefs objectForKey:@"pfFrameW"] ? [[prefs objectForKey:@"pfFrameW"] floatValue] : twFrameW);
 
-		twBackgroundColor	= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
-		twFontColor			= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
+		twIsBackgroundEnabled	= ([prefs objectForKey:@"pfIsBackgroundEnabled"] ? [[prefs objectForKey:@"pfIsBackgroundEnabled"] boolValue] : twIsBackgroundEnabled);
+		twBackgroundColor		= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
+		twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
+		twFontSize				= ([prefs objectForKey:@"pfFontSize"] ? [[prefs objectForKey:@"pfFontSize"] floatValue] : twFontSize);
     }
-	for(int i = 0; i < [prefs count]; i++){
-		NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
-	}
-
+	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
     [prefs release];
 }
 
@@ -85,7 +84,11 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	//switch position end
 	UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(frameX, frameY, twFrameW, twFontSize+5)];
 	[txtToDisplayPrefLabel setTextColor:LCPParseColorString(twFontColor, twFontColorDefault)];
-	[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(twBackgroundColor, twBackgroundColorDefault)];
+	if(twIsBackgroundEnabled) {
+		[txtToDisplayPrefLabel setBackgroundColor:LCPParseColorString(twBackgroundColor, twBackgroundColorDefault)];
+	} else {
+		[txtToDisplayPrefLabel setBackgroundColor: [UIColor clearColor]];
+	}
 	[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
 	[currentView addSubview:txtToDisplayPrefLabel];
 	txtToDisplayPrefLabel.text = twTextLabel;
@@ -97,7 +100,6 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
 	-(void)viewDidLoad {
 		%orig;
-	    NSLog(@"AlwaysRemindMe LOG: orig called in SBLockScreenViewControllerBase: viewDidLoad");
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
@@ -116,6 +118,21 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
 //setting text on SB
 %hook SBHomeScreenViewController
+	- (void)loadView {
+		%orig;
+
+		CGSize screenSize = [UIScreen mainScreen].bounds.size;
+		double screenHeight = screenSize.height;
+		double screenWidth = screenSize.width;
+		NSLog(@"AlwaysRemindMe LOG: 'twIsEnabled': %d", twIsEnabled);
+		if(twIsEnabled) {
+			NSLog(@"AlwaysRemindMe LOG: 'twWhichScreenChoice': %d", twWhichScreenChoice);
+			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
+				UIView* selfView = self.view;
+				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
+			}
+		}
+	}
 %end
 
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {

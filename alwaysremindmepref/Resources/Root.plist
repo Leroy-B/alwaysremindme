@@ -93,7 +93,7 @@
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
-			<string></string>
+			<string>14</string>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -249,6 +249,20 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Background</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsBackgroundEnabled</string>
+			<key>label</key>
+			<string>Show background</string>
 		</dict>
 		<dict>
 			<key>cell</key>
