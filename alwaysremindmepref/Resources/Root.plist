@@ -75,6 +75,40 @@
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
 			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>fontSizePref</string>
+			<key>validValues</key>
+			<array>
+				<integer>11</integer>
+				<integer>14</integer>
+				<integer>16</integer>
+				<integer>18</integer>
+				<integer>20</integer>
+				<integer>22</integer>
+				<integer>25</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>11</string>
+				<string>14</string>
+				<string>16</string>
+				<string>18</string>
+				<string>20</string>
+				<string>22</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>3</string>
+		</dict>
+		<!-- <dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
 			<string>PSSliderCell</string>
 			<key>default</key>
 			<integer>14</integer>
@@ -94,7 +128,77 @@
 			<real>24</real>
 			<key>segmentCount</key>
 			<integer>13</integer>
+		</dict> -->
+		<!-- Pos start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Choose the position of the label. For custom values, select 'Custom' above and use the input fields below.</string>
 		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>enableWherePref</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>25</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Below StatusBar</string>
+				<string>Above Dock</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>5</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>The top left part of the screen is point: y = 0, x = 0</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>y</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>frameYPref</string>
+			<key>label</key>
+			<string>Custom 'y' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>x</string>
+			<key>defaults</key>
+			<string>com.leroy.CustomCCPreferences</string>
+			<key>key</key>
+			<string>frameXPref</string>
+			<key>label</key>
+			<string>Custom 'x' value:</string>
+		</dict>
+		<!-- Pos end -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
