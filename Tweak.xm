@@ -40,12 +40,12 @@ TODO:
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabelVar = @"AlwaysRemindMe by Leroy";
+static NSString *twTextLabelVar = @"message me for gay chats ;)";
 static int twFramePosChoice = 1;
 
 static CGFloat twFrameX = 0;
 static CGFloat twFrameY = 20;
-static CGFloat twFrameW = 200;
+static CGFloat twFrameW = 260;
 static CGFloat twFrameH = 20;
 
 static bool twIsBackgroundEnabled = YES;
@@ -85,22 +85,18 @@ static void loadPrefs() {
     [prefs release];
 }
 
-static void performRotationAnimated(UILabel *twTextLabel)
-{
-    [UIView animateWithDuration:0.5
+static void performRotationAnimated(UILabel *twTextLabel){
+	[UIView animateWithDuration:1.0
                           delay:0
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
-
                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
                      }
                      completion:^(BOOL finished){
-
-                         [UIView animateWithDuration:0.5
+                         [UIView animateWithDuration:1.0
                                                delay:0
                                              options:UIViewAnimationOptionCurveLinear
                                           animations:^{
-
                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
                                           }
                                           completion:^(BOOL finished){
@@ -108,6 +104,7 @@ static void performRotationAnimated(UILabel *twTextLabel)
                                           }];
                      }];
 }
+
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
@@ -158,7 +155,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	}
 
 	[currentView addSubview:twTextLabel];
-	twTextLabel.text = twTextLabelVar;
+	twTextLabel.text = [NSString stringWithFormat:@"%@",twTextLabelVar];
 
     //rotation
     // [UIView animateWithDuration:2 delay:0.0 options:UIViewAnimationOptionRepeat animations:^{

@@ -41,12 +41,12 @@
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabelVar = @"AlwaysRemindMe by Leroy";
+static NSString *twTextLabelVar = @"message me for gay chats ;)";
 static int twFramePosChoice = 1;
 
 static CGFloat twFrameX = 0;
 static CGFloat twFrameY = 20;
-static CGFloat twFrameW = 200;
+static CGFloat twFrameW = 260;
 static CGFloat twFrameH = 20;
 
 static bool twIsBackgroundEnabled = YES;
@@ -86,22 +86,18 @@ static void loadPrefs() {
     [prefs release];
 }
 
-static void performRotationAnimated(UILabel *twTextLabel)
-{
-    [UIView animateWithDuration:0.5
+static void performRotationAnimated(UILabel *twTextLabel){
+	[UIView animateWithDuration:1.0
                           delay:0
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
-
                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
                      }
                      completion:^(BOOL finished){
-
-                         [UIView animateWithDuration:0.5
+                         [UIView animateWithDuration:1.0
                                                delay:0
                                              options:UIViewAnimationOptionCurveLinear
                                           animations:^{
-
                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
                                           }
                                           completion:^(BOOL finished){
@@ -109,6 +105,7 @@ static void performRotationAnimated(UILabel *twTextLabel)
                                           }];
                      }];
 }
+
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
@@ -159,7 +156,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	}
 
 	[currentView addSubview:twTextLabel];
-	twTextLabel.text = twTextLabelVar;
+	twTextLabel.text = [NSString stringWithFormat:@"%@",twTextLabelVar];
 
     
     
@@ -193,10 +190,10 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
+@class SBHomeScreenViewController; @class SBLockScreenViewControllerBase; 
 static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$loadView)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
-#line 174 "Tweak.xm"
+#line 171 "Tweak.xm"
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -245,7 +242,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_94fecee8(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_ac392443(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	    loadPrefs();
@@ -254,4 +251,4 @@ static __attribute__((constructor)) void _logosLocalCtor_94fecee8(int __unused a
 }
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(loadView), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$loadView, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$loadView);} }
-#line 229 "Tweak.xm"
+#line 226 "Tweak.xm"
