@@ -86,6 +86,29 @@ static void loadPrefs() {
     [prefs release];
 }
 
+static void performRotationAnimated(UILabel *twTextLabel)
+{
+    [UIView animateWithDuration:0.5
+                          delay:0
+                        options:UIViewAnimationOptionCurveLinear
+                     animations:^{
+
+                         twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+                     }
+                     completion:^(BOOL finished){
+
+                         [UIView animateWithDuration:0.5
+                                               delay:0
+                                             options:UIViewAnimationOptionCurveLinear
+                                          animations:^{
+
+                                              twTextLabel.transform = CGAffineTransformMakeRotation(0);
+                                          }
+                                          completion:^(BOOL finished){
+                                              performRotationAnimated(twTextLabel);
+                                          }];
+                     }];
+}
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
@@ -143,6 +166,8 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     
     
 
+    performRotationAnimated(twTextLabel);
+
 }
 
 
@@ -168,10 +193,10 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBHomeScreenViewController; @class SBLockScreenViewControllerBase; 
+@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
 static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$loadView)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
-#line 149 "Tweak.xm"
+#line 174 "Tweak.xm"
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -220,7 +245,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_863a598c(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_94fecee8(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	    loadPrefs();
@@ -229,4 +254,4 @@ static __attribute__((constructor)) void _logosLocalCtor_863a598c(int __unused a
 }
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(loadView), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$loadView, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$loadView);} }
-#line 204 "Tweak.xm"
+#line 229 "Tweak.xm"

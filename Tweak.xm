@@ -85,6 +85,29 @@ static void loadPrefs() {
     [prefs release];
 }
 
+static void performRotationAnimated(UILabel *twTextLabel)
+{
+    [UIView animateWithDuration:0.5
+                          delay:0
+                        options:UIViewAnimationOptionCurveLinear
+                     animations:^{
+
+                         twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+                     }
+                     completion:^(BOOL finished){
+
+                         [UIView animateWithDuration:0.5
+                                               delay:0
+                                             options:UIViewAnimationOptionCurveLinear
+                                          animations:^{
+
+                                              twTextLabel.transform = CGAffineTransformMakeRotation(0);
+                                          }
+                                          completion:^(BOOL finished){
+                                              performRotationAnimated(twTextLabel);
+                                          }];
+                     }];
+}
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
@@ -138,9 +161,11 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	twTextLabel.text = twTextLabelVar;
 
     //rotation
-    // [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionRepeat animations:^{
-    //     twTextLabel.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(179));
+    // [UIView animateWithDuration:2 delay:0.0 options:UIViewAnimationOptionRepeat animations:^{
+    //     twTextLabel.transform = CGAffineTransformMakeRotation( ( 270 * M_PI ) / 360 );
     // } completion:nil];
+
+    performRotationAnimated(twTextLabel);
 
 }
 
