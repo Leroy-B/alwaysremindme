@@ -15,13 +15,32 @@
 @interface SBHomeScreenViewController : UIViewController
 @end
 
+@interface UIColor(Hexadecimal)
+
++ (UIColor *)colorWithHexString:(NSString *)hexString;
+
+@end
+
+@implementation UIColor(Hexadecimal)
+
++ (UIColor *)colorWithHexString:(NSString *)hexString {
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1]; 
+    [scanner scanHexInt:&rgbValue];
+
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
+@end
+
 
 
 
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabel = @"AlwaysRemindMe by Leroy";
+static NSString *twTextLabelVar = @"AlwaysRemindMe by Leroy";
 static int twFramePosChoice = 1;
 
 static CGFloat twFrameX = 0;
@@ -38,10 +57,10 @@ static bool twIsBackgroundEnabled = YES;
 static CGFloat twFontSize = 14;
 static CGFloat twFontSizeCustom = 14;
 
-static NSString *twFontColor = @"blackColor";
-static NSString *twBackgroundColor = @"whiteColor";
-static NSString *twFontColorDefault = @"blackColor";
-static NSString *twBackgroundColorDefault = @"whiteColor";
+static NSString *twFontColor = @"#000000";
+static NSString *twBackgroundColor = @"#ffffff";
+
+
 
 static void loadPrefs() {
 
@@ -49,7 +68,7 @@ static void loadPrefs() {
     if(prefs){
 		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
-		twTextLabel				= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabel);
+		twTextLabelVar				= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabelVar);
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
@@ -66,6 +85,7 @@ static void loadPrefs() {
 	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
     [prefs release];
 }
+
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
@@ -88,20 +108,20 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 	}
 	
-	UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
-	[txtToDisplayPrefLabel setTextColor:[UIColor blackColor]];
+	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
+	[twTextLabel setTextColor:[UIColor blackColor]];
 	if(twIsBackgroundEnabled) {
-		[txtToDisplayPrefLabel setBackgroundColor:[UIColor [twBackgroundColor UIColorValue]]];
+		[twTextLabel setBackgroundColor: [UIColor colorWithHexString:twBackgroundColor]];
 	} else {
-		[txtToDisplayPrefLabel setBackgroundColor:[UIColor clearColor]];
+		[twTextLabel setBackgroundColor: [UIColor clearColor]];
 	}
 	if(twFontSize == -999) {
-		[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
+		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
 	} else {
-		[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
+		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
 	}
-	[currentView addSubview:txtToDisplayPrefLabel];
-	txtToDisplayPrefLabel.text = twTextLabel;
+	[currentView addSubview:twTextLabel];
+	twTextLabel.text = twTextLabelVar;
 }
 
 
@@ -130,7 +150,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 @class SBHomeScreenViewController; @class SBLockScreenViewControllerBase; 
 static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$loadView)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
-#line 108 "Tweak.xm"
+#line 128 "Tweak.xm"
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -179,7 +199,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_29b31af0(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_0267e2ff(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	    loadPrefs();
@@ -188,4 +208,4 @@ static __attribute__((constructor)) void _logosLocalCtor_29b31af0(int __unused a
 }
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(loadView), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$loadView, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$loadView);} }
-#line 163 "Tweak.xm"
+#line 183 "Tweak.xm"

@@ -260,13 +260,17 @@
 			<string>white</string>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>detail</key>
+            <string>PSListItemsController</string>
+			<key>label</key>
+            <string>Background color</string>
 			<key>key</key>
-			<string>pfFramePosChoice</string>
+			<string>pfBackgroundColor</string>
 			<key>validValues</key>
 			<array>
-				<string>1</string>
-				<string>2</string>
-				<string>-999</string>
+				<string>#FFFFFF</string>
+				<string>#000000</string>
+				<string>#FFA500</string>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -275,8 +279,32 @@
 				<string>orange</string>
 			</array>
 			<key>alignment</key>
-			<string>5</string>
+			<string>3</string>
 		</dict>
+		<!-- <dict>
+            <key>cell</key>
+            <string>PSLinkListCell</string>
+            <key>defaults</key>
+            <string>com.mycompany.MyAppName</string>
+            <key>detail</key>
+            <string>PSListItemsController</string>
+            <key>key</key>
+            <string>color_pref</string>
+            <key>label</key>
+            <string>Color</string>
+            <key>validTitles</key>
+            <array>
+                <string>Blue</string>
+                <string>Yellow</string>
+                <string>Green</string>
+            </array>
+            <key>validValues</key>
+            <array>
+                <string>Blue</string>
+                <string>Yellow</string>
+                <string>Green</string>
+            </array>
+        </dict> -->
 		<!-- <dict>
 			<key>cell</key>
 			<string>PSLinkCell</string>

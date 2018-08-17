@@ -14,13 +14,32 @@ TODO:
 @interface SBHomeScreenViewController : UIViewController
 @end
 
+@interface UIColor(Hexadecimal)
+
++ (UIColor *)colorWithHexString:(NSString *)hexString;
+
+@end
+
+@implementation UIColor(Hexadecimal)
+
++ (UIColor *)colorWithHexString:(NSString *)hexString {
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1]; // bypass '#' character
+    [scanner scanHexInt:&rgbValue];
+
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
+@end
+
 //define var
 // static NSUserDefaults *preferences;
 
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabel = @"AlwaysRemindMe by Leroy";
+static NSString *twTextLabelVar = @"AlwaysRemindMe by Leroy";
 static int twFramePosChoice = 1;
 
 static CGFloat twFrameX = 0;
@@ -37,10 +56,10 @@ static bool twIsBackgroundEnabled = YES;
 static CGFloat twFontSize = 14;
 static CGFloat twFontSizeCustom = 14;
 
-static NSString *twFontColor = @"blackColor";
-static NSString *twBackgroundColor = @"whiteColor";
-static NSString *twFontColorDefault = @"blackColor";
-static NSString *twBackgroundColorDefault = @"whiteColor";
+static NSString *twFontColor = @"#000000";
+static NSString *twBackgroundColor = @"#ffffff";
+// static NSString *twFontColorDefault = @"#000000";
+// static NSString *twBackgroundColorDefault = @"#ffffff";
 
 static void loadPrefs() {
 
@@ -48,7 +67,7 @@ static void loadPrefs() {
     if(prefs){
 		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
-		twTextLabel				= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabel);
+		twTextLabelVar				= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabelVar);
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
@@ -65,6 +84,7 @@ static void loadPrefs() {
 	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
     [prefs release];
 }
+
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
@@ -87,20 +107,20 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 	}
 	//switch position end
-	UILabel *txtToDisplayPrefLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
-	[txtToDisplayPrefLabel setTextColor:[UIColor blackColor]];
+	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
+	[twTextLabel setTextColor:[UIColor blackColor]];
 	if(twIsBackgroundEnabled) {
-		[txtToDisplayPrefLabel setBackgroundColor:[UIColor [twBackgroundColor UIColorValue]]];
+		[twTextLabel setBackgroundColor: [UIColor colorWithHexString:twBackgroundColor]];
 	} else {
-		[txtToDisplayPrefLabel setBackgroundColor:[UIColor clearColor]];
+		[twTextLabel setBackgroundColor: [UIColor clearColor]];
 	}
 	if(twFontSize == -999) {
-		[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
+		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
 	} else {
-		[txtToDisplayPrefLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
+		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
 	}
-	[currentView addSubview:txtToDisplayPrefLabel];
-	txtToDisplayPrefLabel.text = twTextLabel;
+	[currentView addSubview:twTextLabel];
+	twTextLabel.text = twTextLabelVar;
 }
 
 
