@@ -12,14 +12,10 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = AlwaysRemindMe
 AlwaysRemindMe_FILES = Tweak.xm
-AlwaysRemindMe_LIBRARIES = colorpicker
-CustomCC_EXTRA_FRAMEWORKS += Cephei
-CustomCC_EXTRA_FRAMEWORKS += CepheiPrefs
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
-	@echo "Thank you for installing AlwaysRemindMe :)"
 	install.exec "killall -9 SpringBoard"
 SUBPROJECTS += alwaysremindmepref
 include $(THEOS_MAKE_PATH)/aggregate.mk

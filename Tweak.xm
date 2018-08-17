@@ -6,7 +6,10 @@ TODO:
 */
 
 #import <UIKit/UIKit.h>
-#import "libcolorpicker.h"
+#import <QuartzCore/QuartzCore.h>
+
+#define M_PI   3.14159265358979323846264338327950288   /* pi */
+#define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
 
 @interface SBLockScreenViewControllerBase : UIViewController
 @end
@@ -33,9 +36,7 @@ TODO:
 
 @end
 
-//define var
-// static NSUserDefaults *preferences;
-
+//define var and assign default values
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
@@ -47,19 +48,14 @@ static CGFloat twFrameY = 20;
 static CGFloat twFrameW = 200;
 static CGFloat twFrameH = 20;
 
-// static CGFloat frameX = 0;
-// static CGFloat frameY = 0;
-// static CGFloat frameW;
-// static CGFloat frameH;
-
 static bool twIsBackgroundEnabled = YES;
 static CGFloat twFontSize = 14;
 static CGFloat twFontSizeCustom = 14;
 
 static NSString *twFontColor = @"#000000";
+static NSString *twFontColorCustom = @"#000000";
 static NSString *twBackgroundColor = @"#ffffff";
-// static NSString *twFontColorDefault = @"#000000";
-// static NSString *twBackgroundColorDefault = @"#ffffff";
+static NSString *twBackgroundColorCustom = @"#ffffff";
 
 static void loadPrefs() {
 
@@ -67,7 +63,8 @@ static void loadPrefs() {
     if(prefs){
 		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
-		twTextLabelVar				= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabelVar);
+		twTextLabelVar			= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabelVar);
+        NSLog(@"AlwaysRemindMe LOG: twTextLabelVar emoji: twTextLabelVar: %@ ; pfTextLabel: %@", twTextLabelVar, [prefs objectForKey:@"pfTextLabel"]);
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
@@ -77,7 +74,10 @@ static void loadPrefs() {
 
 		twIsBackgroundEnabled	= ([prefs objectForKey:@"pfIsBackgroundEnabled"] ? [[prefs objectForKey:@"pfIsBackgroundEnabled"] boolValue] : twIsBackgroundEnabled);
 		twBackgroundColor		= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
-		twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
+        twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] stringValue] : twBackgroundColorCustom);
+
+        twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
+        twFontColorCustom		= ([prefs objectForKey:@"pfFontColorCustom"] ? [[prefs objectForKey:@"pfFontColorCustom"] stringValue] : twFontColorCustom);
 		twFontSize				= ([prefs objectForKey:@"pfFontSize"] ? [[prefs objectForKey:@"pfFontSize"] floatValue] : twFontSize);
 		twFontSizeCustom		= ([prefs objectForKey:@"pfFontSizeCustom"] ? [[prefs objectForKey:@"pfFontSizeCustom"] floatValue] : twFontSizeCustom);
     }
@@ -94,7 +94,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 		case 2://above dock
 			twFrameX = (screenWidth/2) - (twFrameW/2);
-			twFrameY = screenHeight-95;
+			twFrameY = screenHeight-100;
 			break;
 		case -999:// custom
 			// twFrameX = pfFrameX;
@@ -107,20 +107,41 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 	}
 	//switch position end
+    // twTextLabel.intrinsicContentSize.width -> for dynamic with of background
 	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
-	[twTextLabel setTextColor:[UIColor blackColor]];
-	if(twIsBackgroundEnabled) {
-		[twTextLabel setBackgroundColor: [UIColor colorWithHexString:twBackgroundColor]];
-	} else {
-		[twTextLabel setBackgroundColor: [UIColor clearColor]];
-	}
-	if(twFontSize == -999) {
+
+    //fontColor
+    if([twFontColor isEqualToString:@"Custom"]) {
+        [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColorCustom]];
+    } else {
+        [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColor]];
+    }
+
+    if(twFontSize == -999) {
 		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
 	} else {
 		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
 	}
+
+    //backgroundColor
+	if(twIsBackgroundEnabled) {
+        if([twBackgroundColor isEqualToString:@"Custom"]) {
+            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorCustom]];
+        } else {
+            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColor]];
+        }
+	} else {
+		[twTextLabel setBackgroundColor: [UIColor clearColor]];
+	}
+
 	[currentView addSubview:twTextLabel];
 	twTextLabel.text = twTextLabelVar;
+
+    //rotation
+    // [UIView animateWithDuration:1 delay:0.0 options:UIViewAnimationOptionRepeat animations:^{
+    //     twTextLabel.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(179));
+    // } completion:nil];
+
 }
 
 
