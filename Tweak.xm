@@ -4,6 +4,12 @@ TODO:
 
 */
 
+/*
+feautre??:
+	- width full screen
+
+*/
+
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
