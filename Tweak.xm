@@ -1,7 +1,6 @@
 /*
 TODO:
 	- bug: slider for font size changes color ?!?
-	- make everything after the orig a method for redundenz
 
 */
 
@@ -40,7 +39,7 @@ TODO:
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabelVar = @"message me for gay chats ;)";
+static NSString *twTextLabelVar = @"This is a placeholder text";
 static int twFramePosChoice = 1;
 
 static CGFloat twFrameX = 0;
@@ -56,6 +55,9 @@ static NSString *twFontColor = @"#000000";
 static NSString *twFontColorCustom = @"#000000";
 static NSString *twBackgroundColor = @"#ffffff";
 static NSString *twBackgroundColorCustom = @"#ffffff";
+
+static bool twIsRotationEnabled = NO;
+static CGFloat twRotationSpeed = 2;
 
 static void loadPrefs() {
 
@@ -80,29 +82,44 @@ static void loadPrefs() {
         twFontColorCustom		= ([prefs objectForKey:@"pfFontColorCustom"] ? [[prefs objectForKey:@"pfFontColorCustom"] stringValue] : twFontColorCustom);
 		twFontSize				= ([prefs objectForKey:@"pfFontSize"] ? [[prefs objectForKey:@"pfFontSize"] floatValue] : twFontSize);
 		twFontSizeCustom		= ([prefs objectForKey:@"pfFontSizeCustom"] ? [[prefs objectForKey:@"pfFontSizeCustom"] floatValue] : twFontSizeCustom);
+
+        twIsRotationEnabled		= ([prefs objectForKey:@"pfIsRotationEnabled"] ? [[prefs objectForKey:@"pfIsRotationEnabled"] boolValue] : twIsRotationEnabled);
+        twRotationSpeed			= ([prefs objectForKey:@"pfRotationSpeed"] ? [[prefs objectForKey:@"pfRotationSpeed"] floatValue] : twRotationSpeed);
     }
 	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
     [prefs release];
 }
 
-static void performRotationAnimated(UILabel *twTextLabel){
-	[UIView animateWithDuration:1.0
+static void performRotationAnimated(UILabel *twTextLabel, double speed){
+
+	[UIView animateWithDuration:(speed/2)
                           delay:0
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
                      }
                      completion:^(BOOL finished){
-                         [UIView animateWithDuration:1.0
+                         [UIView animateWithDuration:(speed/2)
                                                delay:0
                                              options:UIViewAnimationOptionCurveLinear
                                           animations:^{
                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
                                           }
                                           completion:^(BOOL finished){
-                                              performRotationAnimated(twTextLabel);
+                                              performRotationAnimated(twTextLabel, twRotationSpeed);
                                           }];
                      }];
+}
+
+static void pulse(UIView *currentView, double value, double duration) {
+    CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    pulseAnimation.duration = duration;
+    pulseAnimation.toValue = [NSNumber numberWithFloat:value];
+    pulseAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    pulseAnimation.autoreverses = YES;
+    pulseAnimation.repeatCount = 999;
+
+    [currentView.layer addAnimation:pulseAnimation forKey:nil];
 }
 
 
@@ -127,6 +144,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 	}
 	//switch position end
+
     // twTextLabel.intrinsicContentSize.width -> for dynamic with of background
 	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
 
@@ -158,11 +176,11 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	twTextLabel.text = [NSString stringWithFormat:@"%@",twTextLabelVar];
 
     //rotation
-    // [UIView animateWithDuration:2 delay:0.0 options:UIViewAnimationOptionRepeat animations:^{
-    //     twTextLabel.transform = CGAffineTransformMakeRotation( ( 270 * M_PI ) / 360 );
-    // } completion:nil];
+    if(twIsRotationEnabled) {
+        performRotationAnimated(twTextLabel, twRotationSpeed);
+    }
 
-    performRotationAnimated(twTextLabel);
+    pulse(twTextLabel, 2, 1);
 
 }
 
