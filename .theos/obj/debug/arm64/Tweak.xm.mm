@@ -1,22 +1,22 @@
-/*
-TODO:
-    - bug: set custom text (emoji?)
-    - blinking: set speed and Size
-    - shake: set speed and Size
-    - X/Y pos: set correct position on custom select
+#line 1 "Tweak.xm"
 
-*/
 
-/*
-features:
-	- width full screen
 
-*/
+
+
+
+
+
+
+
+
+
+
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
-#define M_PI   3.14159265358979323846264338327950288   /* pi */
+#define M_PI   3.14159265358979323846264338327950288   
 #define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
 
 @interface SBLockScreenViewControllerBase : UIViewController
@@ -36,7 +36,7 @@ features:
 + (UIColor *)colorWithHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
-    [scanner setScanLocation:1]; // bypass '#' character
+    [scanner setScanLocation:1]; 
     [scanner scanHexInt:&rgbValue];
 
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
@@ -44,7 +44,7 @@ features:
 
 @end
 
-//define var and assign default values
+
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
@@ -136,13 +136,38 @@ static void performRotationAnimated(UILabel *twTextLabel, double speed) {
 
 static void performPulseAnimated(UIView *currentView, double size, double duration, CGRect rect1) {
 
-    CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-    pulseAnimation.duration = duration;
-    pulseAnimation.toValue = [NSNumber numberWithFloat:size];
-    pulseAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    pulseAnimation.autoreverses = YES;
-    pulseAnimation.repeatCount = HUGE_VALF;
-    [currentView.layer addAnimation:pulseAnimation forKey:nil];
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    CAKeyframeAnimation* circlePathAnimation = [CAKeyframeAnimation animationWithKeyPath:@"center"];
+
+    CGMutablePathRef circularPath = CGPathCreateMutable();
+    CGRect pathRect = rect1; 
+    CGPathAddEllipseInRect(circularPath, NULL, pathRect);
+    spinAnimation.path = circularPath;
+    CGPathRelease(circularPath);
 
 }
 
@@ -161,28 +186,28 @@ static void performShakeAnimated(UIView *currentView, double duration, double xA
 
 }
 
-// static void performBlinkingAnimated(UIView *currentView, double duration) {
-//
-//     currentView.alpha = 1;
-//     [UIView animateWithDuration:duration delay:0.5 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-//         currentView.alpha = 0;
-//     } completion:nil];
-//
-// }
+
+
+
+
+
+
+
+
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
 	switch (twFramePosChoice) {
-		case 1://below StatusBar
+		case 1:
 			twFrameX = (screenWidth/2) - (twFrameW/2);
 			twFrameY = 20;
 			break;
-		case 2://above dock
+		case 2:
 			twFrameX = (screenWidth/2) - (twFrameW/2);
 			twFrameY = screenHeight-100;
 			break;
-		case -999:// custom
-			// twFrameX = pfFrameX;
-			// twFrameY = pfFrameY;
+		case -999:
+			
+			
 			break;
 		default:
 			NSLog(@"AlwaysRemindMe ERROR: switch -> twFramePosChoice is default");
@@ -190,12 +215,12 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			twFrameY = 20;
 			break;
 	}
-	//switch position end
+	
 
-    // twTextLabel.intrinsicContentSize.width -> for dynamic with of background
+    
 	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
 
-    //fontColor
+    
     if([twFontColor isEqualToString:@"Custom"]) {
         [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColorCustom]];
     } else {
@@ -208,7 +233,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSize]];
 	}
 
-    //backgroundColor
+    
 	if(twIsBackgroundEnabled) {
         if([twBackgroundColor isEqualToString:@"Custom"]) {
             [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorCustom]];
@@ -222,7 +247,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	[currentView addSubview:twTextLabel];
 	twTextLabel.text = [NSString stringWithFormat:@"%@",twTextLabelVar];
 
-    //rotation
+    
     if(twIsRotationEnabled) {
         performRotationAnimated(twTextLabel, twRotationSpeed);
     }
@@ -231,16 +256,16 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     if(twIsPulseEnabled) {
 
         switch (twPulseSizeChoice) {
-    		case 1://default
+    		case 1:
     			varPulseSize = 2;
     			break;
-    		case 2://half
+    		case 2:
     			varPulseSize = 1;
     			break;
-            case 3://half
+            case 3:
     			varPulseSize = 4;
     			break;
-    		case -999:// custom
+    		case -999:
     			varPulseSize = twPulseSize;
     			break;
     		default:
@@ -248,18 +273,18 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
                 varPulseSize = 2;
     			break;
     	}
-    	//switch twPulseSize end
+    	
         switch (twPulseSpeedChoice) {
-    		case 1://default
+    		case 1:
     			varPulseSpeed = 1;
     			break;
-    		case 2:// fast
+    		case 2:
     			varPulseSpeed = 0.5;
     			break;
-            case 3:// slow
+            case 3:
     			varPulseSpeed = 2;
     			break;
-    		case -999:// custom
+    		case -999:
     			varPulseSpeed = twPulseSpeed;
     			break;
     		default:
@@ -267,19 +292,44 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
                 varPulseSpeed = 1;
     			break;
     	}
-    	//switch twPulseSpeed end
+    	
         performPulseAnimated(twTextLabel, varPulseSize, varPulseSpeed, twTextLabel.frame);
     }
-    //performBlinkingAnimated(twTextLabel, 0.5);
-    //performShakeAnimated(twTextLabel, 0.5, 0, 50);
+    
+    performShakeAnimated(twTextLabel, 0.5, 0, 50);
 }
 
 
-//setting text on LS
-%hook SBLockScreenViewControllerBase
 
-	-(void)viewDidLoad {
-		%orig;
+
+#include <substrate.h>
+#if defined(__clang__)
+#if __has_feature(objc_arc)
+#define _LOGOS_SELF_TYPE_NORMAL __unsafe_unretained
+#define _LOGOS_SELF_TYPE_INIT __attribute__((ns_consumed))
+#define _LOGOS_SELF_CONST const
+#define _LOGOS_RETURN_RETAINED __attribute__((ns_returns_retained))
+#else
+#define _LOGOS_SELF_TYPE_NORMAL
+#define _LOGOS_SELF_TYPE_INIT
+#define _LOGOS_SELF_CONST
+#define _LOGOS_RETURN_RETAINED
+#endif
+#else
+#define _LOGOS_SELF_TYPE_NORMAL
+#define _LOGOS_SELF_TYPE_INIT
+#define _LOGOS_SELF_CONST
+#define _LOGOS_RETURN_RETAINED
+#endif
+
+@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
+static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$loadView)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
+
+#line 303 "Tweak.xm"
+
+
+	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+		_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(self, _cmd);
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
@@ -295,13 +345,13 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 		}
 	}
 
-%end
 
-//setting text on SB
-%hook SBHomeScreenViewController
 
-	- (void)loadView {
-		%orig;
+
+
+
+	static void _logos_method$_ungrouped$SBHomeScreenViewController$loadView(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+		_logos_orig$_ungrouped$SBHomeScreenViewController$loadView(self, _cmd);
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
@@ -317,17 +367,20 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 		}
 	}
 
-%end
+
 
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-%ctor {
+static __attribute__((constructor)) void _logosLocalCtor_094e9b75(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	    loadPrefs();
 		NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'CFNotificationCenterAddObserver'");
 	}
 }
+static __attribute__((constructor)) void _logosLocalInit() {
+{Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(loadView), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$loadView, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$loadView);} }
+#line 358 "Tweak.xm"

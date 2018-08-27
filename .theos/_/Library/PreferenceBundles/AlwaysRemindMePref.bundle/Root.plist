@@ -329,7 +329,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>rotation</string>
+			<string>rotation Animation</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -355,7 +355,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfRotationSpeed</string>
+			<string>pfRotationSpeedChoice</string>
 			<key>validValues</key>
 			<array>
 				<integer>1</integer>
@@ -391,7 +391,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>rotation</string>
+			<string>Pulse Animation</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -403,9 +403,9 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>twIsPulseEnabled</string>
+			<string>pfIsPulseEnabled</string>
 			<key>label</key>
-			<string>Enable pulse</string>
+			<string>Enable Pulsating</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -417,7 +417,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>twPulseSpeed</string>
+			<string>pfPulseSpeedChoice</string>
 			<key>validValues</key>
 			<array>
 				<integer>1</integer>
@@ -428,8 +428,8 @@
 			<key>validTitles</key>
 			<array>
 				<string>Default</string>
-				<string>Half</string>
-				<string>Double</string>
+				<string>Fast</string>
+				<string>Slow</string>
 				<string>Custom</string>
 			</array>
 		</dict>
@@ -439,11 +439,13 @@
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
-			<string>Default: 2</string>
+			<string>Default: 1</string>
+			<key>default</key>
+			<string>1</string>
 			<key>defaults</key>
 			<string>com.leroy.CustomCCPreferences</string>
 			<key>key</key>
-			<string>twPulseSpeed</string>
+			<string>pfPulseSpeed</string>
 			<key>label</key>
 			<string>Custom 'speed' value:</string>
 		</dict>
@@ -457,7 +459,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>twPulseSize</string>
+			<string>pfPulseSizeChoice</string>
 			<key>validValues</key>
 			<array>
 				<integer>1</integer>
@@ -480,10 +482,12 @@
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
 			<string>Default: 2</string>
+			<key>default</key>
+			<string>2</string>
 			<key>defaults</key>
 			<string>com.leroy.CustomCCPreferences</string>
 			<key>key</key>
-			<string>twPulseSize</string>
+			<string>pfPulseSize</string>
 			<key>label</key>
 			<string>Custom 'size' value:</string>
 		</dict>
