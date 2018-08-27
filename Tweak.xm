@@ -1,6 +1,8 @@
 /*
 TODO:
 	- bug: slider for font size changes color ?!?
+    - pulse: set speed and Size
+    - X/Y pos: set correct position on custom select
 
 */
 
@@ -65,6 +67,10 @@ static NSString *twBackgroundColorCustom = @"#ffffff";
 static bool twIsRotationEnabled = NO;
 static CGFloat twRotationSpeed = 2;
 
+static bool twIsPulseEnabled = NO;
+static CGFloat twPulseSpeed = 1;
+static CGFloat twPulseSize = 2;
+
 static void loadPrefs() {
 
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
@@ -91,12 +97,16 @@ static void loadPrefs() {
 
         twIsRotationEnabled		= ([prefs objectForKey:@"pfIsRotationEnabled"] ? [[prefs objectForKey:@"pfIsRotationEnabled"] boolValue] : twIsRotationEnabled);
         twRotationSpeed			= ([prefs objectForKey:@"pfRotationSpeed"] ? [[prefs objectForKey:@"pfRotationSpeed"] floatValue] : twRotationSpeed);
+
+        twIsPulseEnabled		= ([prefs objectForKey:@"pfIsPulseEnabled"] ? [[prefs objectForKey:@"pfIsPulseEnabled"] boolValue] : twIsPulseEnabled);
+        twPulseSpeed			= ([prefs objectForKey:@"pfPulseSpeed"] ? [[prefs objectForKey:@"pfPulseSpeed"] floatValue] : twPulseSpeed);
+        twPulseSize 			= ([prefs objectForKey:@"pfPulseSize"] ? [[prefs objectForKey:@"pfPulseSize"] floatValue] : twPulseSize);
     }
 	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
     [prefs release];
 }
 
-static void performRotationAnimated(UILabel *twTextLabel, double speed){
+static void performRotationAnimated(UILabel *twTextLabel, double speed) {
 
 	[UIView animateWithDuration:(speed/2)
                           delay:0
@@ -117,14 +127,14 @@ static void performRotationAnimated(UILabel *twTextLabel, double speed){
                      }];
 }
 
-static void pulse(UIView *currentView, double value, double duration) {
+static void performPulseAnimated(UIView *currentView, double size, double duration) {
+
     CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     pulseAnimation.duration = duration;
-    pulseAnimation.toValue = [NSNumber numberWithFloat:value];
+    pulseAnimation.toValue = [NSNumber numberWithFloat:size];
     pulseAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     pulseAnimation.autoreverses = YES;
-    pulseAnimation.repeatCount = 999;
-
+    pulseAnimation.repeatCount = HUGE_VALF;
     [currentView.layer addAnimation:pulseAnimation forKey:nil];
 }
 
@@ -185,9 +195,9 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     if(twIsRotationEnabled) {
         performRotationAnimated(twTextLabel, twRotationSpeed);
     }
-
-    pulse(twTextLabel, 2, 1);
-
+    if(twIsPulseEnabled) {
+        performPulseAnimated(twTextLabel, twPulseSize, twPulseSpeed);
+    }
 }
 
 

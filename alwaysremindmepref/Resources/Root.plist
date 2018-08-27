@@ -329,7 +329,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>rotation</string>
+			<string>rotation Animation</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -386,6 +386,108 @@
 			<string>Custom 'speed' value:</string>
 		</dict>
 		<!-- rotation end -->
+		<!-- pulse Start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Pulse Animation</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>twIsPulseEnabled</string>
+			<key>label</key>
+			<string>Enable Pulsating</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>twPulseSpeed</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Fast</string>
+				<string>Double</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 2</string>
+			<key>defaults</key>
+			<string>com.leroy.CustomCCPreferences</string>
+			<key>key</key>
+			<string>twPulseSpeed</string>
+			<key>label</key>
+			<string>Custom 'speed' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>twPulseSize</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Half</string>
+				<string>Double</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 2</string>
+			<key>defaults</key>
+			<string>com.leroy.CustomCCPreferences</string>
+			<key>key</key>
+			<string>twPulseSize</string>
+			<key>label</key>
+			<string>Custom 'size' value:</string>
+		</dict>
+		<!-- pulse end -->
 		<!-- actions start -->
 		<dict>
 			<key>cell</key>
