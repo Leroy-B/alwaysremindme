@@ -55,6 +55,29 @@
 		}
 	}
 
+	-(void)viewDidLoad {
+
+		//Adds GitHub button in top right of preference pane
+		UIImage *dismissKB = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/AlwaysRemindMePref.bundle/dismissKB.png"];
+		dismissKB = [dismissKB imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+		UIBarButtonItem *dismissButton = [[UIBarButtonItem alloc]
+							   initWithImage:dismissKB
+							   style:UIBarButtonItemStylePlain
+                               target:self
+                               action:@selector(dismissButtonAction)];
+
+		self.navigationItem.rightBarButtonItem = dismissButton;
+
+		[dismissButton release];
+		[super viewDidLoad];
+
+	}
+
+	-(IBAction)dismissButtonAction {
+		[self.view endEditing:YES];
+		//[[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://github.com/LacertosusRepo"] options:@{} completionHandler:nil];
+	}
+
 
 	- (void)showTwitter {
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"twitter://"]]) [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"twitter://user?screen_name=IDEK_a_Leroy"] options:@{} completionHandler:nil];

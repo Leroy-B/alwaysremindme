@@ -14,8 +14,8 @@ features:
 
 */
 
-#define M_PI   3.14159265358979323846264338327950288   /* pi */
-#define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
+// #define M_PI   3.14159265358979323846264338327950288   /* pi */
+// #define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
 
 @interface SBLockScreenViewControllerBase : UIViewController
 @end
@@ -46,9 +46,9 @@ features:
 static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabelVar = @"This is a placeholder text";
-static int twFramePosChoice = 1;
+static NSString *twTextLabelVar = @"Thank you for downloading :)";
 
+static int twFramePosChoice = 1;
 static CGFloat twFrameX = 0;
 static CGFloat twFrameY = 20;
 static CGFloat twFrameW = 260;
@@ -77,14 +77,26 @@ static CGFloat twPulseSpeed = 1;
 static int twPulseSizeChoice = 1;
 static CGFloat twPulseSize = 2;
 
+//char cString[100];
+
 static void loadPrefs() {
 
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
     if(prefs){
 		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
-		twTextLabelVar			= ([prefs objectForKey:@"pfTextLabel"] ? [[prefs objectForKey:@"pfTextLabel"] stringValue] : twTextLabelVar);
-        NSLog(@"AlwaysRemindMe LOG: twTextLabelVar emoji: twTextLabelVar: %@ ; pfTextLabel: %@", twTextLabelVar, [prefs objectForKey:@"pfTextLabel"]);
+
+        NSMutableArray *array = [NSMutableArray array];
+        for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel"] description] length]; i++) {
+            [array addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel"] description] characterAtIndex:i]]];
+        }
+
+        NSMutableString *result = [[NSMutableString alloc] init];
+        for (NSObject *obj in array){
+            [result appendString:[obj description]];
+        }
+
+        twTextLabelVar = result;
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
@@ -205,7 +217,6 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
     // twTextLabel.intrinsicContentSize.width -> for dynamic with of background
 	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
-    twTextLabel.adjustsFontSizeToFitWidth = YES;
     //fontColor
     if([twFontColor isEqualToString:@"Custom"]) {
         [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColorCustom]];
@@ -228,7 +239,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
         }
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
-	}
+    }
 
 	[currentView addSubview:twTextLabel];
 	twTextLabel.text = twTextLabelVar;
@@ -335,16 +346,14 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 //setting text on LS
 %hook SBLockScreenViewControllerBase
 
-	-(void)viewDidLoad {
-		%orig;
+	-(void)viewDidAppear:(BOOL)arg1 {
+        %orig;
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
 
-		NSLog(@"AlwaysRemindMe LOG: LS 'twIsEnabled': %d", twIsEnabled);
 		if(twIsEnabled) {
-			NSLog(@"AlwaysRemindMe LOG: LS 'twWhichScreenChoice': %d", twWhichScreenChoice);
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
 				UIView* selfView = self.view;
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
@@ -357,16 +366,14 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 //setting text on SB
 %hook SBHomeScreenViewController
 
-	- (void)loadView {
-		%orig;
+	-(void)viewDidAppear:(BOOL)arg1 {
+        %orig;
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
 
-		NSLog(@"AlwaysRemindMe LOG: SB 'twIsEnabled': %d", twIsEnabled);
 		if(twIsEnabled) {
-			NSLog(@"AlwaysRemindMe LOG: SB 'twWhichScreenChoice': %d", twWhichScreenChoice);
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
 				UIView* selfView = self.view;
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
@@ -383,8 +390,8 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 
 %ctor {
 	@autoreleasepool {
+        loadPrefs();
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-	    loadPrefs();
 		NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'CFNotificationCenterAddObserver'");
 	}
 }
