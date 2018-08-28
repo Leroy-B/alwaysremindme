@@ -44,7 +44,10 @@ features:
 
 //define var and assign default values
 static bool twIsEnabled = NO;
+static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
+
+static int twMyNum = 0;
 
 static NSString *twTextLabelVar = @"Thank you for downloading :)";
 
@@ -77,7 +80,12 @@ static CGFloat twPulseSpeed = 1;
 static int twPulseSizeChoice = 1;
 static CGFloat twPulseSize = 2;
 
-//char cString[100];
+
+static bool twShouldDelete = NO;
+
+static void dealloc(UIView *currentView) {
+    [currentView release], currentView = nil;
+}
 
 static void loadPrefs() {
 
@@ -95,7 +103,6 @@ static void loadPrefs() {
         for (NSObject *obj in array){
             [result appendString:[obj description]];
         }
-
         twTextLabelVar = result;
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
@@ -346,39 +353,59 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 //setting text on LS
 %hook SBLockScreenViewControllerBase
 
-	-(void)viewDidAppear:(BOOL)arg1 {
+	-(void)viewDidLoad {
         %orig;
 
-		CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
 
-		if(twIsEnabled) {
-			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
-				UIView* selfView = self.view;
+        UIView* selfView = self.view;
+
+		if(twIsEnabled && !twIsViewPresented) {
+			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
+                twIsViewPresented = YES;
 			}
 		}
+        if(twShouldDelete){
+            dealloc(selfView);
+        }
 	}
+
+%end
+
+%hook SBHomeScreenViewController
+
+    -(void)viewDidLayoutSubviews {
+        NSLog(@"AlwaysRemindMe LOG: 'viewDidLayoutSubviews' called in 'SBHomeScreenViewController' '%d'", twMyNum);
+        twMyNum++;
+    }
 
 %end
 
 //setting text on SB
 %hook SBHomeScreenViewController
 
-	-(void)viewDidAppear:(BOOL)arg1 {
+	-(void)viewDidLoad {
         %orig;
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
 		double screenWidth = screenSize.width;
 
-		if(twIsEnabled) {
+        UIView* selfView = self.view;
+
+		if(twIsEnabled && !twIsViewPresented) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
-				UIView* selfView = self.view;
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
+                twIsViewPresented = YES;
 			}
 		}
+        if(twShouldDelete){
+            dealloc(selfView);
+        }
+
 	}
 
 %end
