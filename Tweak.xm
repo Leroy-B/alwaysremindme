@@ -10,11 +10,9 @@ TODO:
 /*
 features:
 	- width full screen
+    - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
 
 */
-
-#import <UIKit/UIKit.h>
-#import <QuartzCore/QuartzCore.h>
 
 #define M_PI   3.14159265358979323846264338327950288   /* pi */
 #define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
@@ -69,6 +67,10 @@ static bool twIsRotationEnabled = NO;
 static int twRotationSpeedChoice = 1;
 static CGFloat twRotationSpeed = 2;
 
+static bool twIsBlinkingEnabled = NO;
+static int twBlinkingSpeedChoice = 1;
+static CGFloat twBlinkingSpeed = 2;
+
 static bool twIsPulseEnabled = NO;
 static int twPulseSpeedChoice = 1;
 static CGFloat twPulseSpeed = 1;
@@ -103,6 +105,10 @@ static void loadPrefs() {
         twRotationSpeedChoice 	= ([prefs objectForKey:@"pfRotationSpeedChoice"] ? [[prefs objectForKey:@"pfRotationSpeedChoice"] intValue] : twRotationSpeedChoice);
         twRotationSpeed			= ([prefs objectForKey:@"pfRotationSpeed"] ? [[prefs objectForKey:@"pfRotationSpeed"] floatValue] : twRotationSpeed);
 
+        twIsBlinkingEnabled		= ([prefs objectForKey:@"pfIsBlinkingEnabled"] ? [[prefs objectForKey:@"pfIsBlinkingEnabled"] boolValue] : twIsBlinkingEnabled);
+        twBlinkingSpeedChoice 	= ([prefs objectForKey:@"pfBlinkingSpeedChoice"] ? [[prefs objectForKey:@"pfBlinkingSpeedChoice"] intValue] : twBlinkingSpeedChoice);
+        twBlinkingSpeed			= ([prefs objectForKey:@"pfBlinkingSpeed"] ? [[prefs objectForKey:@"pfBlinkingSpeed"] floatValue] : twBlinkingSpeed);
+
         twIsPulseEnabled		= ([prefs objectForKey:@"pfIsPulseEnabled"] ? [[prefs objectForKey:@"pfIsPulseEnabled"] boolValue] : twIsPulseEnabled);
         twPulseSpeedChoice 	    = ([prefs objectForKey:@"pfPulseSpeedChoice"] ? [[prefs objectForKey:@"pfPulseSpeedChoice"] intValue] : twPulseSpeedChoice);
         twPulseSpeed			= ([prefs objectForKey:@"pfPulseSpeed"] ? [[prefs objectForKey:@"pfPulseSpeed"] floatValue] : twPulseSpeed);
@@ -134,7 +140,7 @@ static void performRotationAnimated(UILabel *twTextLabel, double speed) {
                      }];
 }
 
-static void performPulseAnimated(UIView *currentView, double size, double duration, CGRect rect1) {
+static void performPulseAnimated(UIView *currentView, double size, double duration) {
 
     CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     pulseAnimation.duration = duration;
@@ -145,56 +151,61 @@ static void performPulseAnimated(UIView *currentView, double size, double durati
     [currentView.layer addAnimation:pulseAnimation forKey:nil];
 
 }
-
-static void performShakeAnimated(UIView *currentView, double duration, double xAmount, double yAmount) {
-
-    CABasicAnimation *shakeAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
-    shakeAnimation.duration = duration;
-
-    shakeAnimation.fromValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x - xAmount, [currentView center].y - yAmount)];
-    shakeAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x + xAmount, [currentView center].y + yAmount)];
-
-    shakeAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    shakeAnimation.autoreverses = YES;
-    shakeAnimation.repeatCount = HUGE_VALF;
-    [currentView.layer addAnimation:shakeAnimation forKey:@"position"];
-
-}
-
-// static void performBlinkingAnimated(UIView *currentView, double duration) {
 //
-//     currentView.alpha = 1;
-//     [UIView animateWithDuration:duration delay:0.5 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-//         currentView.alpha = 0;
-//     } completion:nil];
+// static void performShakeAnimated(UIView *currentView, double duration, double xAmount, double yAmount) {
+//
+//     CABasicAnimation *shakeAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
+//     shakeAnimation.duration = duration;
+//
+//     shakeAnimation.fromValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x - xAmount, [currentView center].y - yAmount)];
+//     shakeAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x + xAmount, [currentView center].y + yAmount)];
+//
+//     shakeAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//     shakeAnimation.autoreverses = YES;
+//     shakeAnimation.repeatCount = HUGE_VALF;
+//     [currentView.layer addAnimation:shakeAnimation forKey:@"position"];
 //
 // }
 
+static void performBlinkingAnimated(UIView *currentView, double duration) {
+
+    currentView.alpha = 1;
+    [UIView animateWithDuration:duration delay:0.5 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
+        currentView.alpha = 0;
+    } completion:nil];
+
+}
+
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
+    double varFrameX, varFrameY = 0;
 	switch (twFramePosChoice) {
 		case 1://below StatusBar
-			twFrameX = (screenWidth/2) - (twFrameW/2);
-			twFrameY = 20;
+			varFrameX = (screenWidth/2) - (twFrameW/2);
+			varFrameY = 20;
 			break;
 		case 2://above dock
-			twFrameX = (screenWidth/2) - (twFrameW/2);
-			twFrameY = screenHeight-100;
+			varFrameX = (screenWidth/2) - (twFrameW/2);
+			varFrameY = screenHeight-100;
 			break;
 		case -999:// custom
-			// twFrameX = pfFrameX;
-			// twFrameY = pfFrameY;
+			varFrameX = twFrameX;
+			varFrameY = twFrameY;
 			break;
 		default:
 			NSLog(@"AlwaysRemindMe ERROR: switch -> twFramePosChoice is default");
-			twFrameX = (screenWidth/2) - (twFrameW/2);
-			twFrameY = 20;
+			varFrameX = (screenWidth/2) - (twFrameW/2);
+			varFrameY = 20;
 			break;
 	}
 	//switch position end
+    twFrameX = varFrameX;
+    twFrameY = varFrameY;
+
+    //UILabel *twTextLabel = [[UILabel alloc] init];
 
     // twTextLabel.intrinsicContentSize.width -> for dynamic with of background
 	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
-
+    twTextLabel.adjustsFontSizeToFitWidth = YES;
     //fontColor
     if([twFontColor isEqualToString:@"Custom"]) {
         [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColorCustom]];
@@ -220,7 +231,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	}
 
 	[currentView addSubview:twTextLabel];
-	twTextLabel.text = [NSString stringWithFormat:@"%@",twTextLabelVar];
+	twTextLabel.text = twTextLabelVar;
 
     //rotation
     if(twIsRotationEnabled) {
@@ -229,7 +240,6 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
     double varPulseSize, varPulseSpeed = 0;
     if(twIsPulseEnabled) {
-
         switch (twPulseSizeChoice) {
     		case 1://default
     			varPulseSize = 2;
@@ -244,7 +254,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     			varPulseSize = twPulseSize;
     			break;
     		default:
-    			NSLog(@"AlwaysRemindMe ERROR: switch -> twPulseSize is default");
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twPulseSizeChoice is default");
                 varPulseSize = 2;
     			break;
     	}
@@ -263,15 +273,62 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     			varPulseSpeed = twPulseSpeed;
     			break;
     		default:
-    			NSLog(@"AlwaysRemindMe ERROR: switch -> varPulseSpeed is default");
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twPulseSpeedChoice is default");
                 varPulseSpeed = 1;
     			break;
     	}
     	//switch twPulseSpeed end
-        performPulseAnimated(twTextLabel, varPulseSize, varPulseSpeed, twTextLabel.frame);
+        performPulseAnimated(twTextLabel, varPulseSize, varPulseSpeed);
     }
-    //performBlinkingAnimated(twTextLabel, 0.5);
-    //performShakeAnimated(twTextLabel, 0.5, 0, 50);
+
+    double varBlinkingSpeed = 0.5;
+    if(twIsBlinkingEnabled) {
+        switch (twBlinkingSpeedChoice) {
+    		case 1://default
+    			varBlinkingSpeed = 0.5;
+    			break;
+    		case 2://half
+    			varBlinkingSpeed = 0.25;
+    			break;
+            case 3://half
+    			varBlinkingSpeed = 1;
+    			break;
+    		case -999:// custom
+    			varPulseSize = twPulseSize;
+    			break;
+    		default:
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twBlinkingSpeedChoice is default");
+                varBlinkingSpeed = 0.5;
+    			break;
+    	}
+    	//switch twPulseSize end
+        performBlinkingAnimated(twTextLabel, varBlinkingSpeed);
+    }
+
+    // double varBlinkingSpeed = 0.5;
+    // if(twIsBlinkingEnabled) {
+    //     switch (twBlinkingSpeedChoice) {
+    // 		case 1://default
+    // 			varBlinkingSpeed = 0.5;
+    // 			break;
+    // 		case 2://half
+    // 			varBlinkingSpeed = 1;
+    // 			break;
+    //         case 3://half
+    // 			varBlinkingSpeed = 4;
+    // 			break;
+    // 		case -999:// custom
+    // 			varPulseSize = twPulseSize;
+    // 			break;
+    // 		default:
+    // 			NSLog(@"AlwaysRemindMe ERROR: switch -> twBlinkingSpeedChoice is default");
+    //             varBlinkingSpeed = 0.5;
+    // 			break;
+    // 	}
+    // 	//switch twPulseSize end
+    //     performShakeAnimated(twTextLabel, 0.5, 0, 50);
+    // }
+
 }
 
 
