@@ -41,22 +41,6 @@
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>Your Reminder text here</string>
-			<key>default</key>
-			<string>Your text here</string>
-			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>key</key>
-			<string>pfTextLabel</string>
-			<key>label</key>
-			<string>Custom 'text' value:</string>
-		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
 			<string></string>
@@ -78,6 +62,22 @@
 			</array>
 			<key>alignment</key>
 			<string>3</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string>Your text here</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel</string>
+			<key>label</key>
+			<string>Custom 'text' value:</string>
 		</dict>
 		<!-- Locations end -->
 		<!-- Font Size and Color start -->

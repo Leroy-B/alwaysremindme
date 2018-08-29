@@ -1,7 +1,6 @@
 /*
 TODO:
-    - bug: set custom text (emoji?)
-    - blinking: set speed and Size
+    - blinking: set speed
     - shake: set speed and Size
     - X/Y pos: set correct position on custom select
 
@@ -13,9 +12,6 @@ features:
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
 
 */
-
-// #define M_PI   3.14159265358979323846264338327950288   /* pi */
-// #define DEGREES_TO_RADIANS(angle) (angle / 180.0 * M_PI)
 
 @interface SBLockScreenViewControllerBase : UIViewController
 @end
@@ -46,8 +42,6 @@ features:
 static bool twIsEnabled = NO;
 static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
-
-static int twMyNum = 0;
 
 static NSString *twTextLabelVar = @"Thank you for downloading :)";
 
@@ -204,11 +198,22 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 			break;
 		case 2://above dock
 			varFrameX = (screenWidth/2) - (twFrameW/2);
-			varFrameY = screenHeight-100;
+			varFrameY = screenHeight-110;
 			break;
 		case -999:// custom
-			varFrameX = twFrameX;
-			varFrameY = twFrameY;
+            if([[[NSNumber numberWithFloat:twFrameX] stringValue] isEqualToString:@""] && [[[NSNumber numberWithFloat:twFrameY] stringValue] isEqualToString:@""]){
+                varFrameX = screenWidth/2;
+                varFrameY = screenHeight/2;
+            } else if([[[NSNumber numberWithFloat:twFrameX] stringValue] isEqualToString:@""]){
+                varFrameX = screenWidth/2;
+                varFrameY = twFrameY;
+            } else if([[[NSNumber numberWithFloat:twFrameY] stringValue] isEqualToString:@""]){
+                varFrameX = twFrameX;
+                varFrameY = screenHeight/2;
+            } else {
+                varFrameX = twFrameX;
+    			varFrameY = twFrameY;
+            }
 			break;
 		default:
 			NSLog(@"AlwaysRemindMe ERROR: switch -> twFramePosChoice is default");
@@ -353,7 +358,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 //setting text on LS
 %hook SBLockScreenViewControllerBase
 
-	-(void)viewDidLoad {
+	-(void)viewDidAppear:(BOOL)arg1 {
         %orig;
 
         CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -375,19 +380,10 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
 %end
 
-%hook SBHomeScreenViewController
-
-    -(void)viewDidLayoutSubviews {
-        NSLog(@"AlwaysRemindMe LOG: 'viewDidLayoutSubviews' called in 'SBHomeScreenViewController' '%d'", twMyNum);
-        twMyNum++;
-    }
-
-%end
-
 //setting text on SB
 %hook SBHomeScreenViewController
 
-	-(void)viewDidLoad {
+	-(void)viewDidLayoutSubviews {
         %orig;
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
