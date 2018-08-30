@@ -57,7 +57,7 @@ static CGFloat twFontSizeCustom = 14;
 
 static NSString *twFontColor = @"#000000";
 static NSString *twFontColorCustom = @"#000000";
-static NSString *twBackgroundColor = @"#ffffff";
+static NSString *twBackgroundColorChoice = @"#ffffff";
 static NSString *twBackgroundColorCustom = @"#ffffff";
 
 static bool twIsRotationEnabled = NO;
@@ -106,7 +106,7 @@ static void loadPrefs() {
 		twFrameW				= ([prefs objectForKey:@"pfFrameW"] ? [[prefs objectForKey:@"pfFrameW"] floatValue] : twFrameW);
 
 		twIsBackgroundEnabled	= ([prefs objectForKey:@"pfIsBackgroundEnabled"] ? [[prefs objectForKey:@"pfIsBackgroundEnabled"] boolValue] : twIsBackgroundEnabled);
-		twBackgroundColor		= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
+		twBackgroundColorChoice	= ([prefs objectForKey:@"pfBackgroundColorChoice"] ? [[prefs objectForKey:@"pfBackgroundColorChoice"] stringValue] : twBackgroundColorChoice);
         twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] stringValue] : twBackgroundColorCustom);
 
         twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
@@ -244,11 +244,55 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
     //backgroundColor
 	if(twIsBackgroundEnabled) {
-        if([twBackgroundColor isEqualToString:@"Custom"]) {
+        NSString *varBackgroundColor = @"#FFFFFF";
+        switch (twBackgroundColorChoice) {
+    		case 1://white
+                varBackgroundColor = @"#FFFFFF";
+    			break;
+    		case 2://black
+                varBackgroundColor = @"#000000";
+    			break;
+            case 3://orange
+                varBackgroundColor = @"#FFA500";
+    			break;
+    		case -999:// custom
+                if([twBackgroundColorCustom isEqualToString:@""]){
+                    varBackgroundColor = @"#FFFFFF";
+                    UIAlertController * alert = [UIAlertController
+            													alertControllerWithTitle:@"CustomCC: ERROR"
+            																					 message:@"The value for your custom 'y position' has to be numeric!"
+            																		preferredStyle:UIAlertControllerStyleAlert];
+            							UIAlertAction* okButton = [UIAlertAction
+            															actionWithTitle:@"OK"
+            																				style:UIAlertActionStyleDefault
+            																			handler:^(UIAlertAction * action) {
+            														//
+            												  }];
+            							[alert addAction:okButton];
+            							[self presentViewController:alert animated:YES completion:nil];
+                } else if([twBackgroundColorCustom isEqualToString:@"#"]){
+                    varBackgroundColor = @"#FFFFFF";
+                } else {
+                    varBackgroundColor = twBackgroundColorCustom;
+                }
+    			break;
+    		default:
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twFramePosChoice is default");
+    			varFrameX = (screenWidth/2) - (twFrameW/2);
+    			varFrameY = 20;
+    			break;
+    	}
+        [twTextLabel setBackgroundColor: [UIColor colorWithHexString: varBackgroundColor]];
+
+        //////////
+
+        if(twBackgroundColorChoice) {
             [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorCustom]];
         } else {
-            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColor]];
+            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorChoice]];
         }
+
+        ///////
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
     }
@@ -405,6 +449,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 	}
 
 %end
+
 
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
