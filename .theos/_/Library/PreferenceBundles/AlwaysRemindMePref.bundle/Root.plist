@@ -41,22 +41,6 @@
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>Your Reminder text here</string>
-			<key>default</key>
-			<string>Your text here</string>
-			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>key</key>
-			<string>pfTextLabel</string>
-			<key>label</key>
-			<string>Custom 'text' value:</string>
-		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
 			<string></string>
@@ -78,6 +62,22 @@
 			</array>
 			<key>alignment</key>
 			<string>3</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string>Your text here</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel</string>
+			<key>label</key>
+			<string>Custom 'text' value:</string>
 		</dict>
 		<!-- Locations end -->
 		<!-- Font Size and Color start -->
@@ -281,31 +281,29 @@
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
-			<string>PSLinkListCell</string>
+			<string>PSSegmentCell</string>
 			<key>default</key>
-			<string></string>
+			<string>white</string>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>detail</key>
-            <string>PSListItemsController</string>
-			<key>label</key>
-            <string>Background color</string>
 			<key>key</key>
-			<string>pfBackgroundColor</string>
+			<string>pfBackgroundColorChoice</string>
 			<key>validValues</key>
 			<array>
-				<string>Custom</string>
-				<string>#FFFFFF</string>
-				<string>#000000</string>
-				<string>#FFA500</string>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
-				<string>Custom</string>
 				<string>white</string>
 				<string>black</string>
 				<string>orange</string>
+				<string>Custom</string>
 			</array>
+			<key>alignment</key>
+			<string>4</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -322,6 +320,12 @@
 			<string>pfBackgroundColorCustom</string>
 			<key>label</key>
 			<string>Custom 'hex' value:</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Choose the background color of the label. For custom values, select 'Custom' above and use the input fields below.</string>
 		</dict>
 		<!-- BackgroundColor end -->
 		<!-- rotation Start -->

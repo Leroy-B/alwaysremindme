@@ -40,6 +40,10 @@
 @end
 
 
+static SBHomeScreenViewController *myself;
+
+
+
 static bool twIsEnabled = NO;
 static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
@@ -58,7 +62,7 @@ static CGFloat twFontSizeCustom = 14;
 
 static NSString *twFontColor = @"#000000";
 static NSString *twFontColorCustom = @"#000000";
-static NSString *twBackgroundColor = @"#ffffff";
+static int twBackgroundColorChoice = 1;
 static NSString *twBackgroundColorCustom = @"#ffffff";
 
 static bool twIsRotationEnabled = NO;
@@ -80,6 +84,30 @@ static bool twShouldDelete = NO;
 
 static void dealloc(UIView *currentView) {
     [currentView release], currentView = nil;
+}
+
+static void showAlertChangeInSettings(NSString *msg) {
+
+    UIAlertController * alert = [UIAlertController
+                alertControllerWithTitle:@"AlwaysRemindMe: ERROR"
+                                 message:msg
+                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* okButton = [UIAlertAction
+                         actionWithTitle:@"OK"
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                                    
+                                 }];
+    UIAlertAction* changeButton = [UIAlertAction
+                         actionWithTitle:@"Change in settings"
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
+                                 }];
+    [alert addAction:changeButton];
+    [alert addAction:okButton];
+    [(SBHomeScreenViewController*)myself presentViewController:alert animated:YES completion:nil];
+
 }
 
 static void loadPrefs() {
@@ -107,7 +135,7 @@ static void loadPrefs() {
 		twFrameW				= ([prefs objectForKey:@"pfFrameW"] ? [[prefs objectForKey:@"pfFrameW"] floatValue] : twFrameW);
 
 		twIsBackgroundEnabled	= ([prefs objectForKey:@"pfIsBackgroundEnabled"] ? [[prefs objectForKey:@"pfIsBackgroundEnabled"] boolValue] : twIsBackgroundEnabled);
-		twBackgroundColor		= ([prefs objectForKey:@"pfBackgroundColor"] ? [[prefs objectForKey:@"pfBackgroundColor"] stringValue] : twBackgroundColor);
+		twBackgroundColorChoice	= ([prefs objectForKey:@"pfBackgroundColorChoice"] ? [[prefs objectForKey:@"pfBackgroundColorChoice"] intValue] : twBackgroundColorChoice);
         twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] stringValue] : twBackgroundColorCustom);
 
         twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
@@ -245,11 +273,34 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 
     
 	if(twIsBackgroundEnabled) {
-        if([twBackgroundColor isEqualToString:@"Custom"]) {
-            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorCustom]];
-        } else {
-            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColor]];
-        }
+        NSString *varBackgroundColor = @"#FFFFFF";
+        switch (twBackgroundColorChoice) {
+    		case 1:
+                varBackgroundColor = @"#FFFFFF";
+    			break;
+    		case 2:
+                varBackgroundColor = @"#000000";
+    			break;
+            case 3:
+                varBackgroundColor = @"#FFA500";
+    			break;
+    		case -999:
+                if([twBackgroundColorCustom isEqualToString:@""]){
+                    varBackgroundColor = @"#FFFFFF";
+                    showAlertChangeInSettings(@"Your custom background color value is invalid!");
+                } else if([twBackgroundColorCustom isEqualToString:@"#"]){
+                    varBackgroundColor = @"#FFFFFF";
+                    showAlertChangeInSettings(@"Your custom background color value is invalid!");
+                } else {
+                    varBackgroundColor = twBackgroundColorCustom;
+                }
+    			break;
+    		default:
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twBackgroundColorChoice is default");
+    			varBackgroundColor = @"#FFFFFF";
+    			break;
+    	}
+        [twTextLabel setBackgroundColor: [UIColor colorWithHexString: varBackgroundColor]];
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
     }
@@ -378,10 +429,10 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
+@class SBHomeScreenViewController; @class SBLockScreenViewControllerBase; 
 static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL, BOOL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
-#line 359 "Tweak.xm"
+#line 410 "Tweak.xm"
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, BOOL arg1) {
@@ -392,6 +443,7 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppea
 		double screenWidth = screenSize.width;
 
         UIView* selfView = self.view;
+        
 
 		if(twIsEnabled && !twIsViewPresented) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
@@ -417,6 +469,8 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppea
 		double screenWidth = screenSize.width;
 
         UIView* selfView = self.view;
+        myself = self;
+        NSLog(@"AlwaysRemindMe LOG: 'myself' is: %@", myself);
 
 		if(twIsEnabled && !twIsViewPresented) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
@@ -432,12 +486,13 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppea
 
 
 
+
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_88077379(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_bdc0e638(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
         loadPrefs();
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
@@ -446,4 +501,4 @@ static __attribute__((constructor)) void _logosLocalCtor_88077379(int __unused a
 }
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidAppear:), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLayoutSubviews), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews);} }
-#line 421 "Tweak.xm"
+#line 476 "Tweak.xm"

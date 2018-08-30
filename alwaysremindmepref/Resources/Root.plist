@@ -277,8 +277,6 @@
 			<key>label</key>
 			<string>Show background</string>
 		</dict>
-
-
 		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>

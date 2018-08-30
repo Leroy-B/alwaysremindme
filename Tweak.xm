@@ -39,6 +39,10 @@ features:
 @end
 
 //define var and assign default values
+static SBHomeScreenViewController *myself;
+
+
+
 static bool twIsEnabled = NO;
 static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
@@ -57,7 +61,7 @@ static CGFloat twFontSizeCustom = 14;
 
 static NSString *twFontColor = @"#000000";
 static NSString *twFontColorCustom = @"#000000";
-static NSString *twBackgroundColorChoice = @"#ffffff";
+static int twBackgroundColorChoice = 1;
 static NSString *twBackgroundColorCustom = @"#ffffff";
 
 static bool twIsRotationEnabled = NO;
@@ -79,6 +83,30 @@ static bool twShouldDelete = NO;
 
 static void dealloc(UIView *currentView) {
     [currentView release], currentView = nil;
+}
+
+static void showAlertChangeInSettings(NSString *msg) {
+
+    UIAlertController * alert = [UIAlertController
+                alertControllerWithTitle:@"AlwaysRemindMe: ERROR"
+                                 message:msg
+                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* okButton = [UIAlertAction
+                         actionWithTitle:@"OK"
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                                    //
+                                 }];
+    UIAlertAction* changeButton = [UIAlertAction
+                         actionWithTitle:@"Change in settings"
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
+                                 }];
+    [alert addAction:changeButton];
+    [alert addAction:okButton];
+    [(SBHomeScreenViewController*)myself presentViewController:alert animated:YES completion:nil];
+
 }
 
 static void loadPrefs() {
@@ -106,7 +134,7 @@ static void loadPrefs() {
 		twFrameW				= ([prefs objectForKey:@"pfFrameW"] ? [[prefs objectForKey:@"pfFrameW"] floatValue] : twFrameW);
 
 		twIsBackgroundEnabled	= ([prefs objectForKey:@"pfIsBackgroundEnabled"] ? [[prefs objectForKey:@"pfIsBackgroundEnabled"] boolValue] : twIsBackgroundEnabled);
-		twBackgroundColorChoice	= ([prefs objectForKey:@"pfBackgroundColorChoice"] ? [[prefs objectForKey:@"pfBackgroundColorChoice"] stringValue] : twBackgroundColorChoice);
+		twBackgroundColorChoice	= ([prefs objectForKey:@"pfBackgroundColorChoice"] ? [[prefs objectForKey:@"pfBackgroundColorChoice"] intValue] : twBackgroundColorChoice);
         twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] stringValue] : twBackgroundColorCustom);
 
         twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
@@ -258,41 +286,20 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     		case -999:// custom
                 if([twBackgroundColorCustom isEqualToString:@""]){
                     varBackgroundColor = @"#FFFFFF";
-                    UIAlertController * alert = [UIAlertController
-            													alertControllerWithTitle:@"CustomCC: ERROR"
-            																					 message:@"The value for your custom 'y position' has to be numeric!"
-            																		preferredStyle:UIAlertControllerStyleAlert];
-            							UIAlertAction* okButton = [UIAlertAction
-            															actionWithTitle:@"OK"
-            																				style:UIAlertActionStyleDefault
-            																			handler:^(UIAlertAction * action) {
-            														//
-            												  }];
-            							[alert addAction:okButton];
-            							[self presentViewController:alert animated:YES completion:nil];
+                    showAlertChangeInSettings(@"Your custom background color value is invalid!");
                 } else if([twBackgroundColorCustom isEqualToString:@"#"]){
                     varBackgroundColor = @"#FFFFFF";
+                    showAlertChangeInSettings(@"Your custom background color value is invalid!");
                 } else {
                     varBackgroundColor = twBackgroundColorCustom;
                 }
     			break;
     		default:
-    			NSLog(@"AlwaysRemindMe ERROR: switch -> twFramePosChoice is default");
-    			varFrameX = (screenWidth/2) - (twFrameW/2);
-    			varFrameY = 20;
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twBackgroundColorChoice is default");
+    			varBackgroundColor = @"#FFFFFF";
     			break;
     	}
         [twTextLabel setBackgroundColor: [UIColor colorWithHexString: varBackgroundColor]];
-
-        //////////
-
-        if(twBackgroundColorChoice) {
-            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorCustom]];
-        } else {
-            [twTextLabel setBackgroundColor: [UIColor colorWithHexString: twBackgroundColorChoice]];
-        }
-
-        ///////
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
     }
@@ -410,6 +417,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 		double screenWidth = screenSize.width;
 
         UIView* selfView = self.view;
+        // myself = self;
 
 		if(twIsEnabled && !twIsViewPresented) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
@@ -435,6 +443,8 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 		double screenWidth = screenSize.width;
 
         UIView* selfView = self.view;
+        myself = self;
+        NSLog(@"AlwaysRemindMe LOG: 'myself' is: %@", myself);
 
 		if(twIsEnabled && !twIsViewPresented) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
