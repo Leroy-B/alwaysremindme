@@ -8,7 +8,9 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>settings</string>
+			<string>General</string>
+			<key>footerText</key>
+			<string>Choose the text and location of the AlwaysRemindMe text label.</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -24,19 +26,25 @@
 			<key>label</key>
 			<string>Enable AlwaysRemindMe</string>
 		</dict>
-		<!-- Locations start -->
+		<!-- custom text start -->
 		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
-			<string>PSGroupCell</string>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel</string>
 			<key>label</key>
-			<string>Text and Locations</string>
+			<string>Custom 'text' value:</string>
 		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Choose the location of the AlwaysRemindMe text label.</string>
-		</dict>
+		<!-- custom text end -->
+		<!-- Locations start -->
 		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
@@ -63,29 +71,118 @@
 			<key>alignment</key>
 			<string>3</string>
 		</dict>
+		<!-- Locations end -->
+		<!-- Pos start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Choose the position of the label. For custom values, select 'Custom' above and use the input fields below.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFramePosChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Below StatusBar</string>
+				<string>Above Dock</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>5</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>The top left part of the screen is point: x = 0, y = 0</string>
+		</dict>
 		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
-			<string>Your Reminder text here</string>
+			<string>x</string>
 			<key>default</key>
-			<string>Your text here</string>
+			<string></string>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfTextLabel</string>
+			<string>pfFrameX</string>
 			<key>label</key>
-			<string>Custom 'text' value:</string>
+			<string>Custom 'x' value:</string>
 		</dict>
-		<!-- Locations end -->
-		<!-- Font Size and Color start -->
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>y</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFrameY</string>
+			<key>label</key>
+			<string>Custom 'y' value:</string>
+		</dict>
+		<!-- Pos end -->
+		<!-- Font start -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Font Size</string>
+			<string>Font</string>
+			<key>footerText</key>
+			<string>This will take you to a Website, copy the name of your desired font and paste it above.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>TrebuchetMS</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFontCustom</string>
+			<key>label</key>
+			<string>Custom 'Font' value:</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>View available fonts!</string>
+			<key>action</key>
+			<string>showFontSelection</string>
+		</dict>
+		<!-- Font size and Color start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Font size and color</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -134,82 +231,6 @@
 			<string>Custom font 'size' value:</string>
 		</dict>
 		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Choose the position of the label. For custom values, select 'Custom' above and use the input fields below.</string>
-		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
-			<string>PSSegmentCell</string>
-			<key>default</key>
-			<string>Default</string>
-			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>key</key>
-			<string>pfFramePosChoice</string>
-			<key>validValues</key>
-			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>-999</integer>
-			</array>
-			<key>validTitles</key>
-			<array>
-				<string>Below StatusBar</string>
-				<string>Above Dock</string>
-				<string>Custom</string>
-			</array>
-			<key>alignment</key>
-			<string>5</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>The top left part of the screen is point: y = 0, x = 0</string>
-		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>y</string>
-			<key>default</key>
-			<string></string>
-			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>key</key>
-			<string>pfFrameY</string>
-			<key>label</key>
-			<string>Custom 'y' value:</string>
-		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>x</string>
-			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
-			<key>key</key>
-			<string>pfFrameX</string>
-			<key>label</key>
-			<string>Custom 'x' value:</string>
-		</dict>
-		<!-- Pos end -->
-		<!-- FontColor start -->
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Font color</string>
-		</dict>
-		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
@@ -247,19 +268,13 @@
 			<key>default</key>
 			<string>#</string>
 			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
+			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
 			<string>pfFontColorCustom</string>
 			<key>label</key>
 			<string>Custom 'hex' value:</string>
 		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Choose the background color of the label. For custom values, select 'Custom' above and use the input fields below.</string>
-		</dict>
-		<!-- FontColor end -->
+		<!-- Font size and Color end -->
 		<!-- BackgroundColor start -->
 		<dict>
 			<key>cell</key>
@@ -317,19 +332,13 @@
 			<key>placeholder</key>
 			<string>#FFFFFF</string>
 			<key>default</key>
-			<string>#</string>
+			<string></string>
 			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
+			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
 			<string>pfBackgroundColorCustom</string>
 			<key>label</key>
 			<string>Custom 'hex' value:</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Choose the background color of the label. For custom values, select 'Custom' above and use the input fields below.</string>
 		</dict>
 		<!-- BackgroundColor end -->
 		<!-- rotation Start -->
@@ -374,8 +383,8 @@
 			<key>validTitles</key>
 			<array>
 				<string>Default</string>
-				<string>Half</string>
-				<string>Double</string>
+				<string>Slow</string>
+				<string>Fast</string>
 				<string>Custom</string>
 			</array>
 		</dict>
@@ -386,14 +395,130 @@
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
 			<string>Default: 2</string>
+			<key>default</key>
+			<string></string>
 			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
+			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
 			<string>pfRotationSpeed</string>
 			<key>label</key>
 			<string>Custom 'speed' value:</string>
 		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 0</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfRotationDelay</string>
+			<key>label</key>
+			<string>Custom 'delay' value:</string>
+		</dict>
 		<!-- rotation end -->
+		<!-- shaking Start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Shake Animation</string>
+			<key>footerText</key>
+			<string>Smaller 'duration' value means faster animation.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsShakeEnabled</string>
+			<key>label</key>
+			<string>Enable shaking</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>horizontal</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeXAmount</string>
+			<key>label</key>
+			<string>Custom 'x' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>vertical</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeYAmount</string>
+			<key>label</key>
+			<string>Custom 'y' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeDurationChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Slow</string>
+				<string>Fast</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 2</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeDuration</string>
+			<key>label</key>
+			<string>Custom 'duration' value:</string>
+		</dict>
+		<!-- shaking end -->
 		<!-- Blinking Start -->
 		<dict>
 			<key>cell</key>
@@ -411,7 +536,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfIsBlinkingEnabled</string>
+			<string>pfIsBlinkEnabled</string>
 			<key>label</key>
 			<string>Enable blinking</string>
 		</dict>
@@ -425,7 +550,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfBlinkingSpeedChoice</string>
+			<string>pfBlinkSpeedChoice</string>
 			<key>validValues</key>
 			<array>
 				<integer>1</integer>
@@ -451,9 +576,9 @@
 			<key>default</key>
 			<string>0.5</string>
 			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
+			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfBlinkingSpeed</string>
+			<string>pfBlinkSpeed</string>
 			<key>label</key>
 			<string>Custom blinking 'speed' value:</string>
 		</dict>
@@ -515,7 +640,7 @@
 			<key>default</key>
 			<string>1</string>
 			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
+			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
 			<string>pfPulseSpeed</string>
 			<key>label</key>
@@ -557,7 +682,7 @@
 			<key>default</key>
 			<string>2</string>
 			<key>defaults</key>
-			<string>com.leroy.CustomCCPreferences</string>
+			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
 			<string>pfPulseSize</string>
 			<key>label</key>
@@ -575,17 +700,17 @@
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Show your default screen sizes!</string>
+			<string>Apply settings and respring!</string>
 			<key>action</key>
-			<string>printInfo</string>
+			<string>respring</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>Apply settings and respring!</string>
+			<string>Show your default screen size!</string>
 			<key>action</key>
-			<string>respring</string>
+			<string>printInfo</string>
 		</dict>
 		<!-- actions end -->
 		<!-- infos start -->
