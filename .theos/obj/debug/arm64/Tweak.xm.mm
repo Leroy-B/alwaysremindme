@@ -459,8 +459,8 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
-static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL, BOOL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
+@class SBHomeScreenViewController; @class SBLockScreenViewControllerBase; 
+static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL, BOOL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL, BOOL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
 #line 440 "Tweak.xm"
 
@@ -491,8 +491,8 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppea
 
 
 
-	static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
-        _logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews(self, _cmd);
+	static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+        _logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad(self, _cmd);
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		double screenHeight = screenSize.height;
@@ -512,6 +512,10 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppea
             dealloc(selfView);
         }
 
+        if(YES){
+            showAlertChangeInSettings(@"Your custom background color value is invalid!");
+        }
+
 	}
 
 
@@ -522,7 +526,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_952e7dc1(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_7a029742(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
         loadPrefs();
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
@@ -530,5 +534,5 @@ static __attribute__((constructor)) void _logosLocalCtor_952e7dc1(int __unused a
 	}
 }
 static __attribute__((constructor)) void _logosLocalInit() {
-{Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidAppear:), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLayoutSubviews), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLayoutSubviews);} }
-#line 506 "Tweak.xm"
+{Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidAppear:), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidAppear$);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
+#line 510 "Tweak.xm"

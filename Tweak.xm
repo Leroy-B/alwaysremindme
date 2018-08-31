@@ -465,7 +465,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 //setting text on SB
 %hook SBHomeScreenViewController
 
-	-(void)viewDidLayoutSubviews {
+	-(void)viewDidLoad {
         %orig;
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -484,6 +484,10 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
 		}
         if(twShouldDelete){
             dealloc(selfView);
+        }
+
+        if(YES){
+            showAlertChangeInSettings(@"Your custom background color value is invalid!");
         }
 
 	}
