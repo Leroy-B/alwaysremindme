@@ -59,7 +59,7 @@ static bool twIsBackgroundEnabled = YES;
 static CGFloat twFontSize = 14;
 static CGFloat twFontSizeCustom = 14;
 
-static NSString *twFontColor = @"#000000";
+static int twFontColorChoice = 1;
 static NSString *twFontColorCustom = @"#000000";
 static int twBackgroundColorChoice = 1;
 static NSString *twBackgroundColorCustom = @"#ffffff";
@@ -137,7 +137,7 @@ static void loadPrefs() {
 		twBackgroundColorChoice	= ([prefs objectForKey:@"pfBackgroundColorChoice"] ? [[prefs objectForKey:@"pfBackgroundColorChoice"] intValue] : twBackgroundColorChoice);
         twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] stringValue] : twBackgroundColorCustom);
 
-        twFontColor				= ([prefs objectForKey:@"pfFontColor"] ? [[prefs objectForKey:@"pfFontColor"] stringValue] : twFontColor);
+        twFontColorChoice		= ([prefs objectForKey:@"pfFontColorChoice"] ? [[prefs objectForKey:@"pfFontColorChoice"] intValue] : twFontColorChoice);
         twFontColorCustom		= ([prefs objectForKey:@"pfFontColorCustom"] ? [[prefs objectForKey:@"pfFontColorCustom"] stringValue] : twFontColorCustom);
 		twFontSize				= ([prefs objectForKey:@"pfFontSize"] ? [[prefs objectForKey:@"pfFontSize"] floatValue] : twFontSize);
 		twFontSizeCustom		= ([prefs objectForKey:@"pfFontSizeCustom"] ? [[prefs objectForKey:@"pfFontSizeCustom"] floatValue] : twFontSizeCustom);
@@ -218,22 +218,30 @@ static void performBlinkingAnimated(UIView *currentView, double duration) {
 }
 
 static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *currentView) {
+
+    UILabel *twTextLabel = [[UILabel alloc] init];
+    twTextLabel.text = twTextLabelVar;
+
+    CGSize labelSize = twTextLabel.attributedText.size;
+    CGFloat absolutCenter = (screenWidth/2) - (labelSize.width/2);
+    NSLog(@"AlwaysRemindMe LOG: absolutCenter; %f", absolutCenter);
+
     double varFrameX, varFrameY = 0;
 	switch (twFramePosChoice) {
 		case 1://below StatusBar
-			varFrameX = (screenWidth/2) - (twFrameW/2);
+			varFrameX = absolutCenter;
 			varFrameY = 20;
 			break;
 		case 2://above dock
-			varFrameX = (screenWidth/2) - (twFrameW/2);
+			varFrameX = absolutCenter;
 			varFrameY = screenHeight-110;
 			break;
 		case -999:// custom
             if([[[NSNumber numberWithFloat:twFrameX] stringValue] isEqualToString:@""] && [[[NSNumber numberWithFloat:twFrameY] stringValue] isEqualToString:@""]){
-                varFrameX = screenWidth/2;
+                varFrameX = absolutCenter;
                 varFrameY = screenHeight/2;
             } else if([[[NSNumber numberWithFloat:twFrameX] stringValue] isEqualToString:@""]){
-                varFrameX = screenWidth/2;
+                varFrameX = absolutCenter;
                 varFrameY = twFrameY;
             } else if([[[NSNumber numberWithFloat:twFrameY] stringValue] isEqualToString:@""]){
                 varFrameX = twFrameX;
@@ -253,16 +261,38 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     twFrameX = varFrameX;
     twFrameY = varFrameY;
 
-    //UILabel *twTextLabel = [[UILabel alloc] init];
+    twTextLabel.frame = CGRectMake(twFrameX, twFrameY, twTextLabel.intrinsicContentSize.width, twFontSize+5);
 
-    // twTextLabel.intrinsicContentSize.width -> for dynamic with of background
-	UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
+	//UILabel *twTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(twFrameX, twFrameY, twFrameW, twFontSize+5)];
     //fontColor
-    if([twFontColor isEqualToString:@"Custom"]) {
-        [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColorCustom]];
-    } else {
-        [twTextLabel setTextColor: [UIColor colorWithHexString: twFontColor]];
+    NSString *varFontColor = @"#000000";
+    switch (twFontColorChoice) {
+        case 1://black
+            varFontColor = @"#000000";
+            break;
+        case 2://white
+            varFontColor = @"#FFFFFF";
+            break;
+        case 3://orange
+            varFontColor = @"#FFA500";
+            break;
+        case -999:// custom
+            if([twFontColorCustom isEqualToString:@""]){
+                varFontColor = @"#000000";
+                showAlertChangeInSettings(@"Your custom background color value is invalid!");
+            } else if([twBackgroundColorCustom isEqualToString:@"#"]){
+                varFontColor = @"#000000";
+                showAlertChangeInSettings(@"Your custom background color value is invalid!");
+            } else {
+                varFontColor = twFontColorCustom;
+            }
+            break;
+        default:
+            NSLog(@"AlwaysRemindMe ERROR: switch -> twFontColorChoice is default");
+            varFontColor = @"#000000";
+            break;
     }
+    [twTextLabel setTextColor: [UIColor colorWithHexString: varFontColor]];
 
     if(twFontSize == -999) {
 		[twTextLabel setFont:[UIFont fontWithName: @"Trebuchet MS" size: twFontSizeCustom]];
@@ -305,7 +335,7 @@ static void drawAlwaysRemindMe(double screenHeight, double screenWidth, UIView *
     }
 
 	[currentView addSubview:twTextLabel];
-	twTextLabel.text = twTextLabelVar;
+
 
     //rotation
     if(twIsRotationEnabled) {

@@ -75,7 +75,6 @@
 
 	-(IBAction)dismissButtonAction {
 		[self.view endEditing:YES];
-		//[[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://github.com/LacertosusRepo"] options:@{} completionHandler:nil];
 	}
 
 
@@ -124,6 +123,27 @@
 
 	-(void)showPayPal {
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YFSWZBQM8V3C8"] options:@{} completionHandler:nil];
+	}
+
+	-(void)printInfo {
+		CGSize screenSize = [UIScreen mainScreen].bounds.size;
+	    double screenHeight = screenSize.height;
+	    double screenWidth = screenSize.width;
+		NSString *message = [NSString stringWithFormat:@"Your screen height is: '%.1f' and the width is: '%.1f'!\nYour resolution is: '%.1f'x'%.1f'!", screenHeight, screenWidth, screenHeight*2, screenWidth*2];
+
+		UIAlertController * alert = [UIAlertController
+                alertControllerWithTitle:@"CustomCC: INFO"
+                                 message:message
+                          preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* okButton = [UIAlertAction
+	                    actionWithTitle:@"OK"
+	                              style:UIAlertActionStyleDefault
+	                            handler:^(UIAlertAction * action) {
+	                                //
+	                            }];
+		[alert addAction:okButton];
+		[self presentViewController:alert animated:YES completion:nil];
+
 	}
 
 	-(void)respring{
