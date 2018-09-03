@@ -1,6 +1,5 @@
 /*
 TODO:
-    - X/Y pos: set correct position on custom select
     - combine all switch() into one func
     - can copy pref panel text -> fix me
     -
@@ -46,6 +45,10 @@ static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
 static NSString *twTextLabelVar = @"Thank you for downloading :)";
+
+// NSMutableArray *twTextLabelVar = [[NSMutableArray alloc] init];
+// [twTextLabelVar addObject:@"Thank you for downloading :)"];
+
 
 static int twFramePosChoice = 1;
 static CGFloat twFrameX = 0;
@@ -129,6 +132,7 @@ static void loadPrefs() {
 		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
 
+        // all of this is necessary because if the string gets to long it will crash the SpringBoard
         NSMutableArray *array = [NSMutableArray array];
         for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel"] description] length]; i++) {
             [array addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel"] description] characterAtIndex:i]]];
@@ -588,14 +592,11 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	-(void)viewDidLoad {
         %orig;
-        NSLog(@"AlwaysRemindMe DEBUG LOG: SBLockScreenViewControllerBase");
 
         CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		CGFloat screenHeight = screenSize.height;
 		CGFloat screenWidth = screenSize.width;
-
         UIView* selfView = self.view;
-        NSLog(@"AlwaysRemindMe DEBUG LOG: SBLockScreenViewControllerBase self.view: %@", self.view);
 
 		if(twIsEnabled) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
@@ -615,13 +616,11 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	-(void)viewDidLoad {
         %orig;
-        NSLog(@"AlwaysRemindMe DEBUG LOG: SBHomeScreenViewController");
         NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		CGFloat screenHeight = screenSize.height;
 		CGFloat screenWidth = screenSize.width;
-
         UIView* selfView = self.view;
 
 		if(twIsEnabled) {

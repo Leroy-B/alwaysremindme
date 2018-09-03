@@ -2,62 +2,47 @@
 #include <spawn.h>
 #include <signal.h>
 
-@implementation ARMRootListController
 
-	- (NSArray *)specifiers {
+@interface ARMLabelsListController : PSListController
+@end
+
+@implementation ARMLabelsListController
+
+	- (NSMutableArray *)specifiers {
 		if (!_specifiers) {
-			_specifiers = [[self loadSpecifiersFromPlistName:@"Root" target:self] retain];
+			_specifiers = [[self loadSpecifiersFromPlistName:@"Labels" target:self] retain];
+		}
+		return _specifiers;
+	}
+
+	-(NSArray *)labelTitles:(id)target {
+		NSMutableArray *resultArray = [[NSMutableArray alloc] init];
+		NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
+	    if(prefs){
+			NSLog(@"AlwaysRemindMe LOG: pfTextLabel: %@", [[prefs objectForKey:@"pfTextLabel"] description]);
+			[resultArray addObject:[[prefs objectForKey:@"pfTextLabel"] description]];
+		}
+	    return resultArray;
+	}
+
+@end //ARMLabelsListController
+
+
+@interface ARMEditLabelListController : ARMRootListController
+@end
+
+@implementation ARMEditLabelListController
+
+	- (NSMutableArray *)specifiers {
+		if (!_specifiers) {
+			_specifiers = [[self loadSpecifiersFromPlistName:@"EditLabel" target:self] retain];
 		}
 
 		return _specifiers;
 	}
 
-	- (id)readPreferenceValue:(PSSpecifier*)specifier {
-		NSString *path = [NSString stringWithFormat:@"/private/var/mobile/Library/Preferences/%@.plist", [specifier properties][@"defaults"]];
-		NSMutableDictionary *settings = [NSMutableDictionary dictionary];
-		[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:path]];
-		return (settings[[specifier properties][@"key"]]) ?: [specifier properties][@"default"];
-	}
-
-	- (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
-
-		// if ([[specifier properties][@"key"] isEqualToString:@"posPrefY"]) {
-		//
-		// 	  NSScanner *scanner = [NSScanner scannerWithString:value];
-		// 	  float f;
-		// 	  BOOL isNumber = [scanner scanFloat:&f] && [scanner isAtEnd];
-		//
-		// 	  if (!isNumber && [value length]) {
-		// 					UIAlertController * alert = [UIAlertController
-		// 											alertControllerWithTitle:@"CustomCC: ERROR"
-		// 																			 message:@"The value for your custom 'y position' has to be numeric!"
-		// 																preferredStyle:UIAlertControllerStyleAlert];
-		// 					UIAlertAction* okButton = [UIAlertAction
-		// 													actionWithTitle:@"OK"
-		// 																		style:UIAlertActionStyleDefault
-		// 																	handler:^(UIAlertAction * action) {
-		// 												//
-		// 										  }];
-		// 					[alert addAction:okButton];
-		// 					[self presentViewController:alert animated:YES completion:nil];
-		// 					return;
-		// 	  }
-		// }
-
-		NSString *path = [NSString stringWithFormat:@"/private/var/mobile/Library/Preferences/%@.plist", [specifier properties][@"defaults"]];
-		NSMutableDictionary *settings = [NSMutableDictionary dictionary];
-		[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:path]];
-		[settings setObject:value forKey: [specifier properties][@"key"]];
-		[settings writeToFile:path atomically:YES];
-		CFStringRef notificationName = (CFStringRef)[specifier properties][@"PostNotification"];
-		if (notificationName) {
-			CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), notificationName, NULL, NULL, YES);
-		}
-	}
-
 	-(void)viewDidLoad {
 
-		//Adds GitHub button in top right of preference pane
 		UIImage *dismissKB = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/AlwaysRemindMePref.bundle/dismissKB.png"];
 		dismissKB = [dismissKB imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 		UIBarButtonItem *dismissButton = [[UIBarButtonItem alloc]
@@ -72,20 +57,18 @@
 		[dismissButton release];
 		[super viewDidLoad];
 
-		//Adds GitHub button in top right of preference pane
-		// UIImage *dismissKB = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/AlwaysRemindMePref.bundle/dismissKB.png"];
-		// dismissKB = [dismissKB imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-		UIBarButtonItem *repringButton = [[UIBarButtonItem alloc]
-							   initWithImage:nil
-							   style:UIBarButtonItemStylePlain
-                               target:self
-                               action:@selector(respring)];
 
-		self.navigationItem.leftBarButtonItem = repringButton;
-		//self.navigationItem.centerBarButtonItem = dismissButton;
-
-		[repringButton release];
-		[super viewDidLoad];
+		// UIBarButtonItem *respringButton = [[UIBarButtonItem alloc]
+		// 					   initWithTitle:@"Respring"
+		// 					   style:UIBarButtonItemStylePlain
+        //                        target:self
+        //                        action:@selector(respring)];
+		//
+		// self.navigationItem.leftBarButtonItem = respringButton;
+		// //self.navigationItem.centerBarButtonItem = dismissButton;
+		//
+		// [respringButton release];
+		// [super viewDidLoad];
 
 	}
 
@@ -93,15 +76,45 @@
 		[self.view endEditing:YES];
 	}
 
-	// -(void)showDatePicker {
-	// 	self.datePicker = [[UIDatePicker alloc] initWithFrame:CGRectZero];
-	// 	[self.datePicker setDatePickerMode:UIDatePickerModeDate];
-	// 	[self.datePicker addTarget:self action:@selector(onDatePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
-	// }
-	//
-	// - (void)onDatePickerValueChanged:(UIDatePicker *)datePicker {
-	//     self.textField.text = [self.dateFormatter stringFromDate:datePicker.date];
-	// }
+	-(void)showDatePicker {
+
+		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose a time to be reminded at!\n\n\n\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+		UIDatePicker *picker = [[UIDatePicker alloc] init];
+		[picker setDatePickerMode:UIDatePickerModeTime];
+		// [picker setDateFormat:@"HH:mm:ss"];
+		[alertController.view addSubview:picker];
+		[alertController addAction:({
+		    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+		        NSLog(@"%@",picker.date);
+				NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+				[outputFormatter setDateFormat:@"HH:mm:ss"];
+				NSString *newDateString = [outputFormatter stringFromDate:picker.date];
+				NSLog(@"newDateString %@", newDateString);
+				[outputFormatter release];
+		    }];
+		    action;
+		})];
+		UIPopoverPresentationController *popoverController = alertController.popoverPresentationController;
+		popoverController.sourceView = self.view;
+		popoverController.sourceRect = [self.view bounds];
+		[self presentViewController:alertController  animated:YES completion:nil];
+
+	}
+
+
+@end //ARMEditLabelListController
+
+
+@implementation ARMRootListController
+
+	- (NSMutableArray *)specifiers {
+		if (!_specifiers) {
+			_specifiers = [[self loadSpecifiersFromPlistName:@"Root" target:self] retain];
+		}
+
+		return _specifiers;
+	}
+
 
 	-(void)showTwitter {
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"twitter://"]]) [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"twitter://user?screen_name=IDEK_a_Leroy"] options:@{} completionHandler:nil];
@@ -180,7 +193,7 @@
 	}
 
 	-(void)respring {
-		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.leroy.alwaysremindme.list"]){//TODO change me
+		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.leroy.alwaysremindme.list"]){
 			pid_t pid;
 			int status;
 			const char* argv[] = {"killall", "SpringBoard", NULL};
