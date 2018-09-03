@@ -8,7 +8,7 @@ TODO:
 /*
 features:
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
-    - time based (example code as pic on phone)
+    - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
 */
 
 @interface SBLockScreenViewControllerBase : UIViewController

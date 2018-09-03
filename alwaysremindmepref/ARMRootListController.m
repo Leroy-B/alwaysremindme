@@ -85,7 +85,6 @@
 		[alertController.view addSubview:picker];
 		[alertController addAction:({
 		    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-		        NSLog(@"%@",picker.date);
 				NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
 				[outputFormatter setDateFormat:@"HH:mm:ss"];
 				NSString *newDateString = [outputFormatter stringFromDate:picker.date];
