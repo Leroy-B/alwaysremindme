@@ -1,17 +1,15 @@
 /*
 TODO:
-    - Blink: set speed
-    - shake: set speed and Size
     - X/Y pos: set correct position on custom select
-    - move variable assignment to loadPrefs() use 'static int' in front and default value at the end
-    - replace stringValue with 'description' in loadPrefs()
+    - combine all switch() into one func
+    - can copy pref panel text -> fix me
+    -
 */
 
 /*
 features:
-	- width full screen
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
-    - custom font
+    - time based (example code as pic on phone)
 */
 
 @interface SBLockScreenViewControllerBase : UIViewController
@@ -43,7 +41,6 @@ features:
 static SBHomeScreenViewController *myself;
 
 
-
 static bool twIsEnabled = NO;
 //static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
@@ -65,6 +62,11 @@ static int twFontColorChoice = 1;
 static NSString *twFontColorCustom = @"#000000";
 static int twBackgroundColorChoice = 1;
 static NSString *twBackgroundColorCustom = @"#ffffff";
+
+static bool twIsRainbowEnabled = NO;
+static int twRainbowDurationChoice = 1;
+static CGFloat twRainbowDuration = 1;
+static CGFloat twRainbowDelay = 0;
 
 static bool twIsRotationEnabled = NO;
 static int twRotationSpeedChoice = 1;
@@ -88,9 +90,9 @@ static int twPulseSizeChoice = 1;
 static CGFloat twPulseSize = 2;
 
 
-
-
 static bool twShouldDelete = NO;
+
+
 
 static void dealloc(UIView *currentView) {
     [currentView release], currentView = nil;
@@ -146,13 +148,18 @@ static void loadPrefs() {
 
 		twIsBackgroundEnabled	= ([prefs objectForKey:@"pfIsBackgroundEnabled"] ? [[prefs objectForKey:@"pfIsBackgroundEnabled"] boolValue] : twIsBackgroundEnabled);
 		twBackgroundColorChoice	= ([prefs objectForKey:@"pfBackgroundColorChoice"] ? [[prefs objectForKey:@"pfBackgroundColorChoice"] intValue] : twBackgroundColorChoice);
-        twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] stringValue] : twBackgroundColorCustom);
+        twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] description] : twBackgroundColorCustom);
+
+        twIsRainbowEnabled		= ([prefs objectForKey:@"pfIsRainbowEnabled"] ? [[prefs objectForKey:@"pfIsRainbowEnabled"] boolValue] : twIsRainbowEnabled);
+        twRainbowDurationChoice	= ([prefs objectForKey:@"pfRainbowDurationChoice"] ? [[prefs objectForKey:@"pfRainbowDurationChoice"] intValue] : twRainbowDurationChoice);
+        twRainbowDuration		= ([prefs objectForKey:@"pfRainbowDuration"] ? [[prefs objectForKey:@"pfRainbowDuration"] floatValue] : twRainbowDuration);
+        twRainbowDelay			= ([prefs objectForKey:@"pfRainbowDelay"] ? [[prefs objectForKey:@"pfRainbowDelay"] floatValue] : twRainbowDelay);
 
         twFontColorChoice		= ([prefs objectForKey:@"pfFontColorChoice"] ? [[prefs objectForKey:@"pfFontColorChoice"] intValue] : twFontColorChoice);
-        twFontColorCustom		= ([prefs objectForKey:@"pfFontColorCustom"] ? [[prefs objectForKey:@"pfFontColorCustom"] stringValue] : twFontColorCustom);
+        twFontColorCustom		= ([prefs objectForKey:@"pfFontColorCustom"] ? [[prefs objectForKey:@"pfFontColorCustom"] description] : twFontColorCustom);
 		twFontSize				= ([prefs objectForKey:@"pfFontSize"] ? [[prefs objectForKey:@"pfFontSize"] floatValue] : twFontSize);
 		twFontSizeCustom		= ([prefs objectForKey:@"pfFontSizeCustom"] ? [[prefs objectForKey:@"pfFontSizeCustom"] floatValue] : twFontSizeCustom);
-        twFontCustom    		= ([prefs objectForKey:@"pfFontCustom"] ? [[prefs objectForKey:@"pfFontCustom"] stringValue] : twFontCustom);
+        twFontCustom    		= ([prefs objectForKey:@"pfFontCustom"] ? [[prefs objectForKey:@"pfFontCustom"] description] : twFontCustom);
 
         twIsRotationEnabled		= ([prefs objectForKey:@"pfIsRotationEnabled"] ? [[prefs objectForKey:@"pfIsRotationEnabled"] boolValue] : twIsRotationEnabled);
         twRotationSpeedChoice 	= ([prefs objectForKey:@"pfRotationSpeedChoice"] ? [[prefs objectForKey:@"pfRotationSpeedChoice"] intValue] : twRotationSpeedChoice);
@@ -200,7 +207,8 @@ static void performRotationAnimated(UILabel *twTextLabel, CGFloat speed, CGFloat
                                               performRotationAnimated(twTextLabel, twRotationSpeed, twRotationDelay);
                                           }];
                      }];
-}
+
+ }
 
 static void performPulseAnimated(UIView *currentView, CGFloat size, CGFloat duration) {
 
@@ -212,7 +220,7 @@ static void performPulseAnimated(UIView *currentView, CGFloat size, CGFloat dura
     pulseAnimation.repeatCount = HUGE_VALF;
     [currentView.layer addAnimation:pulseAnimation forKey:nil];
 
-}
+}// Pulse func end
 
 static void performShakeAnimated(UIView *currentView, CGFloat duration, CGFloat xAmount, CGFloat yAmount) {
 
@@ -227,7 +235,7 @@ static void performShakeAnimated(UIView *currentView, CGFloat duration, CGFloat 
     shakeAnimation.repeatCount = HUGE_VALF;
     [currentView.layer addAnimation:shakeAnimation forKey:@"position"];
 
-}
+}// shake func end
 
 static void performBlinkAnimated(UIView *currentView, CGFloat duration) {
 
@@ -237,6 +245,16 @@ static void performBlinkAnimated(UIView *currentView, CGFloat duration) {
     } completion:nil];
 
 }
+
+static void performRainbowAnimated(UIView *currentView, CGFloat duration, CGFloat delay) {
+
+    [UIView animateWithDuration:duration delay:delay options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
+        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];;
+    } completion:^(BOOL finished) {
+        performRainbowAnimated(currentView, duration, delay);
+    }];
+
+}// shake rainbow end
 
 // ############################# ANIMATIONS ### END ####################################
 
@@ -256,10 +274,9 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
     //gets text size
     CGSize textSize = [twTextLabel.text sizeWithAttributes:@{NSFontAttributeName:[twTextLabel font]}];
-
     CGFloat absolutCenter = (screenWidth/2) - (textSize.width/2);
-
     CGFloat varFrameX, varFrameY = 0;
+
 	switch (twFramePosChoice) {
 		case 1://below StatusBar
 			varFrameX = absolutCenter;
@@ -269,16 +286,23 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 			varFrameX = absolutCenter;
 			varFrameY = screenHeight-110;
 			break;
+        case 3://center
+			varFrameX = absolutCenter;
+			varFrameY = screenHeight/2;
+			break;
 		case -999:// custom
             if(twFrameX != twFrameX && twFrameY != twFrameY){
                 varFrameX = absolutCenter;
                 varFrameY = screenHeight/2;
+                showAlertChangeInSettings(@"Your custom 'position' values are invalid!");
             } else if(twFrameX != twFrameX){
                 varFrameX = absolutCenter;
                 varFrameY = twFrameY;
+                showAlertChangeInSettings(@"Your custom 'X position' value is invalid!");
             } else if(twFrameY != twFrameY){
                 varFrameX = twFrameX;
                 varFrameY = screenHeight/2;
+                showAlertChangeInSettings(@"Your custom 'Y position' value is invalid!");
             } else {
                 varFrameX = twFrameX;
     			varFrameY = twFrameY;
@@ -303,16 +327,13 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         case 2://white
             varFontColor = @"#FFFFFF";
             break;
-        case 3://orange
-            varFontColor = @"#FFA500";
-            break;
         case -999:// custom
             if([twFontColorCustom isEqualToString:@""]){
                 varFontColor = @"#000000";
-                showAlertChangeInSettings(@"Your custom background color value is invalid!");
+                showAlertChangeInSettings(@"Your custom 'font color' value is invalid!");
             } else if([twFontColorCustom isEqualToString:@"#"]){
                 varFontColor = @"#000000";
-                showAlertChangeInSettings(@"Your custom background color value is invalid!");
+                showAlertChangeInSettings(@"Your custom font 'color value' is invalid!");
             } else {
                 varFontColor = twFontColorCustom;
             }
@@ -328,23 +349,19 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	if(twIsBackgroundEnabled) {
         NSString *varBackgroundColor = @"#FFFFFF";
         switch (twBackgroundColorChoice) {
-    		case 1://white
-                varBackgroundColor = @"#FFFFFF";
-    			break;
-    		case 2://black
+    		case 1://black
                 varBackgroundColor = @"#000000";
     			break;
-            case 3://orange
-                varBackgroundColor = @"#FFA500";
+    		case 2://white
+                varBackgroundColor = @"#FFFFFF";
     			break;
     		case -999:// custom
-                NSLog(@"AlwaysRemindMe DEBUG LOG: twBackgroundColorCustom: %@", twBackgroundColorCustom);
                 if([twBackgroundColorCustom isEqualToString:@""]){
                     varBackgroundColor = @"#FFFFFF";
-                    showAlertChangeInSettings(@"Your custom background color value is invalid!");
+                    showAlertChangeInSettings(@"Your custom 'background color' value is invalid!");
                 } else if([twBackgroundColorCustom isEqualToString:@"#"]){
                     varBackgroundColor = @"#FFFFFF";
-                    showAlertChangeInSettings(@"Your custom background color value is invalid!");
+                    showAlertChangeInSettings(@"Your custom 'background color' value is invalid!");
                 } else {
                     varBackgroundColor = twBackgroundColorCustom;
                 }
@@ -361,6 +378,41 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	[currentView addSubview:twTextLabel];
 
+    //rainbow
+    CGFloat varRainbowDelay, varRainbowDuration = 0;
+    if(twIsRainbowEnabled) {
+        switch (twRainbowDurationChoice) {
+    		case 1://default
+                varRainbowDuration = 1;
+    			break;
+    		case 2://slow
+                varRainbowDuration = 3;
+    			break;
+            case 3://fast
+                varRainbowDuration = 0.2;
+    			break;
+    		case -999:// custom
+                if(twRainbowDuration != twRainbowDuration){
+                    varRainbowDuration = 1;
+                    showAlertChangeInSettings(@"Your custom 'rainbow duration' value is invalid!");
+                } else {
+                    varRainbowDuration = twRainbowDuration;
+                }
+    			break;
+    		default:
+    			NSLog(@"AlwaysRemindMe ERROR: switch -> twRainbowDurationChoice is default");
+                varRainbowDuration = 1;
+    			break;
+    	}
+    	//switch twRainbowDurationChoice end
+        if(twRainbowDelay != twRainbowDelay){
+            varRainbowDelay = 1;
+            showAlertChangeInSettings(@"Your custom 'rainbow delay' value is invalid!");
+        } else {
+            varRainbowDelay = twRainbowDelay;
+        }
+        performRainbowAnimated(twTextLabel, varRainbowDuration, varRainbowDelay);
+    }
 
     //rotation
     CGFloat varRotationDelay, varRotationSpeed = 0;
@@ -378,6 +430,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     		case -999:// custom
                 if(twRotationSpeed != twRotationSpeed){
                     varRotationSpeed = 2;
+                    showAlertChangeInSettings(@"Your custom 'rotation speed' value is invalid!");
                 } else {
                     varRotationSpeed = twRotationSpeed;
                 }
@@ -389,6 +442,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     	//switch twPulseSpeed end
         if(twRotationDelay != twRotationDelay){
             varRotationDelay = 2;
+            showAlertChangeInSettings(@"Your custom 'rotation delay' value is invalid!");
         } else {
             varRotationDelay = twRotationDelay;
         }
@@ -408,7 +462,12 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varPulseSize = 4;
     			break;
     		case -999:// custom
-    			varPulseSize = twPulseSize;
+                if(twPulseSize != twPulseSize){
+                    varPulseSize = 2;
+                    showAlertChangeInSettings(@"Your custom 'pulse size' value is invalid!");
+                } else {
+                    varPulseSize = twPulseSize;
+                }
     			break;
     		default:
     			NSLog(@"AlwaysRemindMe ERROR: switch -> twPulseSizeChoice is default");
@@ -427,7 +486,12 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varPulseSpeed = 2;
     			break;
     		case -999:// custom
-    			varPulseSpeed = twPulseSpeed;
+                if(twPulseSpeed != twPulseSpeed){
+                    varPulseSpeed = 1;
+                    showAlertChangeInSettings(@"Your custom 'pulse speed' value is invalid!");
+                } else {
+                    varPulseSpeed = twPulseSpeed;
+                }
     			break;
     		default:
     			NSLog(@"AlwaysRemindMe ERROR: switch -> twPulseSpeedChoice is default");
@@ -451,7 +515,12 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varBlinkSpeed = 1;
     			break;
     		case -999:// custom
-    			varPulseSize = twPulseSize;
+                if(twBlinkSpeed != twBlinkSpeed){
+                    varBlinkSpeed = 0.5;
+                    showAlertChangeInSettings(@"Your custom 'blink speed' value is invalid!");
+                } else {
+                    varBlinkSpeed = twBlinkSpeed;
+                }
     			break;
     		default:
     			NSLog(@"AlwaysRemindMe ERROR: switch -> twBlinkSpeedChoice is default");
@@ -479,6 +548,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     		case -999:// custom
                 if(twShakeDuration != twShakeDuration){
                     varShakeDuration = 1;
+                    showAlertChangeInSettings(@"Your custom 'shake duration' value is invalid!");
                 } else {
                     varShakeDuration = twShakeDuration;
                 }
@@ -491,14 +561,17 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     	}
     	//switch twShakeDurationChoice end
         if(twShakeXAmount != twShakeXAmount && twShakeYAmount != twShakeYAmount){
-            twShakeXAmount = 10;
-            twShakeYAmount = 0;
+            varShakeXAmount = 10;
+            varShakeYAmount = 0;
+            showAlertChangeInSettings(@"Your custom 'shake position' value is invalid!");
         } else if(twShakeXAmount != twShakeXAmount){
-            varFrameX = 0;
-            varFrameY = twShakeYAmount;
+            varShakeXAmount = 0;
+            varShakeYAmount = twShakeYAmount;
+            showAlertChangeInSettings(@"Your custom 'X shake' value is invalid!");
         } else if(twShakeYAmount != twShakeYAmount){
-            varFrameX = twShakeXAmount;
-            varFrameY = 0;
+            varShakeXAmount = twShakeXAmount;
+            varShakeYAmount = 0;
+            showAlertChangeInSettings(@"Your custom 'Y shake' value is invalid!");
         } else {
             varShakeXAmount = twShakeXAmount;
             varShakeYAmount = twShakeYAmount;
@@ -506,7 +579,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         performShakeAnimated(twTextLabel, varShakeDuration, varShakeXAmount, varShakeYAmount);
     }
 
-}
+}// draw func end
 
 // ############################# DRAW LABEL ### END ####################################
 
@@ -515,12 +588,14 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	-(void)viewDidLoad {
         %orig;
+        NSLog(@"AlwaysRemindMe DEBUG LOG: SBLockScreenViewControllerBase");
 
         CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		CGFloat screenHeight = screenSize.height;
 		CGFloat screenWidth = screenSize.width;
 
         UIView* selfView = self.view;
+        NSLog(@"AlwaysRemindMe DEBUG LOG: SBLockScreenViewControllerBase self.view: %@", self.view);
 
 		if(twIsEnabled) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
@@ -540,6 +615,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	-(void)viewDidLoad {
         %orig;
+        NSLog(@"AlwaysRemindMe DEBUG LOG: SBHomeScreenViewController");
         NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -551,14 +627,13 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 		if(twIsEnabled) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
+                //drawAlwaysRemindMe(screenHeight/2, screenWidth/2, selfView);
                 //twIsViewPresented = YES;
 			}
 		}
         if(twShouldDelete){
             dealloc(selfView);
         }
-
-
 	}
 
 %end

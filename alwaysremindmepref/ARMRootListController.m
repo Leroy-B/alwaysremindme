@@ -67,8 +67,24 @@
                                action:@selector(dismissButtonAction)];
 
 		self.navigationItem.rightBarButtonItem = dismissButton;
+		//self.navigationItem.centerBarButtonItem = dismissButton;
 
 		[dismissButton release];
+		[super viewDidLoad];
+
+		//Adds GitHub button in top right of preference pane
+		// UIImage *dismissKB = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/AlwaysRemindMePref.bundle/dismissKB.png"];
+		// dismissKB = [dismissKB imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+		UIBarButtonItem *repringButton = [[UIBarButtonItem alloc]
+							   initWithImage:nil
+							   style:UIBarButtonItemStylePlain
+                               target:self
+                               action:@selector(respring)];
+
+		self.navigationItem.leftBarButtonItem = repringButton;
+		//self.navigationItem.centerBarButtonItem = dismissButton;
+
+		[repringButton release];
 		[super viewDidLoad];
 
 	}
@@ -77,10 +93,23 @@
 		[self.view endEditing:YES];
 	}
 
+	// -(void)showDatePicker {
+	// 	self.datePicker = [[UIDatePicker alloc] initWithFrame:CGRectZero];
+	// 	[self.datePicker setDatePickerMode:UIDatePickerModeDate];
+	// 	[self.datePicker addTarget:self action:@selector(onDatePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
+	// }
+	//
+	// - (void)onDatePickerValueChanged:(UIDatePicker *)datePicker {
+	//     self.textField.text = [self.dateFormatter stringFromDate:datePicker.date];
+	// }
 
-	- (void)showTwitter {
+	-(void)showTwitter {
 		if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"twitter://"]]) [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"twitter://user?screen_name=IDEK_a_Leroy"] options:@{} completionHandler:nil];
 		else [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://twitter.com/IDEK_a_Leroy"] options:@{} completionHandler:nil];
+	}
+
+	-(void)showReddit {
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/user/IDEK_a_Leroy"] options:@{} completionHandler:nil];
 	}
 
 	-(void)showSourceCode {
@@ -150,7 +179,7 @@
 
 	}
 
-	-(void)respring{
+	-(void)respring {
 		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.leroy.alwaysremindme.list"]){//TODO change me
 			pid_t pid;
 			int status;
