@@ -20,7 +20,7 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfTweakIsEnabled</string>
+			<string>pfIsTweakEnabled</string>
 			<key>label</key>
 			<string>Enable AlwaysRemindMe</string>
 		</dict>

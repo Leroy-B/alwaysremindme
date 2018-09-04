@@ -49,7 +49,10 @@ static NSString *twTextLabelVar = @"Thank you for downloading :)";
 // NSMutableArray *twTextLabelVar = [[NSMutableArray alloc] init];
 // [twTextLabelVar addObject:@"Thank you for downloading :)"];
 
+static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
+static NSString *twTimerCustom = @"12";
+static int twTimerChoice = 1;
 
 
 static int twFramePosChoice = 1;
@@ -131,9 +134,13 @@ static void loadPrefs() {
 
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
     if(prefs){
-		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
+		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
+
+        twIsTimerEnabled		= ([prefs objectForKey:@"pfIsTimerEnabled"] ? [[prefs objectForKey:@"pfIsTimerEnabled"] boolValue] : twIsTimerEnabled);
         twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
+        twTimerChoice           = ([prefs objectForKey:@"pfTimerChoice"] ? [[prefs objectForKey:@"pfTimerChoice"] intValue] : twTimerChoice);
+        twTimerCustom        	= ([prefs objectForKey:@"pfTimerCustom"] ? [[prefs objectForKey:@"pfTimerCustom"] description] : twTimerCustom);
 
         // all of this is necessary because if the string gets to long it will crash the SpringBoard
         NSMutableArray *array = [NSMutableArray array];
@@ -174,7 +181,7 @@ static void loadPrefs() {
         twRotationDelay			= ([prefs objectForKey:@"pfRotationDelay"] ? [[prefs objectForKey:@"pfRotationDelay"] floatValue] : twRotationDelay);
 
         twIsBlinkEnabled		= ([prefs objectForKey:@"pfIsBlinkEnabled"] ? [[prefs objectForKey:@"pfIsBlinkEnabled"] boolValue] : twIsBlinkEnabled);
-        twBlinkSpeedChoice 	= ([prefs objectForKey:@"pfBlinkSpeedChoice"] ? [[prefs objectForKey:@"pfBlinkSpeedChoice"] intValue] : twBlinkSpeedChoice);
+        twBlinkSpeedChoice      = ([prefs objectForKey:@"pfBlinkSpeedChoice"] ? [[prefs objectForKey:@"pfBlinkSpeedChoice"] intValue] : twBlinkSpeedChoice);
         twBlinkSpeed			= ([prefs objectForKey:@"pfBlinkSpeed"] ? [[prefs objectForKey:@"pfBlinkSpeed"] floatValue] : twBlinkSpeed);
 
         twIsPulseEnabled		= ([prefs objectForKey:@"pfIsPulseEnabled"] ? [[prefs objectForKey:@"pfIsPulseEnabled"] boolValue] : twIsPulseEnabled);
@@ -594,32 +601,34 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 %hook SpringBoard
 
     -(void)applicationDidFinishLaunching {
+        NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
         %orig;
         [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
-            [NSTimer scheduledTimerWithTimeInterval:1800 target:self selector:@selector(test:) userInfo:nil repeats:YES];
+            [NSTimer scheduledTimerWithTimeInterval:20 target:self selector:@selector(test:) userInfo:nil repeats:YES];
+            NSLog(@"AlwaysRemindMe LOG: NSTimer");
         }];
     }
 
-    %new
-    -(void)test:(NSTimer *)timer {
-
-        NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-
-        time1 = @"10:00:00";
-        date1 = [df dateFromString:time1];
-
-
-
-        [df setDateFormat:@"HH:mm:ss"];
-
-        NSDate *date1 = [df dateFromString:time1];
-        NSDate *date2 = [df dateFromString:time2];
-        NSDate *now = [NSDate date];
-        if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
-
-        }
-
-    }
+    // %new
+    // -(void)test:(NSTimer *)timer {
+    //
+    //     NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
+    //
+    //     time1 = @"10:00:00";
+    //     date1 = [df dateFromString:time1];
+    //
+    //
+    //
+    //     [df setDateFormat:@"HH:mm:ss"];
+    //
+    //     NSDate *date1 = [df dateFromString:time1];
+    //     NSDate *date2 = [df dateFromString:time2];
+    //     NSDate *now = [NSDate date];
+    //     if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
+    //
+    //     }
+    //
+    // }
 
 %end
 

@@ -64,48 +64,44 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Choose a time</string>
-			<key>footerText</key>
-			<string>The above input field is enabled, it just looks disabled. Choose the time you would like to show your reminder.</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>12:00</string>
+			<string>PSSwitchCell</string>
 			<key>default</key>
-			<string>12:00</string>
+			<false/>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfDateVar</string>
+			<string>pfIsTimerEnabled</string>
 			<key>label</key>
-			<string>showDatePicker!</string>
-			<key>action</key>
-			<string>showDatePicker</string>
-			<key>enabled</key>
-			<false/>
+			<string>Enable a timer</string>
 		</dict>
-		<!-- <dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
-			<string>PSStaticTextCell</string>
+			<string>PSButtonCell</string>
 			<key>key</key>
-			<string>pfTextLabel</string>
-			<key>alignment</key>
-			<integer>1</integer>
+			<string>pfTime24</string>
 			<key>label</key>
-			<string>12:00</string>
+			<string>Pick a time to be reminded at!</string>
 			<key>action</key>
 			<string>showDatePicker</string>
-		</dict> -->
-		<!-- datePicker end -->
-		<!-- Pos start -->
+		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Choose the position of the label. For custom values, select 'Custom' above and use the input fields below.</string>
+			<string>Choose the time you would like to show your reminder. Disabling this option will always show the 'AlwaysRemindMe' label.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Choose a duration</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -114,6 +110,66 @@
 			<string>PSSegmentCell</string>
 			<key>default</key>
 			<string>Default</string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTimerChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>5</string>
+				<string>15</string>
+				<string>30</string>
+				<string>60</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>5</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>The above values are in minutes and define the duration of the on-screen time for the 'AlwaysRemindMe' label.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>12</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTimerCustom</string>
+			<key>label</key>
+			<string>Custom 'timer' value:</string>
+		</dict>
+		<!-- datePicker end -->
+		<!-- Pos start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Choose the position of the 'AlwaysRemindMe' label. For custom values, select 'Custom' above and use the input fields below.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Below StatusBar</string>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>

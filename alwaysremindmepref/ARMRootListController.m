@@ -37,7 +37,6 @@
 		if (!_specifiers) {
 			_specifiers = [[self loadSpecifiersFromPlistName:@"EditLabel" target:self] retain];
 		}
-
 		return _specifiers;
 	}
 
@@ -52,23 +51,9 @@
                                action:@selector(dismissButtonAction)];
 
 		self.navigationItem.rightBarButtonItem = dismissButton;
-		//self.navigationItem.centerBarButtonItem = dismissButton;
 
 		[dismissButton release];
 		[super viewDidLoad];
-
-
-		// UIBarButtonItem *respringButton = [[UIBarButtonItem alloc]
-		// 					   initWithTitle:@"Respring"
-		// 					   style:UIBarButtonItemStylePlain
-        //                        target:self
-        //                        action:@selector(respring)];
-		//
-		// self.navigationItem.leftBarButtonItem = respringButton;
-		// //self.navigationItem.centerBarButtonItem = dismissButton;
-		//
-		// [respringButton release];
-		// [super viewDidLoad];
 
 	}
 
@@ -78,26 +63,36 @@
 
 	-(void)showDatePicker {
 
-		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose a time to be reminded at!\n\n\n\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-		UIDatePicker *picker = [[UIDatePicker alloc] init];
-		picker.setDatePickerMode=UIDatePickerModeTime;
+		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Choose a time to be reminded at!\n\n\n\n\n\n\n\n" preferredStyle:UIAlertControllerStyleActionSheet];
+		UIView *viewDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width,200)];
+		[viewDatePicker setBackgroundColor:[UIColor clearColor]];
+
+		CGRect pickerFrame = CGRectMake(0, 0, self.view.frame.size.width, 200);
+		UIDatePicker *picker = [[UIDatePicker alloc] initWithFrame:pickerFrame];
+		[picker setDatePickerMode:UIDatePickerModeTime];
 		picker.minuteInterval=30;
-		[alertController.view addSubview:picker];
-		[alertController addAction:({
-		    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-				NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-				[outputFormatter setDateFormat:@"HH:mm:ss"];
-				outputFormatter.setDateFormat=@"HH:mm:ss";
-				NSString *newDateString = [outputFormatter stringFromDate:picker.date];
-				NSLog(@"newDateString %@", newDateString);
-				[outputFormatter release];
-		    }];
-		    action;
-		})];
-		UIPopoverPresentationController *popoverController = alertController.popoverPresentationController;
-		popoverController.sourceView = self.view;
-		popoverController.sourceRect = [self.view bounds];
-		[self presentViewController:alertController  animated:YES completion:nil];
+
+		[viewDatePicker addSubview:picker];
+
+		[alertController.view addSubview:viewDatePicker];
+
+		NSDateFormatter *formate=[[NSDateFormatter alloc]init];
+		[formate setDateFormat:@"hh:mm a"];
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+		                                                      handler:^(UIAlertAction * action) {
+																NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+																outputFormatter.dateFormat=@"HH:mm";
+																NSString *newDateString = [outputFormatter stringFromDate:picker.date];
+																NSLog(@"AlwaysRemindMe LOG: newDateString: %@", newDateString);
+																NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
+																[prefs setValue:newDateString forKey:@"pfTime24"];
+																NSLog(@"AlwaysRemindMe LOG: pfTime24: %@", [prefs objectForKey:@"pfTime24"]);
+																[prefs writeToFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist" atomically:YES];
+																[outputFormatter release];
+		                                                      }];
+
+		[alertController addAction:defaultAction];
+		[self presentViewController:alertController animated:YES completion:nil];
 
 	}
 
