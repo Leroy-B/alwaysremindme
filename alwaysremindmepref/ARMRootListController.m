@@ -80,13 +80,14 @@
 
 		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Choose a time to be reminded at!\n\n\n\n\n\n\n\n\n\n\n" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 		UIDatePicker *picker = [[UIDatePicker alloc] init];
-		[picker setDatePickerMode:UIDatePickerModeTime];
-		// [picker setDateFormat:@"HH:mm:ss"];
+		picker.setDatePickerMode=UIDatePickerModeTime;
+		picker.minuteInterval=30;
 		[alertController.view addSubview:picker];
 		[alertController addAction:({
 		    UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 				NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
 				[outputFormatter setDateFormat:@"HH:mm:ss"];
+				outputFormatter.setDateFormat=@"HH:mm:ss";
 				NSString *newDateString = [outputFormatter stringFromDate:picker.date];
 				NSLog(@"newDateString %@", newDateString);
 				[outputFormatter release];

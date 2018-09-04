@@ -49,6 +49,8 @@ static NSString *twTextLabelVar = @"Thank you for downloading :)";
 // NSMutableArray *twTextLabelVar = [[NSMutableArray alloc] init];
 // [twTextLabelVar addObject:@"Thank you for downloading :)"];
 
+static NSString *twTime24 = @"12:00";
+
 
 static int twFramePosChoice = 1;
 static CGFloat twFrameX = 0;
@@ -131,6 +133,7 @@ static void loadPrefs() {
     if(prefs){
 		twIsEnabled				= ([prefs objectForKey:@"pfTweakIsEnabled"] ? [[prefs objectForKey:@"pfTweakIsEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
+        twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
 
         // all of this is necessary because if the string gets to long it will crash the SpringBoard
         NSMutableArray *array = [NSMutableArray array];
@@ -586,6 +589,40 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 }// draw func end
 
 // ############################# DRAW LABEL ### END ####################################
+
+
+%hook SpringBoard
+
+    -(void)applicationDidFinishLaunching {
+        %orig;
+        [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
+            [NSTimer scheduledTimerWithTimeInterval:1800 target:self selector:@selector(test:) userInfo:nil repeats:YES];
+        }];
+    }
+
+    %new
+    -(void)test:(NSTimer *)timer {
+
+        NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
+
+        time1 = @"10:00:00";
+        date1 = [df dateFromString:time1];
+
+
+
+        [df setDateFormat:@"HH:mm:ss"];
+
+        NSDate *date1 = [df dateFromString:time1];
+        NSDate *date2 = [df dateFromString:time2];
+        NSDate *now = [NSDate date];
+        if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
+
+        }
+
+    }
+
+%end
+
 
 //setting text on LS
 %hook SBLockScreenViewControllerBase

@@ -79,26 +79,12 @@
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
-			<string>pfDateVar</string>
+			<string>pfTime24</string>
 			<key>label</key>
 			<string>showDatePicker!</string>
 			<key>action</key>
 			<string>showDatePicker</string>
-			<key>enabled</key>
-			<false/>
 		</dict>
-		<!-- <dict>
-			<key>cell</key>
-			<string>PSStaticTextCell</string>
-			<key>key</key>
-			<string>pfTextLabel</string>
-			<key>alignment</key>
-			<integer>1</integer>
-			<key>label</key>
-			<string>12:00</string>
-			<key>action</key>
-			<string>showDatePicker</string>
-		</dict> -->
 		<!-- datePicker end -->
 		<!-- Pos start -->
 		<dict>
