@@ -36,6 +36,21 @@ features:
 
 @end
 
+@interface PCSimpleTimer : NSObject
+@property BOOL disableSystemWaking;
+- (BOOL)disableSystemWaking;
+- (id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
+- (id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
+- (void)invalidate;
+- (BOOL)isValid;
+- (void)scheduleInRunLoop:(id)arg1;
+- (void)setDisableSystemWaking:(BOOL)arg1;
+- (id)userInfo;
+@end
+
+
+#define PLIST_PATH @"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"
+
 //define var and assign default values
 static SBHomeScreenViewController *myself;
 
@@ -53,6 +68,7 @@ static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
+static PCSimpleTimer *activeTimer;
 
 
 static int twFramePosChoice = 1;
@@ -132,7 +148,7 @@ static void showAlertChangeInSettings(NSString *msg) {
 
 static void loadPrefs() {
 
-	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
+	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
     if(prefs){
 		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : twIsEnabled);
 		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
@@ -604,31 +620,31 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
         %orig;
         [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
-            [NSTimer scheduledTimerWithTimeInterval:20 target:self selector:@selector(test:) userInfo:nil repeats:YES];
-            NSLog(@"AlwaysRemindMe LOG: NSTimer");
+            activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
         }];
     }
 
-    // %new
-    // -(void)test:(NSTimer *)timer {
-    //
-    //     NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-    //
-    //     time1 = @"10:00:00";
-    //     date1 = [df dateFromString:time1];
-    //
-    //
-    //
-    //     [df setDateFormat:@"HH:mm:ss"];
-    //
-    //     NSDate *date1 = [df dateFromString:time1];
-    //     NSDate *date2 = [df dateFromString:time2];
-    //     NSDate *now = [NSDate date];
-    //     if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
-    //
-    //     }
-    //
-    // }
+    %new
+    -(void)test:(NSTimer *)timer {
+        NSLog(@"AlwaysRemindMe LOG: 'test' called form activeTimer: %@", activeTimer);
+
+        // NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
+        //
+        // time1 = @"10:00";
+        // date1 = [df dateFromString:time1];
+        //
+        //
+        //
+        // [df setDateFormat:@"HH:mm"];
+        //
+        // NSDate *date1 = [df dateFromString:time1];
+        // NSDate *date2 = [df dateFromString:time2];
+        // NSDate *now = [NSDate date];
+        // if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
+        //
+        // }
+
+    }
 
 %end
 

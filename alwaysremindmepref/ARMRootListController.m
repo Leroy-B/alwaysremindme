@@ -2,9 +2,8 @@
 #include <spawn.h>
 #include <signal.h>
 
+#define PLIST_PATH @"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"
 
-@interface ARMLabelsListController : PSListController
-@end
 
 @implementation ARMLabelsListController
 
@@ -17,7 +16,7 @@
 
 	-(NSArray *)labelTitles:(id)target {
 		NSMutableArray *resultArray = [[NSMutableArray alloc] init];
-		NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
+		NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
 	    if(prefs){
 			NSLog(@"AlwaysRemindMe LOG: pfTextLabel: %@", [[prefs objectForKey:@"pfTextLabel"] description]);
 			[resultArray addObject:[[prefs objectForKey:@"pfTextLabel"] description]];
@@ -27,9 +26,6 @@
 
 @end //ARMLabelsListController
 
-
-@interface ARMEditLabelListController : ARMRootListController
-@end
 
 @implementation ARMEditLabelListController
 
@@ -67,28 +63,27 @@
 		UIView *viewDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width,200)];
 		[viewDatePicker setBackgroundColor:[UIColor clearColor]];
 
-		CGRect pickerFrame = CGRectMake(0, 0, self.view.frame.size.width, 200);
+		CGRect pickerFrame = CGRectMake(0, 0, self.view.frame.size.width, 220);
 		UIDatePicker *picker = [[UIDatePicker alloc] initWithFrame:pickerFrame];
 		[picker setDatePickerMode:UIDatePickerModeTime];
 		picker.minuteInterval=30;
 
 		[viewDatePicker addSubview:picker];
-
 		[alertController.view addSubview:viewDatePicker];
 
-		NSDateFormatter *formate=[[NSDateFormatter alloc]init];
-		[formate setDateFormat:@"hh:mm a"];
+		NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+		outputFormatter.dateFormat=@"HH:mm";
+		NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
+
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
 		                                                      handler:^(UIAlertAction * action) {
-																NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-																outputFormatter.dateFormat=@"HH:mm";
-																NSString *newDateString = [outputFormatter stringFromDate:picker.date];
-																NSLog(@"AlwaysRemindMe LOG: newDateString: %@", newDateString);
-																NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"];
-																[prefs setValue:newDateString forKey:@"pfTime24"];
-																NSLog(@"AlwaysRemindMe LOG: pfTime24: %@", [prefs objectForKey:@"pfTime24"]);
-																[prefs writeToFile:@"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist" atomically:YES];
-																[outputFormatter release];
+
+																  [prefs setValue:[outputFormatter stringFromDate:picker.date] forKey:@"pfTime24"];
+																  [prefs writeToFile:PLIST_PATH atomically:YES];
+																  [prefs release];
+																  [outputFormatter release];
+																  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), nil, nil, TRUE);
+
 		                                                      }];
 
 		[alertController addAction:defaultAction];
@@ -214,4 +209,4 @@
 		}
 	}
 
-@end
+@end //ARMRootListController
