@@ -18,6 +18,9 @@
 @interface SBHomeScreenViewController : UIViewController
 @end
 
+@interface SBControlCenterController
+@end
+
 @interface UIColor(Hexadecimal)
 
 + (UIColor *)colorWithHexString:(NSString *)hexString;
@@ -615,7 +618,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 
 
-
 #include <substrate.h>
 #if defined(__clang__)
 #if __has_feature(objc_arc)
@@ -636,10 +638,29 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SpringBoard; @class PCSimpleTimer; @class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
-static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$test$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, NSTimer *); static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
+@class SBControlCenterController; @class SBLockScreenViewControllerBase; @class PCSimpleTimer; @class SBHomeScreenViewController; @class SpringBoard; 
+static void (*_logos_orig$_ungrouped$SBControlCenterController$_willBeginTransition)(_LOGOS_SELF_TYPE_NORMAL SBControlCenterController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBControlCenterController$_willBeginTransition(_LOGOS_SELF_TYPE_NORMAL SBControlCenterController* _LOGOS_SELF_CONST, SEL); static BOOL (*_logos_orig$_ungrouped$SBControlCenterController$isPresentedOrDismissing)(_LOGOS_SELF_TYPE_NORMAL SBControlCenterController* _LOGOS_SELF_CONST, SEL); static BOOL _logos_method$_ungrouped$SBControlCenterController$isPresentedOrDismissing(_LOGOS_SELF_TYPE_NORMAL SBControlCenterController* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SpringBoard$test$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, NSTimer *); static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$PCSimpleTimer(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("PCSimpleTimer"); } return _klass; }
-#line 617 "Tweak.xm"
+#line 619 "Tweak.xm"
+
+
+
+    
+    static void _logos_method$_ungrouped$SBControlCenterController$_willBeginTransition(_LOGOS_SELF_TYPE_NORMAL SBControlCenterController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+
+        NSLog(@"AlwaysRemindMe LOG: _willBeginTransition got called");
+        _logos_orig$_ungrouped$SBControlCenterController$_willBeginTransition(self, _cmd);
+    }
+
+    
+    static BOOL _logos_method$_ungrouped$SBControlCenterController$isPresentedOrDismissing(_LOGOS_SELF_TYPE_NORMAL SBControlCenterController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+
+        NSLog(@"AlwaysRemindMe LOG: isPresentedOrDismissing got called");
+        return _logos_orig$_ungrouped$SBControlCenterController$isPresentedOrDismissing(self, _cmd);
+    }
+
+
+
 
 
     static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -731,7 +752,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_dcc030d4(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_cb785065(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
         loadPrefs();
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
@@ -739,5 +760,5 @@ static __attribute__((constructor)) void _logosLocalCtor_dcc030d4(int __unused a
 	}
 }
 static __attribute__((constructor)) void _logosLocalInit() {
-{Class _logos_class$_ungrouped$SpringBoard = objc_getClass("SpringBoard"); MSHookMessageEx(_logos_class$_ungrouped$SpringBoard, @selector(applicationDidFinishLaunching), (IMP)&_logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching, (IMP*)&_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSTimer *), strlen(@encode(NSTimer *))); i += strlen(@encode(NSTimer *)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(test:), (IMP)&_logos_method$_ungrouped$SpringBoard$test$, _typeEncoding); }Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
-#line 715 "Tweak.xm"
+{Class _logos_class$_ungrouped$SBControlCenterController = objc_getClass("SBControlCenterController"); MSHookMessageEx(_logos_class$_ungrouped$SBControlCenterController, @selector(_willBeginTransition), (IMP)&_logos_method$_ungrouped$SBControlCenterController$_willBeginTransition, (IMP*)&_logos_orig$_ungrouped$SBControlCenterController$_willBeginTransition);MSHookMessageEx(_logos_class$_ungrouped$SBControlCenterController, @selector(isPresentedOrDismissing), (IMP)&_logos_method$_ungrouped$SBControlCenterController$isPresentedOrDismissing, (IMP*)&_logos_orig$_ungrouped$SBControlCenterController$isPresentedOrDismissing);Class _logos_class$_ungrouped$SpringBoard = objc_getClass("SpringBoard"); MSHookMessageEx(_logos_class$_ungrouped$SpringBoard, @selector(applicationDidFinishLaunching), (IMP)&_logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching, (IMP*)&_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSTimer *), strlen(@encode(NSTimer *))); i += strlen(@encode(NSTimer *)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(test:), (IMP)&_logos_method$_ungrouped$SpringBoard$test$, _typeEncoding); }Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
+#line 736 "Tweak.xm"

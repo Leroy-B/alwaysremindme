@@ -613,7 +613,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 // ############################# DRAW LABEL ### END ####################################
 
-
 %hook SpringBoard
 
     -(void)applicationDidFinishLaunching {
