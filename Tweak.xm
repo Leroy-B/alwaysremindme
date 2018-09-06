@@ -11,6 +11,9 @@ features:
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
 */
 
+@interface SpringBoard
+@end
+
 @interface SBLockScreenViewControllerBase : UIViewController
 @end
 
@@ -615,12 +618,14 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 %hook SpringBoard
 
-    -(void)applicationDidFinishLaunching {
+    -(void)applicationDidFinishLaunching:(id)arg1 {
         NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
         %orig;
-        [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
-            activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-        }];
+        activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+        //activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+        // [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
+        //     activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+        // }];
     }
 
     %new
