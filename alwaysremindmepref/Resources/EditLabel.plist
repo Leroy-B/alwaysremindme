@@ -29,6 +29,22 @@
 			<key>label</key>
 			<string>Custom 'text' value:</string>
 		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.leroy.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel1</string>
+			<key>label</key>
+			<string>Custom 'text' value:</string>
+		</dict>
 		<!-- custom text end -->
 		<!-- Locations start -->
 		<dict>
@@ -77,7 +93,7 @@
 			<key>key</key>
 			<string>pfIsTimerEnabled</string>
 			<key>label</key>
-			<string>Enable a timer</string>
+			<string>Enable at a time</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>

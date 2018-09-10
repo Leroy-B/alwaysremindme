@@ -69,6 +69,7 @@ static bool twIsEnabled = NO;
 static int twWhichScreenChoice = 0;
 
 static NSString *twTextLabelVar = @"Thank you for downloading :)";
+static NSString *twTextLabelVar1 = @"";
 
 // NSMutableArray *twTextLabelVar = [[NSMutableArray alloc] init];
 // [twTextLabelVar addObject:@"Thank you for downloading :)"];
@@ -176,6 +177,17 @@ static void loadPrefs() {
             [result appendString:[obj description]];
         }
         twTextLabelVar = result;
+
+        NSMutableArray *array1 = [NSMutableArray array];
+        for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel1"] description] length]; i++) {
+            [array1 addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel1"] description] characterAtIndex:i]]];
+        }
+
+        NSMutableString *result1 = [[NSMutableString alloc] init];
+        for (NSObject *obj1 in array1){
+            [result1 appendString:[obj1 description]];
+        }
+        twTextLabelVar1 = result1;
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
@@ -302,7 +314,12 @@ static void performRainbowAnimated(UIView *currentView, CGFloat delay) {
 static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView *currentView) {
 
     UILabel *twTextLabel = [[UILabel alloc] init];
-    twTextLabel.text = twTextLabelVar;
+    twTextLabel.numberOfLines=0;
+    if ([twTextLabelVar1 isEqualToString:@""]) {
+        twTextLabel.text = twTextLabelVar;
+    } else {
+        twTextLabel.text = [NSString stringWithFormat:@"%@\r%@", twTextLabelVar,twTextLabelVar1];
+    }
     [twTextLabel sizeToFit];
 
     if(twFontSize == -999) {
@@ -694,8 +711,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 
 %ctor {
 	@autoreleasepool {
+	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
         loadPrefs();
-	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-		NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'CFNotificationCenterAddObserver'");
 	}
 }
