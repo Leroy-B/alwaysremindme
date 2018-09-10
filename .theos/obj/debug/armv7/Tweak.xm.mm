@@ -23,19 +23,25 @@
 
 @interface UIColor(Hexadecimal)
 
-+ (UIColor *)colorWithHexString:(NSString *)hexString;
++ (UIColor *)colorFromHex:(NSString *)hexString;
 
 @end
 
 @implementation UIColor(Hexadecimal)
 
-+ (UIColor *)colorWithHexString:(NSString *)hexString {
++ (UIColor *)colorFromHex:(NSString *)hexString {
     unsigned rgbValue = 0;
-    NSScanner *scanner = [NSScanner scannerWithString:hexString];
-    [scanner setScanLocation:1]; 
-    [scanner scanHexInt:&rgbValue];
-
-    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+    if ([hexString hasPrefix:@"#"]) {
+		hexString = [hexString substringFromIndex:1];
+	}
+    if (hexString) {
+	    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+	    [scanner setScanLocation:0]; 
+	    [scanner scanHexInt:&rgbValue];
+	    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+    } else {
+		return [UIColor grayColor];
+	}
 }
 
 @end
@@ -72,7 +78,7 @@ static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
-static PCSimpleTimer *activeTimer;
+
 
 
 static int twFramePosChoice = 1;
@@ -92,8 +98,6 @@ static int twBackgroundColorChoice = 1;
 static NSString *twBackgroundColorCustom = @"#ffffff";
 
 static bool twIsRainbowEnabled = NO;
-static int twRainbowDurationChoice = 1;
-static CGFloat twRainbowDuration = 1;
 static CGFloat twRainbowDelay = 0;
 
 static bool twIsRotationEnabled = NO;
@@ -185,8 +189,6 @@ static void loadPrefs() {
         twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] description] : twBackgroundColorCustom);
 
         twIsRainbowEnabled		= ([prefs objectForKey:@"pfIsRainbowEnabled"] ? [[prefs objectForKey:@"pfIsRainbowEnabled"] boolValue] : twIsRainbowEnabled);
-        twRainbowDurationChoice	= ([prefs objectForKey:@"pfRainbowDurationChoice"] ? [[prefs objectForKey:@"pfRainbowDurationChoice"] intValue] : twRainbowDurationChoice);
-        twRainbowDuration		= ([prefs objectForKey:@"pfRainbowDuration"] ? [[prefs objectForKey:@"pfRainbowDuration"] floatValue] : twRainbowDuration);
         twRainbowDelay			= ([prefs objectForKey:@"pfRainbowDelay"] ? [[prefs objectForKey:@"pfRainbowDelay"] floatValue] : twRainbowDelay);
 
         twFontColorChoice		= ([prefs objectForKey:@"pfFontColorChoice"] ? [[prefs objectForKey:@"pfFontColorChoice"] intValue] : twFontColorChoice);
@@ -280,12 +282,16 @@ static void performBlinkAnimated(UIView *currentView, CGFloat duration) {
 
 }
 
-static void performRainbowAnimated(UIView *currentView, CGFloat duration, CGFloat delay) {
+static void performRainbowAnimated(UIView *currentView, CGFloat delay) {
 
-    [UIView animateWithDuration:duration delay:delay options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
-        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];;
+    [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
+        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
     } completion:^(BOOL finished) {
-        performRainbowAnimated(currentView, duration, delay);
+        double delayInSeconds = delay;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            performRainbowAnimated(currentView, delay);
+        });
     }];
 
 }
@@ -377,7 +383,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
             varFontColor = @"#000000";
             break;
     }
-    [twTextLabel setTextColor: [UIColor colorWithHexString: varFontColor]];
+    [twTextLabel setTextColor: [UIColor colorFromHex: varFontColor]];
 
     
 	if(twIsBackgroundEnabled) {
@@ -405,7 +411,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varBackgroundColor = @"#FFFFFF";
     			break;
     	}
-        [twTextLabel setBackgroundColor: [UIColor colorWithHexString: varBackgroundColor]];
+        [twTextLabel setBackgroundColor: [UIColor colorFromHex: varBackgroundColor]];
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
     }
@@ -413,31 +419,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	[currentView addSubview:twTextLabel];
 
     
-    CGFloat varRainbowDelay, varRainbowDuration = 0;
+    CGFloat varRainbowDelay = 0;
     if(twIsRainbowEnabled) {
-        switch (twRainbowDurationChoice) {
-    		case 1:
-                varRainbowDuration = 1;
-    			break;
-    		case 2:
-                varRainbowDuration = 3;
-    			break;
-            case 3:
-                varRainbowDuration = 0.2;
-    			break;
-    		case -999:
-                if(twRainbowDuration != twRainbowDuration){
-                    varRainbowDuration = 1;
-                    showAlertChangeInSettings(@"Your custom 'rainbow duration' value is invalid!");
-                } else {
-                    varRainbowDuration = twRainbowDuration;
-                }
-    			break;
-    		default:
-    			NSLog(@"AlwaysRemindMe ERROR: switch -> twRainbowDurationChoice is default");
-                varRainbowDuration = 1;
-    			break;
-    	}
     	
         if(twRainbowDelay != twRainbowDelay){
             varRainbowDelay = 1;
@@ -445,7 +428,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         } else {
             varRainbowDelay = twRainbowDelay;
         }
-        performRainbowAnimated(twTextLabel, varRainbowDuration, varRainbowDelay);
+        performRainbowAnimated(twTextLabel, varRainbowDelay);
     }
 
     
@@ -618,6 +601,44 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include <substrate.h>
 #if defined(__clang__)
 #if __has_feature(objc_arc)
@@ -638,48 +659,10 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SpringBoard; @class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
-static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$test$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, NSTimer *); static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
+@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
+static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
 
-#line 619 "Tweak.xm"
-
-
-    static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id arg1) {
-        NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
-        _logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$(self, _cmd, arg1);
-        activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-        
-        
-        
-        
-    }
-
-    
-    static void _logos_method$_ungrouped$SpringBoard$test$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, NSTimer * timer) {
-        NSLog(@"AlwaysRemindMe LOG: 'test' called form activeTimer: %@", activeTimer);
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-    }
-
-
-
-
-
+#line 640 "Tweak.xm"
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -735,7 +718,7 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_b76e75d7(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_340e210b(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
         loadPrefs();
 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
@@ -743,5 +726,5 @@ static __attribute__((constructor)) void _logosLocalCtor_b76e75d7(int __unused a
 	}
 }
 static __attribute__((constructor)) void _logosLocalInit() {
-{Class _logos_class$_ungrouped$SpringBoard = objc_getClass("SpringBoard"); MSHookMessageEx(_logos_class$_ungrouped$SpringBoard, @selector(applicationDidFinishLaunching:), (IMP)&_logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$, (IMP*)&_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$);{ char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; memcpy(_typeEncoding + i, @encode(NSTimer *), strlen(@encode(NSTimer *))); i += strlen(@encode(NSTimer *)); _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SpringBoard, @selector(test:), (IMP)&_logos_method$_ungrouped$SpringBoard$test$, _typeEncoding); }Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
-#line 719 "Tweak.xm"
+{Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
+#line 702 "Tweak.xm"

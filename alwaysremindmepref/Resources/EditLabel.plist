@@ -365,6 +365,8 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Background</string>
+			<key>footerText</key>
+			<string>Smaller 'delay' value means faster animation. Value is in seconds.</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -422,16 +424,6 @@
 			<key>label</key>
 			<string>Custom 'hex' value:</string>
 		</dict>
-		<!-- BackgroundColor end -->
-		<!-- rainbow Start -->
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Background Rainbow Animation</string>
-			<key>footerText</key>
-			<string>Smaller 'duration' value means faster animation.</string>
-		</dict>
 		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
@@ -452,7 +444,7 @@
 			<key>cell</key>
 			<string>PSEditTextCell</string>
 			<key>placeholder</key>
-			<string>seconds between colors</string>
+			<string>in seconds</string>
 			<key>default</key>
 			<string>1</string>
 			<key>defaults</key>
@@ -462,55 +454,25 @@
 			<key>label</key>
 			<string>Custom 'delay' value:</string>
 		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
-			<string>PSSegmentCell</string>
-			<key>default</key>
-			<string>Default</string>
-			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>key</key>
-			<string>pfRainbowDurationChoice</string>
-			<key>validValues</key>
-			<array>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>-999</integer>
-			</array>
-			<key>validTitles</key>
-			<array>
-				<string>Default</string>
-				<string>Slow</string>
-				<string>Fast</string>
-				<string>Custom</string>
-			</array>
-		</dict>
-		<dict>
-			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
-			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>Default: 1</string>
-			<key>default</key>
-			<string></string>
-			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
-			<key>key</key>
-			<string>pfRainbowDuration</string>
-			<key>label</key>
-			<string>Custom 'duration' value:</string>
-		</dict>
-		<!-- rainbow end -->
+		<!-- BackgroundColor end -->
 		<!-- rotation Start -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>rotation Animation</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/Rotate</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -593,6 +555,18 @@
 			<string>Shake Animation</string>
 			<key>footerText</key>
 			<string>Smaller 'duration' value means faster animation.</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/ShakeHorziontal</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -691,6 +665,18 @@
 			<string>blinking Animation</string>
 		</dict>
 		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/Blinking</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
+		</dict>
+		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
@@ -753,6 +739,18 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Pulse Animation</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/Pulsing</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
 		</dict>
 		<dict>
 			<key>PostNotification</key>

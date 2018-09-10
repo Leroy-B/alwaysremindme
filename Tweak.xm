@@ -22,19 +22,25 @@ features:
 
 @interface UIColor(Hexadecimal)
 
-+ (UIColor *)colorWithHexString:(NSString *)hexString;
++ (UIColor *)colorFromHex:(NSString *)hexString;
 
 @end
 
 @implementation UIColor(Hexadecimal)
 
-+ (UIColor *)colorWithHexString:(NSString *)hexString {
++ (UIColor *)colorFromHex:(NSString *)hexString {
     unsigned rgbValue = 0;
-    NSScanner *scanner = [NSScanner scannerWithString:hexString];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
-
-    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+    if ([hexString hasPrefix:@"#"]) {
+		hexString = [hexString substringFromIndex:1];
+	}
+    if (hexString) {
+	    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+	    [scanner setScanLocation:0]; // bypass '#' character
+	    [scanner scanHexInt:&rgbValue];
+	    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+    } else {
+		return [UIColor grayColor];
+	}
 }
 
 @end
@@ -71,7 +77,7 @@ static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
-static PCSimpleTimer *activeTimer;
+//static PCSimpleTimer *activeTimer;
 
 
 static int twFramePosChoice = 1;
@@ -91,8 +97,6 @@ static int twBackgroundColorChoice = 1;
 static NSString *twBackgroundColorCustom = @"#ffffff";
 
 static bool twIsRainbowEnabled = NO;
-static int twRainbowDurationChoice = 1;
-static CGFloat twRainbowDuration = 1;
 static CGFloat twRainbowDelay = 0;
 
 static bool twIsRotationEnabled = NO;
@@ -184,8 +188,6 @@ static void loadPrefs() {
         twBackgroundColorCustom	= ([prefs objectForKey:@"pfBackgroundColorCustom"] ? [[prefs objectForKey:@"pfBackgroundColorCustom"] description] : twBackgroundColorCustom);
 
         twIsRainbowEnabled		= ([prefs objectForKey:@"pfIsRainbowEnabled"] ? [[prefs objectForKey:@"pfIsRainbowEnabled"] boolValue] : twIsRainbowEnabled);
-        twRainbowDurationChoice	= ([prefs objectForKey:@"pfRainbowDurationChoice"] ? [[prefs objectForKey:@"pfRainbowDurationChoice"] intValue] : twRainbowDurationChoice);
-        twRainbowDuration		= ([prefs objectForKey:@"pfRainbowDuration"] ? [[prefs objectForKey:@"pfRainbowDuration"] floatValue] : twRainbowDuration);
         twRainbowDelay			= ([prefs objectForKey:@"pfRainbowDelay"] ? [[prefs objectForKey:@"pfRainbowDelay"] floatValue] : twRainbowDelay);
 
         twFontColorChoice		= ([prefs objectForKey:@"pfFontColorChoice"] ? [[prefs objectForKey:@"pfFontColorChoice"] intValue] : twFontColorChoice);
@@ -279,12 +281,16 @@ static void performBlinkAnimated(UIView *currentView, CGFloat duration) {
 
 }
 
-static void performRainbowAnimated(UIView *currentView, CGFloat duration, CGFloat delay) {
+static void performRainbowAnimated(UIView *currentView, CGFloat delay) {
 
-    [UIView animateWithDuration:duration delay:delay options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
-        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];;
+    [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
+        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
     } completion:^(BOOL finished) {
-        performRainbowAnimated(currentView, duration, delay);
+        double delayInSeconds = delay;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            performRainbowAnimated(currentView, delay);
+        });
     }];
 
 }// shake rainbow end
@@ -376,7 +382,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
             varFontColor = @"#000000";
             break;
     }
-    [twTextLabel setTextColor: [UIColor colorWithHexString: varFontColor]];
+    [twTextLabel setTextColor: [UIColor colorFromHex: varFontColor]];
 
     //backgroundColor
 	if(twIsBackgroundEnabled) {
@@ -404,7 +410,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varBackgroundColor = @"#FFFFFF";
     			break;
     	}
-        [twTextLabel setBackgroundColor: [UIColor colorWithHexString: varBackgroundColor]];
+        [twTextLabel setBackgroundColor: [UIColor colorFromHex: varBackgroundColor]];
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
     }
@@ -412,31 +418,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	[currentView addSubview:twTextLabel];
 
     //rainbow
-    CGFloat varRainbowDelay, varRainbowDuration = 0;
+    CGFloat varRainbowDelay = 0;
     if(twIsRainbowEnabled) {
-        switch (twRainbowDurationChoice) {
-    		case 1://default
-                varRainbowDuration = 1;
-    			break;
-    		case 2://slow
-                varRainbowDuration = 3;
-    			break;
-            case 3://fast
-                varRainbowDuration = 0.2;
-    			break;
-    		case -999:// custom
-                if(twRainbowDuration != twRainbowDuration){
-                    varRainbowDuration = 1;
-                    showAlertChangeInSettings(@"Your custom 'rainbow duration' value is invalid!");
-                } else {
-                    varRainbowDuration = twRainbowDuration;
-                }
-    			break;
-    		default:
-    			NSLog(@"AlwaysRemindMe ERROR: switch -> twRainbowDurationChoice is default");
-                varRainbowDuration = 1;
-    			break;
-    	}
     	//switch twRainbowDurationChoice end
         if(twRainbowDelay != twRainbowDelay){
             varRainbowDelay = 1;
@@ -444,7 +427,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         } else {
             varRainbowDelay = twRainbowDelay;
         }
-        performRainbowAnimated(twTextLabel, varRainbowDuration, varRainbowDelay);
+        performRainbowAnimated(twTextLabel, varRainbowDelay);
     }
 
     //rotation
@@ -616,41 +599,41 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 // ############################# DRAW LABEL ### END ####################################
 
-%hook SpringBoard
-
-    -(void)applicationDidFinishLaunching:(id)arg1 {
-        NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
-        %orig;
-        activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-        //activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-        // [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
-        //     activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-        // }];
-    }
-
-    %new
-    -(void)test:(NSTimer *)timer {
-        NSLog(@"AlwaysRemindMe LOG: 'test' called form activeTimer: %@", activeTimer);
-
-        // NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-        //
-        // time1 = @"10:00";
-        // date1 = [df dateFromString:time1];
-        //
-        //
-        //
-        // [df setDateFormat:@"HH:mm"];
-        //
-        // NSDate *date1 = [df dateFromString:time1];
-        // NSDate *date2 = [df dateFromString:time2];
-        // NSDate *now = [NSDate date];
-        // if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
-        //
-        // }
-
-    }
-
-%end
+// %hook SpringBoard
+//
+//     -(void)applicationDidFinishLaunching:(id)arg1 {
+//         NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
+//         %orig;
+//         //activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+//         //activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+//         // [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
+//         //     activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+//         // }];
+//     }
+//
+//     %new
+//     -(void)test:(NSTimer *)timer {
+//         NSLog(@"AlwaysRemindMe LOG: 'test' called form activeTimer: %@", activeTimer);
+//
+//         // NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
+//         //
+//         // time1 = @"10:00";
+//         // date1 = [df dateFromString:time1];
+//         //
+//         //
+//         //
+//         // [df setDateFormat:@"HH:mm"];
+//         //
+//         // NSDate *date1 = [df dateFromString:time1];
+//         // NSDate *date2 = [df dateFromString:time2];
+//         // NSDate *now = [NSDate date];
+//         // if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
+//         //
+//         // }
+//
+//     }
+//
+// %end
 
 
 //setting text on LS
