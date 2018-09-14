@@ -621,8 +621,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 //     -(void)applicationDidFinishLaunching:(id)arg1 {
 //         NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
 //         %orig;
-//         //activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-//         //activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
+//         activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.AlwaysRemindMePref" target:self selector:@selector(test) userInfo:nil];
+//         // activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
 //         // [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
 //         //     activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
 //         // }];
