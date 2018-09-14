@@ -78,7 +78,7 @@ static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
-//static PCSimpleTimer *activeTimer;
+static PCSimpleTimer *activeTimer = nil;
 
 
 static int twFramePosChoice = 1;
@@ -124,7 +124,7 @@ static CGFloat twPulseSize = 2;
 
 static bool twShouldDelete = NO;
 
-
+void TimerExampleLoadTimer();
 
 static void dealloc(UIView *currentView) {
     [currentView release], currentView = nil;
@@ -616,41 +616,24 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 // ############################# DRAW LABEL ### END ####################################
 
-// %hook SpringBoard
-//
-//     -(void)applicationDidFinishLaunching:(id)arg1 {
-//         NSLog(@"AlwaysRemindMe LOG: applicationDidFinishLaunching");
-//         %orig;
-//         activeTimer = [PCSimpleTimer initWithTimeInterval:20 serviceIdentifier:@"com.leroy.AlwaysRemindMePref" target:self selector:@selector(test) userInfo:nil];
-//         // activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-//         // [[NSOperationQueue mainQueue] addOperationWithBlock: ^ {
-//         //     activeTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:20 serviceIdentifier:@"com.leroy.alwaysremindme" target:self selector:@selector(test) userInfo:nil];
-//         // }];
-//     }
-//
-//     %new
-//     -(void)test:(NSTimer *)timer {
-//         NSLog(@"AlwaysRemindMe LOG: 'test' called form activeTimer: %@", activeTimer);
-//
-//         // NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-//         //
-//         // time1 = @"10:00";
-//         // date1 = [df dateFromString:time1];
-//         //
-//         //
-//         //
-//         // [df setDateFormat:@"HH:mm"];
-//         //
-//         // NSDate *date1 = [df dateFromString:time1];
-//         // NSDate *date2 = [df dateFromString:time2];
-//         // NSDate *now = [NSDate date];
-//         // if(([now compare:date1] == NSOrderedDescending) && ([now compare:date2] == NSOrderedAscending)) {
-//         //
-//         // }
-//
-//     }
-//
-// %end
+%hook SpringBoard
+-(void)applicationDidFinishLaunching:(id)application
+{
+	%orig;
+
+	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
+	TimerExampleLoadTimer();
+}
+%end
+
+%hook SBClockDataProvider
+
+%new
+- (void)TimerExampleFired
+{
+	NSLog(@"[TimerExample] TimerExampleFired");
+}
+%end //hook SBClockDataProvider
 
 
 //setting text on LS
@@ -703,6 +686,44 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 %end
 
+void TimerExampleLoadTimer() {
+	NSDictionary *userInfoDictionary = nil;
+
+	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
+
+	if (!userInfoDictionary) {
+		return;
+	}
+	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
+
+	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
+		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
+		return;
+	}
+
+	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+
+	activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"com.leroy.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:data];
+
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+	[formatter setTimeZone:[NSTimeZone defaultTimeZone]];
+	NSLog(@"AlwaysRemindMe LOG: Added Timer %@", [formatter stringFromDate:fireDate]);
+
+}
+
+// static void TimerExampleNotified(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+//
+// 	NSLog(@"AlwaysRemindMe LOG: received CFNotificationCenterPostNotification");
+//
+// 	// kill old timer
+// 	if (activeTimer) {
+// 		[activeTimer invalidate];
+// 		activeTimer = nil;
+// 	}
+//
+// 	TimerExampleLoadTimer();
+// }
 
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
@@ -711,7 +732,50 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 
 %ctor {
 	@autoreleasepool {
-	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
         loadPrefs();
+	    //CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+        //CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, TimerExampleNotified, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+        // loadPrefs();
 	}
 }
+
+// %ctor {
+//     loadPrefs();
+//     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+//
+// }
+
+// %ctor {
+//     @autoreleasepool {
+//         loadPrefs();
+//         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+//                                     NULL,
+//                                     (CFNotificationCallback)preferenceschanged,
+//                                     CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"),
+//                                     NULL,
+//                                     CFNotificationSuspensionBehaviorDeliverImmediately);
+//         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+//                                     NULL,
+//                                     (CFNotificationCallback)TimerExampleNotified,
+//                                     CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"),
+//                                     NULL,
+//                                     CFNotificationSuspensionBehaviorDeliverImmediately);
+//
+//     }
+//
+//
+// }
+
+//
+// %ctor {
+// 	@autoreleasepool {
+//         loadPrefs();
+// 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+//         loadPrefs();
+// 	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+// 		NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'CFNotificationCenterAddObserver'");
+//         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, TimerExampleNotified, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+//         loadPrefs();
+// 	}
+// }

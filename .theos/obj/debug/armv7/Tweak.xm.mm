@@ -79,7 +79,7 @@ static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
-
+static PCSimpleTimer *activeTimer = nil;
 
 
 static int twFramePosChoice = 1;
@@ -125,7 +125,7 @@ static CGFloat twPulseSize = 2;
 
 static bool twShouldDelete = NO;
 
-
+void TimerExampleLoadTimer();
 
 static void dealloc(UIView *currentView) {
     [currentView release], currentView = nil;
@@ -618,44 +618,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #include <substrate.h>
 #if defined(__clang__)
 #if __has_feature(objc_arc)
@@ -676,10 +638,31 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
-static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
+@class PCSimpleTimer; @class SpringBoard; @class SBClockDataProvider; @class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
+static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGOS_SELF_TYPE_NORMAL SBClockDataProvider* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
+static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$SBClockDataProvider(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("SBClockDataProvider"); } return _klass; }static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$PCSimpleTimer(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("PCSimpleTimer"); } return _klass; }
+#line 619 "Tweak.xm"
 
-#line 657 "Tweak.xm"
+
+static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id application) {
+	_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$(self, _cmd, application);
+
+	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
+	TimerExampleLoadTimer();
+}
+
+
+
+
+
+
+static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGOS_SELF_TYPE_NORMAL SBClockDataProvider* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+	NSLog(@"[TimerExample] TimerExampleFired");
+}
+ 
+
+
+
 
 
 	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
@@ -729,18 +712,99 @@ static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)
 
 
 
+void TimerExampleLoadTimer() {
+	NSDictionary *userInfoDictionary = nil;
+
+	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
+
+	if (!userInfoDictionary) {
+		return;
+	}
+	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
+
+	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
+		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
+		return;
+	}
+
+	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+
+	activeTimer = [[_logos_static_class_lookup$PCSimpleTimer() alloc] initWithFireDate:fireDate serviceIdentifier:@"com.leroy.AlwaysRemindMePref" target:[_logos_static_class_lookup$SBClockDataProvider() self] selector:@selector(TimerExampleFired) userInfo:data];
+
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+	[formatter setTimeZone:[NSTimeZone defaultTimeZone]];
+	NSLog(@"AlwaysRemindMe LOG: Added Timer %@", [formatter stringFromDate:fireDate]);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_b76e75d7(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_3c9af3fb(int __unused argc, char __unused **argv, char __unused **envp) {
 	@autoreleasepool {
-	    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
         loadPrefs();
+	    
+        
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+        
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static __attribute__((constructor)) void _logosLocalInit() {
-{Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
-#line 718 "Tweak.xm"
+{Class _logos_class$_ungrouped$SpringBoard = objc_getClass("SpringBoard"); MSHookMessageEx(_logos_class$_ungrouped$SpringBoard, @selector(applicationDidFinishLaunching:), (IMP)&_logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$, (IMP*)&_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$);Class _logos_class$_ungrouped$SBClockDataProvider = objc_getClass("SBClockDataProvider"); { char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBClockDataProvider, @selector(TimerExampleFired), (IMP)&_logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired, _typeEncoding); }Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
+#line 782 "Tweak.xm"

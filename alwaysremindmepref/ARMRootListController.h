@@ -6,5 +6,5 @@
 @interface ARMLabelsListController : PSListController
 @end
 
-@interface ARMEditLabelListController : ARMRootListController
+@interface ARMEditLabelListController : PSListController
 @end

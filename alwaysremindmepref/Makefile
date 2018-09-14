@@ -1,12 +1,10 @@
 THEOS_DEVICE_IP = 192.168.1.63
 #THEOS_DEVICE_IP = 192.168.1.105
-TARGET = iphone:11.2:11.0
+TARGET = iphone:11.2:7.0
 # TARGET = simulator:clang::11.0
 
-ARCHS = arm64
+ARCHS = arm64 armv7
 # ARCHS = x86_64
-
-DEBUG = 0
 
 include $(THEOS)/makefiles/common.mk
 

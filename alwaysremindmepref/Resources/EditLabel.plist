@@ -80,6 +80,8 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Choose a time</string>
+			<key>footerText</key>
+			<string>Choose the time you would like to show your reminder. Disabling this option will always show the 'AlwaysRemindMe' label.</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -110,14 +112,10 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Choose the time you would like to show your reminder. Disabling this option will always show the 'AlwaysRemindMe' label.</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Choose a duration</string>
+			<key>footerText</key>
+			<string>The above values are in minutes and define the duration of the on-screen time for the 'AlwaysRemindMe' label.</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -150,12 +148,6 @@
 			<string>5</string>
 		</dict>
 		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>The above values are in minutes and define the duration of the on-screen time for the 'AlwaysRemindMe' label.</string>
-		</dict>
-		<dict>
 			<key>PostNotification</key>
 			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
 			<key>cell</key>
@@ -176,6 +168,8 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Choose a Position</string>
 			<key>footerText</key>
 			<string>Choose the position of the 'AlwaysRemindMe' label. For custom values, select 'Custom' above and use the input fields below.</string>
 		</dict>
@@ -246,7 +240,7 @@
 			<string>Custom 'y' value:</string>
 		</dict>
 		<!-- Pos end -->
-		<!-- Font start -->
+		<!-- start -->
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
@@ -269,7 +263,7 @@
 			<key>key</key>
 			<string>pfFontCustom</string>
 			<key>label</key>
-			<string>Custom 'Font' value:</string>
+			<string>Custom 'font' value:</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -338,7 +332,7 @@
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
-			<string>white</string>
+			<integer>2</integer>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -351,12 +345,12 @@
 			</array>
 			<key>validTitles</key>
 			<array>
-				<string>black</string>
-				<string>white</string>
+				<string>Black</string>
+				<string>White</string>
 				<string>Custom</string>
 			</array>
 			<key>alignment</key>
-			<string>4</string>
+			<string>3</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
@@ -404,7 +398,7 @@
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
-			<string>white</string>
+			<integer>1</integer>
 			<key>defaults</key>
 			<string>com.leroy.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -417,12 +411,12 @@
 			</array>
 			<key>validTitles</key>
 			<array>
-				<string>black</string>
-				<string>white</string>
+				<string>Black</string>
+				<string>White</string>
 				<string>Custom</string>
 			</array>
 			<key>alignment</key>
-			<string>4</string>
+			<string>3</string>
 		</dict>
 		<dict>
 			<key>PostNotification</key>
