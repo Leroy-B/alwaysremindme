@@ -112,8 +112,6 @@
 			<string>Choose the time you would like to show your reminder. Disabling this option will always show the 'AlwaysRemindMe' label.</string>
 		</dict>
 		<dict>
-			<key>PostNotification</key>
-			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
@@ -124,6 +122,8 @@
 			<string>pfIsTimerEnabled</string>
 			<key>label</key>
 			<string>Enable at a time</string>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>

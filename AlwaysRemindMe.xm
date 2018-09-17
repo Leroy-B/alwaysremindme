@@ -160,8 +160,8 @@ static void loadPrefs() {
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
     NSLog(@"AlwaysRemindMe LOG: before prefs: %@", prefs);
     if(prefs){
-		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : NO);
-		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : 0);
+		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : twIsEnabled);
+		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
 
         twIsTimerEnabled		= ([prefs objectForKey:@"pfIsTimerEnabled"] ? [[prefs objectForKey:@"pfIsTimerEnabled"] boolValue] : twIsTimerEnabled);
         twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
@@ -696,7 +696,7 @@ void TimerExampleLoadTimer() {
 	if (!userInfoDictionary) {
 		return;
 	}
-	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
+	NSDate *fireDate = [userInfoDictionary objectForKey:@"pfTime24"];
 
 	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
@@ -740,6 +740,14 @@ static void preferencesChanged(CFNotificationCenterRef center, void *observer, C
 			NULL,
 			(CFNotificationCallback)preferencesChanged,
 			CFSTR("ch.leroyb.AlwaysRemindMePref.preferencesChanged"),
+			NULL,
+			CFNotificationSuspensionBehaviorDeliverImmediately
+		);
+        // listen for changes to timer
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+			NULL,
+			(CFNotificationCallback)TimerExampleNotified,
+			CFSTR("ch.leroyb.AlwaysRemindMePref.timerChanged"),
 			NULL,
 			CFNotificationSuspensionBehaviorDeliverImmediately
 		);

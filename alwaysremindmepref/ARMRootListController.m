@@ -36,25 +36,32 @@
 	return _specifiers;
 }
 
+- (void)_returnKeyPressed:(NSNotificationCenter *)notification {
+    [self.view endEditing:YES];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ch.leroyb.AlwaysRemindMePref.preferencesChanged" object:self];
+}
+
 -(void)viewDidLoad {
 
-	UIImage *dismissKB = [[UIImage alloc] initWithContentsOfFile:@"/Library/PreferenceBundles/AlwaysRemindMePref.bundle/dismissKB.png"];
-	dismissKB = [dismissKB imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-	UIBarButtonItem *dismissButton = [[UIBarButtonItem alloc]
-						   initWithImage:dismissKB
-						   style:UIBarButtonItemStylePlain
+	UIBarButtonItem *shareButton = [[UIBarButtonItem alloc]
+						   initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                            target:self
-                           action:@selector(dismissButtonAction)];
+                           action:@selector(share:)];
 
-	self.navigationItem.rightBarButtonItem = dismissButton;
+	self.navigationItem.rightBarButtonItem = shareButton;
 
-	[dismissButton release];
+	[shareButton release];
 	[super viewDidLoad];
 
 }
 
--(IBAction)dismissButtonAction {
-	[self.view endEditing:YES];
+-(IBAction)share:(UIBarButtonItem *)sender {
+	NSString *textToShare = @"Click the link below to add LeroyB's repository to Cydia!";
+    NSURL *myWebsite = [NSURL URLWithString:@"cydia://url/https://cydia.saurik.com/api/share#?source=https://leroy-b.github.io/home/repo/"];
+    NSArray *activityItems = @[textToShare, myWebsite];
+    UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    activityViewControntroller.excludedActivityTypes = @[];
+    [self presentViewController:activityViewControntroller animated:true completion:nil];
 }
 
 -(void)showDatePicker {
@@ -82,7 +89,7 @@
 															  [prefs writeToFile:PLIST_PATH atomically:YES];
 															  [prefs release];
 															  [outputFormatter release];
-															  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("ch.leroyb.AlwaysRemindMePref/preferencesChanged"), nil, nil, TRUE);
+															  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("ch.leroyb.AlwaysRemindMePref.timerChanged"), nil, nil, TRUE);
 
 	                                                      }];
 
