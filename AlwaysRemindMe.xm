@@ -179,16 +179,16 @@ static void loadPrefs() {
         }
         twTextLabelVar = result;
 
-        NSMutableArray *array1 = [NSMutableArray array];
-        for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel1"] description] length]; i++) {
-            [array1 addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel1"] description] characterAtIndex:i]]];
-        }
-
-        NSMutableString *result1 = [[NSMutableString alloc] init];
-        for (NSObject *obj1 in array1){
-            [result1 appendString:[obj1 description]];
-        }
-        twTextLabelVar1 = result1;
+        // NSMutableArray *array1 = [NSMutableArray array];
+        // for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel1"] description] length]; i++) {
+        //     [array1 addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel1"] description] characterAtIndex:i]]];
+        // }
+        //
+        // NSMutableString *result1 = [[NSMutableString alloc] init];
+        // for (NSObject *obj1 in array1){
+        //     [result1 appendString:[obj1 description]];
+        // }
+        // twTextLabelVar1 = result1;
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
