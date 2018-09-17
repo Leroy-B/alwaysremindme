@@ -6,11 +6,33 @@
 
 @implementation ARMRootListController
 
-- (NSArray *)specifiers {
-	if (!_specifiers) {
-		_specifiers = [[self loadSpecifiersFromPlistName:@"Root" target:self] retain];
+- (id)readPreferenceValue:(PSSpecifier *)specifier {
+	NSDictionary *s = [NSDictionary dictionaryWithContentsOfFile:PLIST_PATH];
+	if (!s[specifier.properties[@"key"]]) {
+		return specifier.properties[@"default"];
 	}
+	return s[specifier.properties[@"key"]];
+}
 
+- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
+	[defaults addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH]];
+	[defaults setObject:value forKey:specifier.properties[@"key"]];
+	[defaults writeToFile:PLIST_PATH atomically:YES];
+	CFStringRef toPost = (CFStringRef)specifier.properties[@"PostNotification"];
+	if (toPost) {
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
+                                         toPost,
+                                         NULL,
+                                         NULL,
+                                         YES);
+  }
+}
+
+- (id)specifiers {
+	if (!_specifiers) {
+		_specifiers = [[self loadSpecifiersFromPlistName:@"Root" target: self] retain];
+	}
 	return _specifiers;
 }
 

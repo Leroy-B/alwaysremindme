@@ -46,17 +46,17 @@ features:
 
 @end
 
-// @interface PCSimpleTimer : NSObject
-// @property BOOL disableSystemWaking;
-// - (BOOL)disableSystemWaking;
-// - (id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
-// - (id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
-// - (void)invalidate;
-// - (BOOL)isValid;
-// - (void)scheduleInRunLoop:(id)arg1;
-// - (void)setDisableSystemWaking:(BOOL)arg1;
-// - (id)userInfo;
-// @end
+@interface PCSimpleTimer : NSObject
+@property BOOL disableSystemWaking;
+- (BOOL)disableSystemWaking;
+- (id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
+- (id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
+- (void)invalidate;
+- (BOOL)isValid;
+- (void)scheduleInRunLoop:(id)arg1;
+- (void)setDisableSystemWaking:(BOOL)arg1;
+- (id)userInfo;
+@end
 
 
 #define PLIST_PATH @"/var/mobile/Library/Preferences/ch.leroyb.AlwaysRemindMePref.plist"
@@ -69,7 +69,7 @@ static bool twIsEnabled = NO;
 //static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
 
-static NSString *twTextLabelVar = @"Thank you for downloading :)";
+static NSString *twTextLabelVar = @"";
 static NSString *twTextLabelVar1 = @"";
 
 // NSMutableArray *twTextLabelVar = [[NSMutableArray alloc] init];
@@ -79,7 +79,7 @@ static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
-// static PCSimpleTimer *activeTimer = nil;
+static PCSimpleTimer *activeTimer = nil;
 
 
 static int twFramePosChoice = 1;
@@ -158,9 +158,10 @@ static void showAlertChangeInSettings(NSString *msg) {
 static void loadPrefs() {
 
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
+    NSLog(@"AlwaysRemindMe LOG: before prefs: %@", prefs);
     if(prefs){
-		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : twIsEnabled);
-		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : twWhichScreenChoice);
+		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : NO);
+		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [[prefs objectForKey:@"pfWhichScreenChoice"] intValue] : 0);
 
         twIsTimerEnabled		= ([prefs objectForKey:@"pfIsTimerEnabled"] ? [[prefs objectForKey:@"pfIsTimerEnabled"] boolValue] : twIsTimerEnabled);
         twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
@@ -179,16 +180,16 @@ static void loadPrefs() {
         }
         twTextLabelVar = result;
 
-        // NSMutableArray *array1 = [NSMutableArray array];
-        // for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel1"] description] length]; i++) {
-        //     [array1 addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel1"] description] characterAtIndex:i]]];
-        // }
-        //
-        // NSMutableString *result1 = [[NSMutableString alloc] init];
-        // for (NSObject *obj1 in array1){
-        //     [result1 appendString:[obj1 description]];
-        // }
-        // twTextLabelVar1 = result1;
+        NSMutableArray *array1 = [NSMutableArray array];
+        for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel1"] description] length]; i++) {
+            [array1 addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel1"] description] characterAtIndex:i]]];
+        }
+
+        NSMutableString *result1 = [[NSMutableString alloc] init];
+        for (NSObject *obj1 in array1){
+            [result1 appendString:[obj1 description]];
+        }
+        twTextLabelVar1 = result1;
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [[prefs objectForKey:@"pfFramePosChoice"] intValue] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [[prefs objectForKey:@"pfFrameX"] floatValue] : twFrameX);
@@ -230,7 +231,7 @@ static void loadPrefs() {
         twShakeXAmount			= ([prefs objectForKey:@"pfShakeXAmount"] ? [[prefs objectForKey:@"pfShakeXAmount"] floatValue] : twShakeXAmount);
         twShakeYAmount 			= ([prefs objectForKey:@"pfShakeYAmount"] ? [[prefs objectForKey:@"pfShakeYAmount"] floatValue] : twShakeYAmount);
     }
-	NSLog(@"AlwaysRemindMe LOG: prefs: %@", prefs);
+	NSLog(@"AlwaysRemindMe LOG: after prefs: %@", prefs);
     [prefs release];
 }
 
@@ -617,24 +618,24 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 // ############################# DRAW LABEL ### END ####################################
 
-// %hook SpringBoard
-// -(void)applicationDidFinishLaunching:(id)application
-// {
-// 	%orig;
-//
-// 	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
-// 	TimerExampleLoadTimer();
-// }
-// %end
-//
-// %hook SBClockDataProvider
-//
-// %new
-// - (void)TimerExampleFired
-// {
-// 	NSLog(@"[TimerExample] TimerExampleFired");
-// }
-// %end //hook SBClockDataProvider
+%hook SpringBoard
+-(void)applicationDidFinishLaunching:(id)application
+{
+	%orig;
+
+	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
+	TimerExampleLoadTimer();
+}
+%end
+
+%hook SBClockDataProvider
+
+%new
+- (void)TimerExampleFired
+{
+	NSLog(@"[TimerExample] TimerExampleFired");
+}
+%end //hook SBClockDataProvider
 
 
 //setting text on LS
@@ -687,48 +688,48 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 %end
 
-// void TimerExampleLoadTimer() {
-// 	NSDictionary *userInfoDictionary = nil;
-//
-// 	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
-//
-// 	if (!userInfoDictionary) {
-// 		return;
-// 	}
-// 	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
-//
-// 	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
-// 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
-// 		return;
-// 	}
-//
-// 	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-//
-// 	activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:data];
-//
-// 	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-// 	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
-// 	[formatter setTimeZone:[NSTimeZone defaultTimeZone]];
-// 	NSLog(@"AlwaysRemindMe LOG: Added Timer %@", [formatter stringFromDate:fireDate]);
-//
-// }
+void TimerExampleLoadTimer() {
+	NSDictionary *userInfoDictionary = nil;
 
-// static void TimerExampleNotified(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-//
-// 	NSLog(@"AlwaysRemindMe LOG: received CFNotificationCenterPostNotification");
-//
-// 	// kill old timer
-// 	if (activeTimer) {
-// 		[activeTimer invalidate];
-// 		activeTimer = nil;
-// 	}
-//
-// 	TimerExampleLoadTimer();
-// }
+	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
 
-static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+	if (!userInfoDictionary) {
+		return;
+	}
+	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
+
+	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
+		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
+		return;
+	}
+
+	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+
+	activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:data];
+
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+	[formatter setTimeZone:[NSTimeZone defaultTimeZone]];
+	NSLog(@"AlwaysRemindMe LOG: Added Timer %@", [formatter stringFromDate:fireDate]);
+
+}
+
+static void TimerExampleNotified(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+
+	NSLog(@"AlwaysRemindMe LOG: received CFNotificationCenterPostNotification");
+
+	// kill old timer
+	if (activeTimer) {
+		[activeTimer invalidate];
+		activeTimer = nil;
+	}
+
+	TimerExampleLoadTimer();
+}
+
+static void preferencesChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
-	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
+	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferencesChanged'");
 }
 
 %ctor {
@@ -737,8 +738,8 @@ static void preferenceschanged(CFNotificationCenterRef center, void *observer, C
 		// listen for changes to settings
 		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
 			NULL,
-			(CFNotificationCallback)preferenceschanged,
-			CFSTR("ch.leroyb.AlwaysRemindMePref/preferencesChanged"),
+			(CFNotificationCallback)preferencesChanged,
+			CFSTR("ch.leroyb.AlwaysRemindMePref.preferencesChanged"),
 			NULL,
 			CFNotificationSuspensionBehaviorDeliverImmediately
 		);
