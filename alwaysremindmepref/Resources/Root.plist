@@ -12,28 +12,885 @@
 		</dict>
 		<dict>
 			<key>PostNotification</key>
-			<string>com.leroy.AlwaysRemindMePref/preferenceschanged</string>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
 			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
 			<false/>
 			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
 			<string>pfIsTweakEnabled</string>
 			<key>label</key>
 			<string>Enable AlwaysRemindMe</string>
 		</dict>
-		<dict>
+		<!-- <dict>
 			<key>cell</key>
 			<string>PSLinkListCell</string>
 			<key>defaults</key>
-			<string>com.leroy.AlwaysRemindMePref</string>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>detail</key>
 			<string>ARMLabelsListController</string>
 			<key>label</key>
 			<string>List of labels</string>
+		</dict> -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Text lines</string>
+			<key>footerText</key>
+			<string>Choose the text and location of the AlwaysRemindMe text label.</string>
 		</dict>
+		<!-- custom text start -->
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel</string>
+			<key>label</key>
+			<string>First line 'text' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Your Reminder text here</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTextLabel1</string>
+			<key>label</key>
+			<string>Second line 'text' value:</string>
+		</dict>
+		<!-- custom text end -->
+		<!-- Locations start -->
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfWhichScreenChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Both</string>
+				<string>Homescreen</string>
+				<string>Lockscreen</string>
+			</array>
+			<key>alignment</key>
+			<string>3</string>
+		</dict>
+		<!-- Locations end -->
+		<!-- datePicker start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Choose a time</string>
+			<key>footerText</key>
+			<string>Choose the time you would like to show your reminder. Disabling this option will always show the 'AlwaysRemindMe' label.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsTimerEnabled</string>
+			<key>label</key>
+			<string>Enable at a time</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>key</key>
+			<string>pfTime24</string>
+			<key>label</key>
+			<string>Pick a time to be reminded at!</string>
+			<key>action</key>
+			<string>showDatePicker</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Choose a duration</string>
+			<key>footerText</key>
+			<string>The above values are in minutes and define the duration of the on-screen time for the 'AlwaysRemindMe' label.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTimerChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>5</string>
+				<string>15</string>
+				<string>30</string>
+				<string>60</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>5</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>12</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfTimerCustom</string>
+			<key>label</key>
+			<string>Custom 'timer' value:</string>
+		</dict>
+		<!-- datePicker end -->
+		<!-- Pos start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Choose a Position</string>
+			<key>footerText</key>
+			<string>Choose the position of the 'AlwaysRemindMe' label. For custom values, select 'Custom' above and use the input fields below.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Below StatusBar</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFramePosChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Below StatusBar</string>
+				<string>Above Dock</string>
+				<string>Center</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>5</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>The top left part of the screen is point: x = 0, y = 0</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>x</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFrameX</string>
+			<key>label</key>
+			<string>Custom 'x' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>y</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFrameY</string>
+			<key>label</key>
+			<string>Custom 'y' value:</string>
+		</dict>
+		<!-- Pos end -->
+		<!-- start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Font</string>
+			<key>footerText</key>
+			<string>This will take you to a Website, copy the name of your desired font and paste it above.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>TrebuchetMS</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFontCustom</string>
+			<key>label</key>
+			<string>Custom 'font' value:</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>View available fonts!</string>
+			<key>action</key>
+			<string>showFontSelection</string>
+		</dict>
+		<!-- Font size and Color start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Font size and color</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>14</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFontSize</string>
+			<key>validValues</key>
+			<array>
+				<integer>11</integer>
+				<integer>14</integer>
+				<integer>20</integer>
+				<integer>30</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>11</string>
+				<string>14</string>
+				<string>20</string>
+				<string>30</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>5</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>size</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFontSizeCustom</string>
+			<key>label</key>
+			<string>Custom font 'size' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<integer>2</integer>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFontColorChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Black</string>
+				<string>White</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>3</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>#FFFFFF</string>
+			<key>default</key>
+			<string>#</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfFontColorCustom</string>
+			<key>label</key>
+			<string>Custom 'hex' value:</string>
+		</dict>
+		<!-- Font size and Color end -->
+		<!-- BackgroundColor start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Background</string>
+			<key>footerText</key>
+			<string>Smaller 'delay' value means faster animation. Value is in seconds.</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsBackgroundEnabled</string>
+			<key>label</key>
+			<string>Show background</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<integer>1</integer>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfBackgroundColorChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Black</string>
+				<string>White</string>
+				<string>Custom</string>
+			</array>
+			<key>alignment</key>
+			<string>3</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>#FFFFFF</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfBackgroundColorCustom</string>
+			<key>label</key>
+			<string>Custom 'hex' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsRainbowEnabled</string>
+			<key>label</key>
+			<string>Enable rainbow background</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>in seconds</string>
+			<key>default</key>
+			<string>1</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfRainbowDelay</string>
+			<key>label</key>
+			<string>Custom 'delay' value:</string>
+		</dict>
+		<!-- BackgroundColor end -->
+		<!-- rotation Start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>rotation Animation</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/Rotate</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsRotationEnabled</string>
+			<key>label</key>
+			<string>Enable rotation</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 0</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfRotationDelay</string>
+			<key>label</key>
+			<string>Custom 'delay' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfRotationSpeedChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Slow</string>
+				<string>Fast</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 2</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfRotationSpeed</string>
+			<key>label</key>
+			<string>Custom 'speed' value:</string>
+		</dict>
+		<!-- rotation end -->
+		<!-- shaking Start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Shake Animation</string>
+			<key>footerText</key>
+			<string>Smaller 'duration' value means faster animation.</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/ShakeHorziontal</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsShakeEnabled</string>
+			<key>label</key>
+			<string>Enable shaking</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>horizontal</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeXAmount</string>
+			<key>label</key>
+			<string>Custom 'x' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>vertical</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeYAmount</string>
+			<key>label</key>
+			<string>Custom 'y' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeDurationChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Slow</string>
+				<string>Fast</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 2</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeDuration</string>
+			<key>label</key>
+			<string>Custom 'duration' value:</string>
+		</dict>
+		<!-- shaking end -->
+		<!-- Blinking Start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>blinking Animation</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/Blinking</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsBlinkEnabled</string>
+			<key>label</key>
+			<string>Enable blinking</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfBlinkSpeedChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Fast</string>
+				<string>Slow</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 0.5</string>
+			<key>default</key>
+			<string>0.5</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfBlinkSpeed</string>
+			<key>label</key>
+			<string>Custom blinking 'speed' value:</string>
+		</dict>
+		<!-- blinking end -->
+		<!-- pulse Start -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Pulse Animation</string>
+		</dict>
+		<dict>
+		 	<key>cell</key>
+		 	<string>PSStaticTextCell</string>
+		 	<key>cellClass</key>
+		 	<string>PFHeaderCell</string>
+		 	<key>background</key>
+		 	<string>#686868</string>
+		 	<key>image</key>
+		 	<string>Previews/Pulsing</string>
+		 	<key>height</key>
+		 	<integer>100</integer>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfIsPulseEnabled</string>
+			<key>label</key>
+			<string>Enable Pulsating</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfPulseSpeedChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Fast</string>
+				<string>Slow</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 1</string>
+			<key>default</key>
+			<string>1</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfPulseSpeed</string>
+			<key>label</key>
+			<string>Custom 'speed' value:</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSSegmentCell</string>
+			<key>default</key>
+			<string>Default</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfPulseSizeChoice</string>
+			<key>validValues</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>-999</integer>
+			</array>
+			<key>validTitles</key>
+			<array>
+				<string>Default</string>
+				<string>Half</string>
+				<string>Double</string>
+				<string>Custom</string>
+			</array>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref/preferencesChanged</string>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 2</string>
+			<key>default</key>
+			<string>2</string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfPulseSize</string>
+			<key>label</key>
+			<string>Custom 'size' value:</string>
+		</dict>
+		<!-- pulse end -->
 		<!-- actions start -->
 		<dict>
 			<key>cell</key>
@@ -128,6 +985,6 @@
 		<!-- infos end -->
 	</array>
 	<key>title</key>
-	<string>AlwaysRemindMe</string>
+	<string>AlwaysRemindMePref</string>
 </dict>
 </plist>

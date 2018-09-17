@@ -1,16 +1,16 @@
-#line 1 "Tweak.xm"
+/*
+TODO:
+    - combine all switch() into one func
+    - can copy pref panel text -> fix me
+    - combine all show func in Root Controller into one func
+    - share button iN corner top right or/and in info section -> sends link to add repo and show package -> current package
+*/
 
-
-
-
-
-
-
-
-
-
-
-
+/*
+features:
+    - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
+    - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
+*/
 
 @interface SpringBoard
 @end
@@ -36,7 +36,7 @@
 	}
     if (hexString) {
 	    NSScanner *scanner = [NSScanner scannerWithString:hexString];
-	    [scanner setScanLocation:0]; 
+	    [scanner setScanLocation:0]; // bypass '#' character
 	    [scanner scanHexInt:&rgbValue];
 	    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
     } else {
@@ -46,40 +46,40 @@
 
 @end
 
-@interface PCSimpleTimer : NSObject
-@property BOOL disableSystemWaking;
-- (BOOL)disableSystemWaking;
-- (id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
-- (id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
-- (void)invalidate;
-- (BOOL)isValid;
-- (void)scheduleInRunLoop:(id)arg1;
-- (void)setDisableSystemWaking:(BOOL)arg1;
-- (id)userInfo;
-@end
+// @interface PCSimpleTimer : NSObject
+// @property BOOL disableSystemWaking;
+// - (BOOL)disableSystemWaking;
+// - (id)initWithFireDate:(id)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
+// - (id)initWithTimeInterval:(double)arg1 serviceIdentifier:(id)arg2 target:(id)arg3 selector:(SEL)arg4 userInfo:(id)arg5;
+// - (void)invalidate;
+// - (BOOL)isValid;
+// - (void)scheduleInRunLoop:(id)arg1;
+// - (void)setDisableSystemWaking:(BOOL)arg1;
+// - (id)userInfo;
+// @end
 
 
-#define PLIST_PATH @"/var/mobile/Library/Preferences/com.leroy.AlwaysRemindMePref.plist"
+#define PLIST_PATH @"/var/mobile/Library/Preferences/ch.leroyb.AlwaysRemindMePref.plist"
 
-
+//define var and assign default values
 static SBHomeScreenViewController *myself;
 
 
 static bool twIsEnabled = NO;
-
+//static bool twIsViewPresented = NO;
 static int twWhichScreenChoice = 0;
 
 static NSString *twTextLabelVar = @"Thank you for downloading :)";
 static NSString *twTextLabelVar1 = @"";
 
-
-
+// NSMutableArray *twTextLabelVar = [[NSMutableArray alloc] init];
+// [twTextLabelVar addObject:@"Thank you for downloading :)"];
 
 static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimerCustom = @"12";
 static int twTimerChoice = 1;
-static PCSimpleTimer *activeTimer = nil;
+// static PCSimpleTimer *activeTimer = nil;
 
 
 static int twFramePosChoice = 1;
@@ -141,7 +141,7 @@ static void showAlertChangeInSettings(NSString *msg) {
                          actionWithTitle:@"OK"
                                    style:UIAlertActionStyleDefault
                                  handler:^(UIAlertAction * action) {
-                                                    
+                                                    //
                                  }];
     UIAlertAction* changeButton = [UIAlertAction
                          actionWithTitle:@"Change in settings"
@@ -167,7 +167,7 @@ static void loadPrefs() {
         twTimerChoice           = ([prefs objectForKey:@"pfTimerChoice"] ? [[prefs objectForKey:@"pfTimerChoice"] intValue] : twTimerChoice);
         twTimerCustom        	= ([prefs objectForKey:@"pfTimerCustom"] ? [[prefs objectForKey:@"pfTimerCustom"] description] : twTimerCustom);
 
-        
+        // all of this is necessary because if the string gets to long it will crash the SpringBoard
         NSMutableArray *array = [NSMutableArray array];
         for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel"] description] length]; i++) {
             [array addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel"] description] characterAtIndex:i]]];
@@ -234,7 +234,7 @@ static void loadPrefs() {
     [prefs release];
 }
 
-
+// ############################# ANIMATIONS ### START ####################################
 
 static void performRotationAnimated(UILabel *twTextLabel, CGFloat speed, CGFloat delay) {
 
@@ -268,7 +268,7 @@ static void performPulseAnimated(UIView *currentView, CGFloat size, CGFloat dura
     pulseAnimation.repeatCount = HUGE_VALF;
     [currentView.layer addAnimation:pulseAnimation forKey:nil];
 
-}
+}// Pulse func end
 
 static void performShakeAnimated(UIView *currentView, CGFloat duration, CGFloat xAmount, CGFloat yAmount) {
 
@@ -283,7 +283,7 @@ static void performShakeAnimated(UIView *currentView, CGFloat duration, CGFloat 
     shakeAnimation.repeatCount = HUGE_VALF;
     [currentView.layer addAnimation:shakeAnimation forKey:@"position"];
 
-}
+}// shake func end
 
 static void performBlinkAnimated(UIView *currentView, CGFloat duration) {
 
@@ -306,11 +306,11 @@ static void performRainbowAnimated(UIView *currentView, CGFloat delay) {
         });
     }];
 
-}
+}// shake rainbow end
 
+// ############################# ANIMATIONS ### END ####################################
 
-
-
+// ############################# DRAW LABEL ### START ####################################
 
 static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView *currentView) {
 
@@ -329,25 +329,25 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 		[twTextLabel setFont:[UIFont fontWithName: twFontCustom size: twFontSize]];
 	}
 
-    
+    //gets text size
     CGSize textSize = [twTextLabel.text sizeWithAttributes:@{NSFontAttributeName:[twTextLabel font]}];
     CGFloat absolutCenter = (screenWidth/2) - (textSize.width/2);
     CGFloat varFrameX, varFrameY = 0;
 
 	switch (twFramePosChoice) {
-		case 1:
+		case 1://below StatusBar
 			varFrameX = absolutCenter;
 			varFrameY = 20;
 			break;
-		case 2:
+		case 2://above dock
 			varFrameX = absolutCenter;
 			varFrameY = screenHeight-110;
 			break;
-        case 3:
+        case 3://center
 			varFrameX = absolutCenter;
 			varFrameY = screenHeight/2;
 			break;
-		case -999:
+		case -999:// custom
             if(twFrameX != twFrameX && twFrameY != twFrameY){
                 varFrameX = absolutCenter;
                 varFrameY = screenHeight/2;
@@ -371,20 +371,20 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 			varFrameY = 20;
 			break;
 	}
-	
+	//switch position end
 
     twTextLabel.frame = CGRectMake(varFrameX, varFrameY, twTextLabel.intrinsicContentSize.width, twTextLabel.intrinsicContentSize.height);
 
-    
+    //fontColor
     NSString *varFontColor = @"#000000";
     switch (twFontColorChoice) {
-        case 1:
+        case 1://black
             varFontColor = @"#000000";
             break;
-        case 2:
+        case 2://white
             varFontColor = @"#FFFFFF";
             break;
-        case -999:
+        case -999:// custom
             if([twFontColorCustom isEqualToString:@""]){
                 varFontColor = @"#000000";
                 showAlertChangeInSettings(@"Your custom 'font color' value is invalid!");
@@ -402,17 +402,17 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     }
     [twTextLabel setTextColor: [UIColor colorFromHex: varFontColor]];
 
-    
+    //backgroundColor
 	if(twIsBackgroundEnabled) {
         NSString *varBackgroundColor = @"#FFFFFF";
         switch (twBackgroundColorChoice) {
-    		case 1:
+    		case 1://black
                 varBackgroundColor = @"#000000";
     			break;
-    		case 2:
+    		case 2://white
                 varBackgroundColor = @"#FFFFFF";
     			break;
-    		case -999:
+    		case -999:// custom
                 if([twBackgroundColorCustom isEqualToString:@""]){
                     varBackgroundColor = @"#FFFFFF";
                     showAlertChangeInSettings(@"Your custom 'background color' value is invalid!");
@@ -435,10 +435,10 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	[currentView addSubview:twTextLabel];
 
-    
+    //rainbow
     CGFloat varRainbowDelay = 0;
     if(twIsRainbowEnabled) {
-    	
+    	//switch twRainbowDurationChoice end
         if(twRainbowDelay != twRainbowDelay){
             varRainbowDelay = 1;
             showAlertChangeInSettings(@"Your custom 'rainbow delay' value is invalid!");
@@ -448,20 +448,20 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         performRainbowAnimated(twTextLabel, varRainbowDelay);
     }
 
-    
+    //rotation
     CGFloat varRotationDelay, varRotationSpeed = 0;
     if(twIsRotationEnabled) {
         switch (twRotationSpeedChoice) {
-    		case 1:
+    		case 1://default
                 varRotationSpeed = 2;
     			break;
-    		case 2:
+    		case 2://slow
                 varRotationSpeed = 0.5;
     			break;
-            case 3:
+            case 3://fast
                 varRotationSpeed = 4;
     			break;
-    		case -999:
+    		case -999:// custom
                 if(twRotationSpeed != twRotationSpeed){
                     varRotationSpeed = 2;
                     showAlertChangeInSettings(@"Your custom 'rotation speed' value is invalid!");
@@ -473,7 +473,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			NSLog(@"AlwaysRemindMe ERROR: switch -> twRotationSpeedChoice is default");
     			break;
     	}
-    	
+    	//switch twPulseSpeed end
         if(twRotationDelay != twRotationDelay){
             varRotationDelay = 2;
             showAlertChangeInSettings(@"Your custom 'rotation delay' value is invalid!");
@@ -486,16 +486,16 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     CGFloat varPulseSize, varPulseSpeed = 0;
     if(twIsPulseEnabled) {
         switch (twPulseSizeChoice) {
-    		case 1:
+    		case 1://default
     			varPulseSize = 2;
     			break;
-    		case 2:
+    		case 2://half
     			varPulseSize = 1;
     			break;
-            case 3:
+            case 3://half
     			varPulseSize = 4;
     			break;
-    		case -999:
+    		case -999:// custom
                 if(twPulseSize != twPulseSize){
                     varPulseSize = 2;
                     showAlertChangeInSettings(@"Your custom 'pulse size' value is invalid!");
@@ -508,18 +508,18 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varPulseSize = 2;
     			break;
     	}
-    	
+    	//switch twPulseSize end
         switch (twPulseSpeedChoice) {
-    		case 1:
+    		case 1://default
     			varPulseSpeed = 1;
     			break;
-    		case 2:
+    		case 2:// fast
     			varPulseSpeed = 0.5;
     			break;
-            case 3:
+            case 3:// slow
     			varPulseSpeed = 2;
     			break;
-    		case -999:
+    		case -999:// custom
                 if(twPulseSpeed != twPulseSpeed){
                     varPulseSpeed = 1;
                     showAlertChangeInSettings(@"Your custom 'pulse speed' value is invalid!");
@@ -532,23 +532,23 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varPulseSpeed = 1;
     			break;
     	}
-    	
+    	//switch twPulseSpeed end
         performPulseAnimated(twTextLabel, varPulseSize, varPulseSpeed);
     }
 
     CGFloat varBlinkSpeed = 0.5;
     if(twIsBlinkEnabled) {
         switch (twBlinkSpeedChoice) {
-    		case 1:
+    		case 1://default
     			varBlinkSpeed = 0.5;
     			break;
-    		case 2:
+    		case 2://half
     			varBlinkSpeed = 0.25;
     			break;
-            case 3:
+            case 3://half
     			varBlinkSpeed = 1;
     			break;
-    		case -999:
+    		case -999:// custom
                 if(twBlinkSpeed != twBlinkSpeed){
                     varBlinkSpeed = 0.5;
                     showAlertChangeInSettings(@"Your custom 'blink speed' value is invalid!");
@@ -561,7 +561,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varBlinkSpeed = 0.5;
     			break;
     	}
-    	
+    	//switch twBlinkSpeedChoice end
         performBlinkAnimated(twTextLabel, varBlinkSpeed);
     }
 
@@ -570,16 +570,16 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     CGFloat varShakeYAmount = 0;
     if(twIsShakeEnabled) {
         switch (twShakeDurationChoice) {
-    		case 1:
+    		case 1://default
                 varShakeDuration = 1;
     			break;
-    		case 2:
+    		case 2://slow
                 varShakeDuration = 4;
     			break;
-            case 3:
+            case 3://fast
                 varShakeDuration = 0.5;
     			break;
-    		case -999:
+    		case -999:// custom
                 if(twShakeDuration != twShakeDuration){
                     varShakeDuration = 1;
                     showAlertChangeInSettings(@"Your custom 'shake duration' value is invalid!");
@@ -593,7 +593,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 twShakeYAmount = 0;
     			break;
     	}
-    	
+    	//switch twShakeDurationChoice end
         if(twShakeXAmount != twShakeXAmount && twShakeYAmount != twShakeYAmount){
             varShakeXAmount = 10;
             varShakeYAmount = 0;
@@ -613,60 +613,35 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         performShakeAnimated(twTextLabel, varShakeDuration, varShakeXAmount, varShakeYAmount);
     }
 
-}
+}// draw func end
+
+// ############################# DRAW LABEL ### END ####################################
+
+// %hook SpringBoard
+// -(void)applicationDidFinishLaunching:(id)application
+// {
+// 	%orig;
+//
+// 	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
+// 	TimerExampleLoadTimer();
+// }
+// %end
+//
+// %hook SBClockDataProvider
+//
+// %new
+// - (void)TimerExampleFired
+// {
+// 	NSLog(@"[TimerExample] TimerExampleFired");
+// }
+// %end //hook SBClockDataProvider
 
 
+//setting text on LS
+%hook SBLockScreenViewControllerBase
 
-
-#include <substrate.h>
-#if defined(__clang__)
-#if __has_feature(objc_arc)
-#define _LOGOS_SELF_TYPE_NORMAL __unsafe_unretained
-#define _LOGOS_SELF_TYPE_INIT __attribute__((ns_consumed))
-#define _LOGOS_SELF_CONST const
-#define _LOGOS_RETURN_RETAINED __attribute__((ns_returns_retained))
-#else
-#define _LOGOS_SELF_TYPE_NORMAL
-#define _LOGOS_SELF_TYPE_INIT
-#define _LOGOS_SELF_CONST
-#define _LOGOS_RETURN_RETAINED
-#endif
-#else
-#define _LOGOS_SELF_TYPE_NORMAL
-#define _LOGOS_SELF_TYPE_INIT
-#define _LOGOS_SELF_CONST
-#define _LOGOS_RETURN_RETAINED
-#endif
-
-@class PCSimpleTimer; @class SpringBoard; @class SBClockDataProvider; @class SBLockScreenViewControllerBase; @class SBHomeScreenViewController; 
-static void (*_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$)(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST, SEL, id); static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGOS_SELF_TYPE_NORMAL SBClockDataProvider* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST, SEL); static void (*_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad)(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST, SEL); 
-static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$SBClockDataProvider(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("SBClockDataProvider"); } return _klass; }static __inline__ __attribute__((always_inline)) __attribute__((unused)) Class _logos_static_class_lookup$PCSimpleTimer(void) { static Class _klass; if(!_klass) { _klass = objc_getClass("PCSimpleTimer"); } return _klass; }
-#line 619 "Tweak.xm"
-
-
-static void _logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$(_LOGOS_SELF_TYPE_NORMAL SpringBoard* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, id application) {
-	_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$(self, _cmd, application);
-
-	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
-	TimerExampleLoadTimer();
-}
-
-
-
-
-
-
-static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGOS_SELF_TYPE_NORMAL SBClockDataProvider* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
-	NSLog(@"[TimerExample] TimerExampleFired");
-}
- 
-
-
-
-
-
-	static void _logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBLockScreenViewControllerBase* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
-        _logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad(self, _cmd);
+	-(void)viewDidLoad {
+        %orig;
 
         CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		CGFloat screenHeight = screenSize.height;
@@ -676,7 +651,7 @@ static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGO
 		if(twIsEnabled) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 2)) {
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
-                
+                //twIsViewPresented = YES;
 			}
 		}
         if(twShouldDelete){
@@ -684,13 +659,13 @@ static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGO
         }
 	}
 
+%end
 
+//setting text on SB
+%hook SBHomeScreenViewController
 
-
-
-
-	static void _logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad(_LOGOS_SELF_TYPE_NORMAL SBHomeScreenViewController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
-        _logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad(self, _cmd);
+	-(void)viewDidLoad {
+        %orig;
         NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
 
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
@@ -701,8 +676,8 @@ static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGO
 		if(twIsEnabled) {
 			if ((twWhichScreenChoice == 0) || (twWhichScreenChoice == 1)) {
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
-                
-                
+                //drawAlwaysRemindMe(screenHeight/2, screenWidth/2, selfView);
+                //twIsViewPresented = YES;
 			}
 		}
         if(twShouldDelete){
@@ -710,101 +685,62 @@ static void _logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired(_LOGO
         }
 	}
 
+%end
 
+// void TimerExampleLoadTimer() {
+// 	NSDictionary *userInfoDictionary = nil;
+//
+// 	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
+//
+// 	if (!userInfoDictionary) {
+// 		return;
+// 	}
+// 	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
+//
+// 	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
+// 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
+// 		return;
+// 	}
+//
+// 	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+//
+// 	activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:data];
+//
+// 	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+// 	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+// 	[formatter setTimeZone:[NSTimeZone defaultTimeZone]];
+// 	NSLog(@"AlwaysRemindMe LOG: Added Timer %@", [formatter stringFromDate:fireDate]);
+//
+// }
 
-void TimerExampleLoadTimer() {
-	NSDictionary *userInfoDictionary = nil;
-
-	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
-
-	if (!userInfoDictionary) {
-		return;
-	}
-	NSDate *fireDate = [userInfoDictionary objectForKey:@"fireDate"];
-
-	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
-		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
-		return;
-	}
-
-	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-
-	activeTimer = [[_logos_static_class_lookup$PCSimpleTimer() alloc] initWithFireDate:fireDate serviceIdentifier:@"com.leroy.AlwaysRemindMePref" target:[_logos_static_class_lookup$SBClockDataProvider() self] selector:@selector(TimerExampleFired) userInfo:data];
-
-	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
-	[formatter setTimeZone:[NSTimeZone defaultTimeZone]];
-	NSLog(@"AlwaysRemindMe LOG: Added Timer %@", [formatter stringFromDate:fireDate]);
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
+// static void TimerExampleNotified(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+//
+// 	NSLog(@"AlwaysRemindMe LOG: received CFNotificationCenterPostNotification");
+//
+// 	// kill old timer
+// 	if (activeTimer) {
+// 		[activeTimer invalidate];
+// 		activeTimer = nil;
+// 	}
+//
+// 	TimerExampleLoadTimer();
+// }
 
 static void preferenceschanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferenceschanged'");
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_3c9af3fb(int __unused argc, char __unused **argv, char __unused **envp) {
+%ctor {
 	@autoreleasepool {
-        loadPrefs();
-	    
-        
-        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)preferenceschanged, CFSTR("com.leroy.AlwaysRemindMePref/preferenceschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
-        
+		loadPrefs();
+		// listen for changes to settings
+		CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(),
+			NULL,
+			(CFNotificationCallback)preferenceschanged,
+			CFSTR("ch.leroyb.AlwaysRemindMePref/preferencesChanged"),
+			NULL,
+			CFNotificationSuspensionBehaviorDeliverImmediately
+		);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-static __attribute__((constructor)) void _logosLocalInit() {
-{Class _logos_class$_ungrouped$SpringBoard = objc_getClass("SpringBoard"); MSHookMessageEx(_logos_class$_ungrouped$SpringBoard, @selector(applicationDidFinishLaunching:), (IMP)&_logos_method$_ungrouped$SpringBoard$applicationDidFinishLaunching$, (IMP*)&_logos_orig$_ungrouped$SpringBoard$applicationDidFinishLaunching$);Class _logos_class$_ungrouped$SBClockDataProvider = objc_getClass("SBClockDataProvider"); { char _typeEncoding[1024]; unsigned int i = 0; _typeEncoding[i] = 'v'; i += 1; _typeEncoding[i] = '@'; i += 1; _typeEncoding[i] = ':'; i += 1; _typeEncoding[i] = '\0'; class_addMethod(_logos_class$_ungrouped$SBClockDataProvider, @selector(TimerExampleFired), (IMP)&_logos_method$_ungrouped$SBClockDataProvider$TimerExampleFired, _typeEncoding); }Class _logos_class$_ungrouped$SBLockScreenViewControllerBase = objc_getClass("SBLockScreenViewControllerBase"); MSHookMessageEx(_logos_class$_ungrouped$SBLockScreenViewControllerBase, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBLockScreenViewControllerBase$viewDidLoad);Class _logos_class$_ungrouped$SBHomeScreenViewController = objc_getClass("SBHomeScreenViewController"); MSHookMessageEx(_logos_class$_ungrouped$SBHomeScreenViewController, @selector(viewDidLoad), (IMP)&_logos_method$_ungrouped$SBHomeScreenViewController$viewDidLoad, (IMP*)&_logos_orig$_ungrouped$SBHomeScreenViewController$viewDidLoad);} }
-#line 782 "Tweak.xm"
