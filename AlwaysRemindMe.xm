@@ -676,6 +676,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                                        style:UIAlertActionStyleDefault
                                      handler:^(UIAlertAction * _Nonnull action) {
                                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
+                                        [alert release];
                                         //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
                                      }];
 
@@ -713,7 +714,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         NSLog(@"AlwaysRemindMe LOG: prepareForUIUnlock");
         if(customHasIssue) {
             NSLog(@"AlwaysRemindMe DEBUG LOG: 2");
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [[%c(SBHomeScreenViewController) alloc] showCustomHasIssueAlert];
                 //[%c(SBHomeScreenViewController) showCustomHasIssueAlert];
             });
