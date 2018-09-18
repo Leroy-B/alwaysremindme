@@ -352,7 +352,7 @@
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
-			<integer>2</integer>
+			<string></string>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -378,7 +378,7 @@
 			<key>placeholder</key>
 			<string>#FFFFFF</string>
 			<key>default</key>
-			<string>#</string>
+			<string></string>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -416,7 +416,7 @@
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
-			<integer>1</integer>
+			<string></string>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -429,8 +429,8 @@
 			</array>
 			<key>validTitles</key>
 			<array>
-				<string>Black</string>
 				<string>White</string>
+				<string>Black</string>
 				<string>Custom</string>
 			</array>
 			<key>PostNotification</key>
@@ -750,7 +750,7 @@
 			<key>placeholder</key>
 			<string>Default: 0.5</string>
 			<key>default</key>
-			<string>0.5</string>
+			<string></string>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -826,7 +826,7 @@
 			<key>placeholder</key>
 			<string>Default: 1</string>
 			<key>default</key>
-			<string>1</string>
+			<string></string>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
@@ -868,7 +868,7 @@
 			<key>placeholder</key>
 			<string>Default: 2</string>
 			<key>default</key>
-			<string>2</string>
+			<string></string>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>

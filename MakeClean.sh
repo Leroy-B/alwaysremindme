@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Cleaning up build scraps."
+echo "Cleaning..."
 
 make clean
 
@@ -10,8 +10,9 @@ rm -rf alwaysremindmepref/.theos
 
 echo "Cleaning done."
 
-echo "Building FINALPACKAGE."
+echo "Building..."
 
-make package install FINALPACKAGE=1
+# FINALPACKAGE=1
+make package install
 
 echo "Building done."

@@ -41,6 +41,10 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ch.leroyb.AlwaysRemindMePref.preferencesChanged" object:self];
 }
 
+- (void)setContentOffset:(CGPoint)value {
+	[self setContentOffset:value];
+}
+
 -(void)viewDidLoad {
 
 	UIBarButtonItem *shareButton = [[UIBarButtonItem alloc]
@@ -52,7 +56,7 @@
 
 	[shareButton release];
 	[super viewDidLoad];
-
+	//[self setContentOffset:CGPointMake(0, 100)];
 }
 
 -(IBAction)share:(UIBarButtonItem *)sender {
