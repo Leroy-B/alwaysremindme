@@ -125,6 +125,7 @@ static CGFloat twPulseSize = 2;
 static bool twShouldDelete = NO;
 static bool customHasIssue = NO;
 static NSString *customHasIssueText = @"";
+static bool isAlertShowing = NO;
 
 void TimerExampleLoadTimer();
 
@@ -660,7 +661,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
     %new
     -(void)showCustomHasIssueAlert {
-        NSLog(@"AlwaysRemindMe DEBUG LOG: 3");
         UIAlertController * alert = [UIAlertController
                     alertControllerWithTitle:@"AlwaysRemindMe: ERROR"
                                      message:customHasIssueText
@@ -669,20 +669,25 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                              actionWithTitle:@"Ignore"
                                        style:UIAlertActionStyleDefault
                                      handler:^(UIAlertAction * _Nonnull action) {
-                                         //
+                                         isAlertShowing = NO;
                                      }];
         UIAlertAction* changeButton = [UIAlertAction
                              actionWithTitle:@"Change in settings"
                                        style:UIAlertActionStyleDefault
                                      handler:^(UIAlertAction * _Nonnull action) {
                                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
-                                        [alert release];
                                         //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
                                      }];
-
-        [alert addAction:okButton];
-        [alert addAction:changeButton];
-        [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
+         if(!isAlertShowing){
+             isAlertShowing = YES;
+             [alert addAction:okButton];
+             [alert addAction:changeButton];
+             [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
+         } else {
+             isAlertShowing = NO;
+             alert = nil;
+             [alert release];
+         }
     }
 
 %end
@@ -709,21 +714,15 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         }
 	}
 
-    -(void)prepareForUIUnlock {
-        %orig();
-        NSLog(@"AlwaysRemindMe LOG: prepareForUIUnlock");
+    -(void)viewDidDisappear:(BOOL)arg1 {
+        %orig(arg1);
         if(customHasIssue) {
-            NSLog(@"AlwaysRemindMe DEBUG LOG: 2");
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [[%c(SBHomeScreenViewController) alloc] showCustomHasIssueAlert];
                 //[%c(SBHomeScreenViewController) showCustomHasIssueAlert];
             });
 
         }
-    }
-    -(void)viewDidDisappear:(BOOL)arg1 {
-        %orig();
-        NSLog(@"AlwaysRemindMe LOG: viewDidDisappear");
     }
 
 %end

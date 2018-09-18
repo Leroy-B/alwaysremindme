@@ -103,7 +103,7 @@
 		</dict>
 		<!-- Locations end -->
 		<!-- datePicker start -->
-		<dict>
+		<!-- <dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
@@ -188,7 +188,7 @@
 			<string>Custom 'timer' value:</string>
 			<key>PostNotification</key>
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
-		</dict>
+		</dict> -->
 		<!-- datePicker end -->
 		<!-- Pos start -->
 		<dict>
