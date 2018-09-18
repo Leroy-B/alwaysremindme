@@ -63,7 +63,7 @@
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
 	    AVPlayerItem *p = [notification object];
-	    [p seekToTime:kCMTimeZero completionHandler: nil];
+	    [p seekToTime:kCMTimeZero /*completionHandler:nil*/];
 	}
 
 @end

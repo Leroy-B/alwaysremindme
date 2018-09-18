@@ -8,6 +8,7 @@ TODO:
 
 /*
 features:
+    - touch on label [open action sheet(show all and share sheet), open pref panel, select time to be reminded at]
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
 */
@@ -62,7 +63,7 @@ features:
 #define PLIST_PATH @"/var/mobile/Library/Preferences/ch.leroyb.AlwaysRemindMePref.plist"
 
 //define var and assign default values
-static SBHomeScreenViewController *myself;
+// static SBHomeScreenViewController *myself;
 
 
 static bool twIsEnabled = NO;
@@ -127,33 +128,6 @@ static bool twShouldDelete = NO;
 
 void TimerExampleLoadTimer();
 
-static void dealloc(UIView *currentView) {
-    [currentView release], currentView = nil;
-}
-
-static void showAlertChangeInSettings(NSString *msg) {
-
-    UIAlertController * alert = [UIAlertController
-                alertControllerWithTitle:@"AlwaysRemindMe: ERROR"
-                                 message:msg
-                          preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction* okButton = [UIAlertAction
-                         actionWithTitle:@"OK"
-                                   style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction * action) {
-                                                    //
-                                 }];
-    UIAlertAction* changeButton = [UIAlertAction
-                         actionWithTitle:@"Change in settings"
-                                   style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction * action) {
-                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"App-Prefs:root="] options:@{} completionHandler:nil];
-                                 }];
-    [alert addAction:changeButton];
-    [alert addAction:okButton];
-    [(SBHomeScreenViewController*)myself presentViewController:alert animated:YES completion:nil];
-
-}
 
 static void loadPrefs() {
 
@@ -234,6 +208,47 @@ static void loadPrefs() {
 	NSLog(@"AlwaysRemindMe LOG: after prefs: %@", prefs);
     [prefs release];
 }
+
+// ############################# GENERAL FUNC ### START ####################################
+
+static void dealloc(UIView *currentView) {
+    [currentView release], currentView = nil;
+}
+
+@interface UIAlertController (ContentViewController)
+@property (nonatomic,retain) UIViewController * contentViewController;
+@end
+
+
+
+static void showAlertChangeInSettings(NSString *msg) {
+
+    UIAlertController * alert = [UIAlertController
+                alertControllerWithTitle:@"AlwaysRemindMe: ERROR"
+                                 message:msg
+                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* okButton = [UIAlertAction
+                         actionWithTitle:@"OK"
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                                    //
+                                 }];
+    UIAlertAction* changeButton = [UIAlertAction
+                         actionWithTitle:@"Change in settings"
+                                   style:UIAlertActionStyleDefault
+                                 handler:^(UIAlertAction * action) {
+                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=AlwaysRemindMe"]];
+                                     //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=General&path=INTERNATIONAL"]];
+                                     //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"App-prefs:root=General"] options:@{} completionHandler:nil];
+                                 }];
+    [alert addAction:changeButton];
+    [alert addAction:okButton];
+    //[[[UIApplication sharedApplication] keyWindow] rootViewController];
+    [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
+
+}
+
+// ############################# GENERAL FUNC ### END ####################################
 
 // ############################# ANIMATIONS ### START ####################################
 
@@ -619,9 +634,29 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 // ############################# DRAW LABEL ### END ####################################
 
 %hook SpringBoard
--(void)applicationDidFinishLaunching:(id)application
-{
+-(void)applicationDidFinishLaunching:(id)application {
 	%orig;
+
+    // UIAlertController * alert = [UIAlertController
+    //             alertControllerWithTitle:@"AlwaysRemindMe: ERROR"
+    //                              message:@"Test"
+    //                       preferredStyle:UIAlertControllerStyleAlert];
+    // UIAlertAction* okButton = [UIAlertAction
+    //                      actionWithTitle:@"OK"
+    //                                style:UIAlertActionStyleDefault
+    //                              handler:^(UIAlertAction * action) {
+    //                                                 //
+    //                              }];
+    // UIAlertAction* changeButton = [UIAlertAction
+    //                      actionWithTitle:@"Change in settings"
+    //                                style:UIAlertActionStyleDefault
+    //                              handler:^(UIAlertAction * action) {
+    //                                  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=General&path=INTERNATIONAL"]];
+    //                                  //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"App-prefs:root=General"] options:@{} completionHandler:nil];
+    //                              }];
+    // [alert addAction:changeButton];
+    // [alert addAction:okButton];
+    // [(SBHomeScreenViewController*)myself presentViewController:alert animated:YES completion:nil];
 
 	NSLog(@"[TimerExample] SpringBoard applicationDidFinishLaunching");
 	TimerExampleLoadTimer();
@@ -631,8 +666,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 %hook SBClockDataProvider
 
 %new
-- (void)TimerExampleFired
-{
+- (void)TimerExampleFired {
 	NSLog(@"[TimerExample] TimerExampleFired");
 }
 %end //hook SBClockDataProvider
@@ -690,22 +724,22 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 void TimerExampleLoadTimer() {
 	NSDictionary *userInfoDictionary = nil;
-
 	userInfoDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
-
 	if (!userInfoDictionary) {
 		return;
 	}
-	NSDate *fireDate = [userInfoDictionary objectForKey:@"pfTime24"];
 
+	NSDate *fireDate = [userInfoDictionary objectForKey:@"pfTime24"];
+    NSLog(@"AlwaysRemindMe LOG: pfTime24: %@", [userInfoDictionary objectForKey:@"pfTime24"]);
+    NSLog(@"AlwaysRemindMe LOG: fireDate: %@", fireDate);
+    NSLog(@"AlwaysRemindMe LOG: %@", [NSDate date]);
 	if (!fireDate || [[NSDate date] compare:fireDate] == NSOrderedDescending) {
 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
 		return;
 	}
 
-	NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-
-	activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:data];
+	//NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+	activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:nil];
 
 	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 	[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
@@ -717,13 +751,12 @@ void TimerExampleLoadTimer() {
 static void TimerExampleNotified(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
 
 	NSLog(@"AlwaysRemindMe LOG: received CFNotificationCenterPostNotification");
-
 	// kill old timer
 	if (activeTimer) {
 		[activeTimer invalidate];
 		activeTimer = nil;
 	}
-
+    NSLog(@"AlwaysRemindMe LOG: 'TimerExampleLoadTimer' called in 'TimerExampleNotified'");
 	TimerExampleLoadTimer();
 }
 

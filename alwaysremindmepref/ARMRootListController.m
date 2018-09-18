@@ -79,7 +79,7 @@
 	[alertController.view addSubview:viewDatePicker];
 
 	NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-	outputFormatter.dateFormat=@"HH:mm";
+	outputFormatter.dateFormat=@"yyyy/MM/dd HH:mm:ss";
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
 
 	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
@@ -167,7 +167,6 @@
                     actionWithTitle:@"OK"
                               style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction * action) {
-                                //
                             }];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
