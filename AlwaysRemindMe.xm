@@ -721,6 +721,10 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
         }
     }
+    -(void)viewDidDisappear:(BOOL)arg1 {
+        %orig();
+        NSLog(@"AlwaysRemindMe LOG: viewDidDisappear");
+    }
 
 %end
 
