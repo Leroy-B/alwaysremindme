@@ -678,16 +678,19 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
                                         //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
                                      }];
-         if(!isAlertShowing){
-             isAlertShowing = YES;
-             [alert addAction:okButton];
-             [alert addAction:changeButton];
-             [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
-         } else {
-             isAlertShowing = NO;
-             alert = nil;
-             [alert release];
-         }
+        if(!isAlertShowing) {
+            isAlertShowing = YES;
+            [alert addAction:okButton];
+            [alert addAction:changeButton];
+            [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
+        } else {
+            isAlertShowing = NO;
+            [alert dismissViewControllerAnimated:YES completion:^{}];
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(7.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            isAlertShowing = NO;
+            [alert dismissViewControllerAnimated:YES completion:^{}];
+        });
     }
 
 %end
