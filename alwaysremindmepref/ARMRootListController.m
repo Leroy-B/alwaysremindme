@@ -6,21 +6,21 @@
 
 @implementation ARMRootListController
 
-- (id)readPreferenceValue:(PSSpecifier *)specifier {
+- (id)readPreferenceValue:(PSSpecifier *)specifier{
 	NSDictionary *s = [NSDictionary dictionaryWithContentsOfFile:PLIST_PATH];
-	if (!s[specifier.properties[@"key"]]) {
+	if (!s[specifier.properties[@"key"]]){
 		return specifier.properties[@"default"];
 	}
 	return s[specifier.properties[@"key"]];
 }
 
-- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
+- (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier{
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:PLIST_PATH]];
 	[defaults setObject:value forKey:specifier.properties[@"key"]];
 	[defaults writeToFile:PLIST_PATH atomically:YES];
 	CFStringRef toPost = (CFStringRef)specifier.properties[@"PostNotification"];
-	if (toPost) {
+	if (toPost){
     CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
                                          toPost,
                                          NULL,
@@ -29,23 +29,23 @@
   }
 }
 
-- (id)specifiers {
-	if (!_specifiers) {
+- (id)specifiers{
+	if (!_specifiers){
 		_specifiers = [[self loadSpecifiersFromPlistName:@"Root" target: self] retain];
 	}
 	return _specifiers;
 }
 
-- (void)_returnKeyPressed:(NSNotificationCenter *)notification {
+- (void)_returnKeyPressed:(NSNotificationCenter *)notification{
     [self.view endEditing:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ch.leroyb.AlwaysRemindMePref.preferencesChanged" object:self];
 }
 
-- (void)setContentOffset:(CGPoint)value {
+- (void)setContentOffset:(CGPoint)value{
 	[self setContentOffset:value];
 }
 
--(void)viewDidLoad {
+-(void)viewDidLoad{
 
 	UIBarButtonItem *shareButton = [[UIBarButtonItem alloc]
 						   initWithBarButtonSystemItem:UIBarButtonSystemItemAction
@@ -59,7 +59,7 @@
 	//[self setContentOffset:CGPointMake(0, 100)];
 }
 
--(IBAction)share:(UIBarButtonItem *)sender {
+-(IBAction)share:(UIBarButtonItem *)sender{
 	NSString *textToShare = @"Click the link below to add LeroyB's repository to Cydia!";
     NSURL *myWebsite = [NSURL URLWithString:@"cydia://url/https://cydia.saurik.com/api/share#?source=https://leroy-b.github.io/home/repo/"];
     NSArray *activityItems = @[textToShare, myWebsite];
@@ -68,7 +68,7 @@
     [self presentViewController:activityViewControntroller animated:true completion:nil];
 }
 
--(void)showDatePicker {
+-(void)showDatePicker{
 
 	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Choose a time to be reminded at!\n\n\n\n\n\n\n\n" preferredStyle:UIAlertControllerStyleActionSheet];
 	UIView *viewDatePicker = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width,200)];
@@ -86,36 +86,36 @@
 	outputFormatter.dateFormat=@"yyyy/MM/dd HH:mm:ss";
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
 
-	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-	                                                      handler:^(UIAlertAction * action) {
-
-															  [prefs setValue:[outputFormatter stringFromDate:picker.date] forKey:@"pfTime24"];
-															  [prefs writeToFile:PLIST_PATH atomically:YES];
-															  [prefs release];
-															  [outputFormatter release];
-															  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("ch.leroyb.AlwaysRemindMePref.timerChanged"), nil, nil, TRUE);
-
-	                                                      }];
+	UIAlertAction* defaultAction = [UIAlertAction
+		actionWithTitle:@"OK"
+				  style:UIAlertActionStyleDefault
+	            handler:^(UIAlertAction * action){
+					  [prefs setValue:[outputFormatter stringFromDate:picker.date] forKey:@"pfTime24"];
+					  [prefs writeToFile:PLIST_PATH atomically:YES];
+					  [prefs release];
+					  [outputFormatter release];
+					  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("ch.leroyb.AlwaysRemindMePref.timerChanged"), nil, nil, TRUE);
+                }];
 
 	[alertController addAction:defaultAction];
 	[self presentViewController:alertController animated:YES completion:nil];
 
 }
 
--(void)showTwitter {
+-(void)showTwitter{
 	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"twitter://"]]) [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"twitter://user?screen_name=IDEK_a_Leroy"] options:@{} completionHandler:nil];
 	else [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://twitter.com/IDEK_a_Leroy"] options:@{} completionHandler:nil];
 }
 
--(void)showReddit {
+-(void)showReddit{
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/user/IDEK_a_Leroy"] options:@{} completionHandler:nil];
 }
 
--(void)showSourceCode {
+-(void)showSourceCode{
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/Leroy-B/alwaysremindme"] options:@{} completionHandler:nil];
 }
 
--(void)showBitcoin {
+-(void)showBitcoin{
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	pasteboard.string = @"1EZATpr8i4N5XaR9bfCwPHAK6DB2s19uwN";
 	UIAlertController * alert = [UIAlertController
@@ -125,14 +125,14 @@
 	UIAlertAction* okButton = [UIAlertAction
 				actionWithTitle:@"OK"
 						  style:UIAlertActionStyleDefault
-						handler:^(UIAlertAction * action) {
+						handler:^(UIAlertAction * action){
 							//
 						}];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
 }
 
--(void)showMonero {
+-(void)showMonero{
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	pasteboard.string = @"42jBMo7NpyYUoPU3qdu7x6cntT3ez2da5TxKTwZVX9eZfwBA6XzeQEFcTxBukNUYyaGtgvdKtLyz72udsnRo3hFhLYPo37L";
 	UIAlertController * alert = [UIAlertController
@@ -142,22 +142,22 @@
 	UIAlertAction* okButton = [UIAlertAction
 				actionWithTitle:@"OK"
 						  style:UIAlertActionStyleDefault
-						handler:^(UIAlertAction * action) {
+						handler:^(UIAlertAction * action){
 							//
 						}];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
 }
 
--(void)showPayPal {
+-(void)showPayPal{
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YFSWZBQM8V3C8"] options:@{} completionHandler:nil];
 }
 
--(void)showFontSelection {
+-(void)showFontSelection{
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://iosfonts.com"] options:@{} completionHandler:nil];
 }
 
--(void)printInfo {
+-(void)printInfo{
 	CGSize screenSize = [UIScreen mainScreen].bounds.size;
     double screenHeight = screenSize.height;
     double screenWidth = screenSize.width;
@@ -170,18 +170,18 @@
 	UIAlertAction* okButton = [UIAlertAction
                     actionWithTitle:@"OK"
                               style:UIAlertActionStyleDefault
-                            handler:^(UIAlertAction * action) {
+                            handler:^(UIAlertAction * action){
                             }];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
 
 }
 
--(void)respring {
+-(void)respring{
 	if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/ch.leroyb.alwaysremindme.list"]){
 		pid_t pid;
 		int status;
-		const char* argv[] = {"killall", "SpringBoard", NULL};
+		const char* argv[] ={"killall", "SpringBoard", NULL};
 		posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
 		waitpid(pid, &status, WEXITED);
 	} else {
@@ -195,7 +195,7 @@
 			[alert dismissViewControllerAnimated:YES completion:^{
 				pid_t pid;
 				int status;
-				const char* argv[] = {"killall", "SpringBoard", NULL};
+				const char* argv[] ={"killall", "SpringBoard", NULL};
 				posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
 				waitpid(pid, &status, WEXITED);
 			}];
