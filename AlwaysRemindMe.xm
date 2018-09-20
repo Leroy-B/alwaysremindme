@@ -120,37 +120,42 @@ void TimerExampleLoadTimer();
 static void loadPrefs(){
     // storing in a key and value fashon for easy access
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSMutableString *result = [[NSMutableString alloc] init];
+    NSMutableString *result1 = [[NSMutableString alloc] init];
     if(prefs){
-		twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : twIsEnabled);
-		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [prefs objectForKey:@"pfWhichScreenChoice"] : twWhichScreenChoice);
-
-        twIsTimerEnabled		= ([prefs objectForKey:@"pfIsTimerEnabled"] ? [[prefs objectForKey:@"pfIsTimerEnabled"] boolValue] : twIsTimerEnabled);
-        twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
-        twTimerChoice           = ([prefs objectForKey:@"pfTimerChoice"] ? [prefs objectForKey:@"pfTimerChoice"] : twTimerChoice);
-        twTimerCustom        	= ([prefs objectForKey:@"pfTimerCustom"] ? [[prefs objectForKey:@"pfTimerCustom"] description] : twTimerCustom);
 
         // all of this is necessary because if the string gets to long it will crash the SpringBoard
-        NSMutableArray *array = [NSMutableArray array];
-        NSMutableString *result = [[NSMutableString alloc] init];
         // for the length of the 'pfTextLabel' string, save char at loop position to array
         for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel"] description] length]; i++){
             [array addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel"] description] characterAtIndex:i]]];
         }
+        // for each obj in the previously created array append the current obj to the mutable string
         for (NSObject *obj in array){
             [result appendString:[obj description]];
         }
         twTextLabelVar = result;
         [array removeAllObjects];
-        result = nil;
 
         // same for the second string
         for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel1"] description] length]; i++){
             [array addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel1"] description] characterAtIndex:i]]];
         }
         for (NSObject *obj1 in array){
-            [result appendString:[obj1 description]];
+            [result1 appendString:[obj1 description]];
         }
-        twTextLabelVar1 = result;
+        twTextLabelVar1 = result1;
+        result = nil;
+        result1 = nil;
+
+        // each var checks if the object for its key exists, if so it uses the key's value else it uses the default/nil value
+        twIsEnabled				= ([prefs objectForKey:@"pfIsTweakEnabled"] ? [[prefs objectForKey:@"pfIsTweakEnabled"] boolValue] : twIsEnabled);
+		twWhichScreenChoice 	= ([prefs objectForKey:@"pfWhichScreenChoice"] ? [prefs objectForKey:@"pfWhichScreenChoice"] : twWhichScreenChoice);
+
+        twIsTimerEnabled		= ([prefs objectForKey:@"pfIsTimerEnabled"] ? [[prefs objectForKey:@"pfIsTimerEnabled"] boolValue] : twIsTimerEnabled);
+        twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
+        twTimerChoice           = ([prefs objectForKey:@"pfTimerChoice"] ? [prefs objectForKey:@"pfTimerChoice"] : twTimerChoice);
+        twTimerCustom        	= ([prefs objectForKey:@"pfTimerCustom"] ? [[prefs objectForKey:@"pfTimerCustom"] description] : twTimerCustom);
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [prefs objectForKey:@"pfFramePosChoice"] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [prefs objectForKey:@"pfFrameX"] : twFrameX);
@@ -194,6 +199,7 @@ static void loadPrefs(){
     }
 	NSLog(@"AlwaysRemindMe LOG: after prefs: %@", prefs);
     [prefs release];
+    [array release];
 }
 
 // ############################# GENERAL FUNC ### START ####################################
@@ -206,6 +212,7 @@ static void dealloc(UIView *currentView){
 
 // ############################# ANIMATIONS ### START ####################################
 
+// takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely 
 static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay){
 
 	[UIView animateWithDuration:([speed intValue]/2)
