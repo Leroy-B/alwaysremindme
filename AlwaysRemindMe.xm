@@ -9,6 +9,7 @@ TODO:
 
 /*
 features:
+    - animation for n times?
     - touch on label [open action sheet(show all and share sheet), open pref panel, select time to be reminded at]
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
@@ -70,7 +71,8 @@ features:
 static bool twIsEnabled = NO;
 //static bool twIsViewPresented = NO;
 static NSNumber *twWhichScreenChoice = @0;
-static NSString *twTextLabelVar, *twTextLabelVar1 = @"";
+static NSString *twTextLabelVar = @"";
+static NSString *twTextLabelVar1 = @"";
 
 static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
@@ -79,10 +81,14 @@ static NSNumber *twTimerChoice = @1;
 static PCSimpleTimer *activeTimer = nil;
 
 static NSNumber *twFramePosChoice = @1;
-static NSNumber *twFrameX, *twFrameY, *twFrameW, *twFrameH = nil;
+static NSNumber *twFrameX = nil;
+static NSNumber *twFrameY = nil;
+static NSNumber *twFrameW = nil;
+static NSNumber *twFrameH = nil;
 
 static bool twIsBackgroundEnabled = YES;
-static NSNumber *twFontSize, *twFontSizeCustom = @14;
+static NSNumber *twFontSizeCustom = @14;
+static NSNumber *twFontSize = @14;
 static NSString *twFontCustom = @"Trebuchet MS";
 
 static NSNumber *twFontColorChoice = @1;
@@ -95,7 +101,8 @@ static NSNumber *twRainbowDelay = nil;
 
 static bool twIsRotationEnabled = NO;
 static NSNumber *twRotationSpeedChoice = @1;
-static NSNumber *twRotationSpeed, *twRotationDelay = nil;
+static NSNumber *twRotationSpeed = nil;
+static NSNumber *twRotationDelay = nil;
 
 static bool twIsBlinkEnabled = NO;
 static NSNumber *twBlinkSpeedChoice = @1;
@@ -103,11 +110,15 @@ static NSNumber *twBlinkSpeed = nil;
 
 static bool twIsShakeEnabled = NO;
 static NSNumber *twShakeDurationChoice = @1;
-static NSNumber *twShakeDuration, *twShakeXAmount, *twShakeYAmount = nil;
+static NSNumber *twShakeDuration = nil;
+static NSNumber *twShakeXAmount = nil;
+static NSNumber *twShakeYAmount = nil;
 
 static bool twIsPulseEnabled = NO;
 static NSNumber *twPulseSpeedChoice = @1;
-static NSNumber *twPulseSizeChoice, *twPulseSpeed, *twPulseSize = nil;
+static NSNumber *twPulseSizeChoice = nil;
+static NSNumber *twPulseSpeed = nil;
+static NSNumber *twPulseSize = nil;
 
 static bool twShouldDelete = NO;
 static bool customHasIssue = NO;
@@ -120,12 +131,11 @@ void TimerExampleLoadTimer();
 static void loadPrefs(){
     // storing in a key and value fashon for easy access
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    NSMutableString *result = [[NSMutableString alloc] init];
-    NSMutableString *result1 = [[NSMutableString alloc] init];
     if(prefs){
-
         // all of this is necessary because if the string gets to long it will crash the SpringBoard
+        NSMutableArray *array = [[[NSMutableArray alloc] init] autorelease];
+        NSMutableString *result = [[NSMutableString alloc] init];
+        NSMutableString *result1 = [[NSMutableString alloc] init];
         // for the length of the 'pfTextLabel' string, save char at loop position to array
         for (int i = 0; i < [[[prefs objectForKey:@"pfTextLabel"] description] length]; i++){
             [array addObject:[NSString stringWithFormat:@"%C", [[[prefs objectForKey:@"pfTextLabel"] description] characterAtIndex:i]]];
@@ -145,6 +155,7 @@ static void loadPrefs(){
             [result1 appendString:[obj1 description]];
         }
         twTextLabelVar1 = result1;
+
         result = nil;
         result1 = nil;
 
@@ -199,7 +210,6 @@ static void loadPrefs(){
     }
 	NSLog(@"AlwaysRemindMe LOG: after prefs: %@", prefs);
     [prefs release];
-    [array release];
 }
 
 // ############################# GENERAL FUNC ### START ####################################
@@ -212,7 +222,7 @@ static void dealloc(UIView *currentView){
 
 // ############################# ANIMATIONS ### START ####################################
 
-// takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely 
+// takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
 static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay){
 
 	[UIView animateWithDuration:([speed intValue]/2)
@@ -235,6 +245,7 @@ static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNum
 
  }
 
+// takes a 'UIView' and pulsates it to given size, duration of the animation can also be given
 static void performPulseAnimated(UIView *currentView, NSNumber *size, NSNumber *duration){
 
     CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
@@ -247,6 +258,7 @@ static void performPulseAnimated(UIView *currentView, NSNumber *size, NSNumber *
 
 }// Pulse func end
 
+// takes a 'UIView' and moves (x and or y or one one of thoes) it over time,
 static void performShakeAnimated(UIView *currentView, NSNumber *duration, NSNumber *xAmount, NSNumber *yAmount){
 
     CABasicAnimation *shakeAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
@@ -262,6 +274,7 @@ static void performShakeAnimated(UIView *currentView, NSNumber *duration, NSNumb
 
 }// shake func end
 
+// takes 'UIView' and fades it over time and back
 static void performBlinkAnimated(UIView *currentView, NSNumber *duration){
 
     currentView.alpha = 1;
@@ -271,16 +284,21 @@ static void performBlinkAnimated(UIView *currentView, NSNumber *duration){
 
 }
 
+// takes 'UIView' and changes the backgroundColor with delay after each change
 static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
 
     [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
         currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
     } completion:^(BOOL finished){
+        // executes block after delay has passed
         double delayInSeconds = [delay floatValue];
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             performRainbowAnimated(currentView, delay);
         });
+        // dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([delay floatValue] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //     performRainbowAnimated(currentView, delay);
+        // });
     }];
 
 }// shake rainbow end
@@ -289,17 +307,20 @@ static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
 
 // ############################# DRAW LABEL ### START ####################################
 
+// creates 'UILabel' on the selected screen
 static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView *currentView){
 
-    UILabel *twTextLabel = [[UILabel alloc] init];
+    UILabel *twTextLabel = [[[UILabel alloc] init] autorelease];
     twTextLabel.numberOfLines=0;
     if ([twTextLabelVar1 isEqualToString:@""]){
+        NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
         twTextLabel.text = twTextLabelVar;
     } else {
+        NSLog(@"AlwaysRemindMe DEBUG LOG: 2");
         twTextLabel.text = [NSString stringWithFormat:@"%@\r%@", twTextLabelVar,twTextLabelVar1];
     }
-    [twTextLabel sizeToFit];
 
+    [twTextLabel sizeToFit];
     if([twFontSize intValue] == -999){
 		[twTextLabel setFont:[UIFont fontWithName: twFontCustom size: [twFontSizeCustom floatValue]]];
 	} else {
@@ -352,7 +373,10 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 			break;
 	}
 	//switch position end
-
+    NSLog(@"AlwaysRemindMe DEBUG LOG: varFrameX: %f", varFrameX);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: varFrameY: %f", varFrameY);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: width: %f", twTextLabel.intrinsicContentSize.width);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: height: %f", twTextLabel.intrinsicContentSize.height);
     twTextLabel.frame = CGRectMake(varFrameX, varFrameY, twTextLabel.intrinsicContentSize.width, twTextLabel.intrinsicContentSize.height);
 
     //fontColor
@@ -610,7 +634,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         }
         performShakeAnimated(twTextLabel, varShakeDuration, varShakeXAmount, varShakeYAmount);
     }
-
 }// draw func end
 
 // ############################# DRAW LABEL ### END ####################################
@@ -622,7 +645,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	NSLog(@"AlwaysRemindMe DEBUG LOG: SpringBoard applicationDidFinishLaunching / calling TimerExampleLoadTimer");
 	TimerExampleLoadTimer();
 }
-%end
+%end //hook SpringBoard
 
 %hook SBClockDataProvider
 
@@ -637,14 +660,17 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	-(void)viewDidLoad{
         %orig;
-        //NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
+        // NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
 
+        // gets the current screen width and height
 		CGSize screenSize = [UIScreen mainScreen].bounds.size;
 		CGFloat screenHeight = screenSize.height;
 		CGFloat screenWidth = screenSize.width;
+        // gets the current view
         UIView* selfView = self.view;
 
 		if(twIsEnabled){
+            // if screen choice is ether 'Both' or 'Homescreen'
 			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
                 //drawAlwaysRemindMe(screenHeight/2, screenWidth/2, selfView);
@@ -656,6 +682,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         }
 	}
 
+    // new 'SBHomeScreenViewController' methode to show an alert if one or more user defined values are invalid
     %new
     -(void)showCustomHasIssueAlert{
 
@@ -673,9 +700,11 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                              actionWithTitle:@"Change in settings"
                                        style:UIAlertActionStyleDefault
                                      handler:^(UIAlertAction * _Nonnull action){
-                                        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
+                                         // opens the settings.app to the tweak location
+                                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
                                         //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
                                      }];
+        // if the issue alert is not showing
         if(!isAlertShowing){
             isAlertShowing = YES;
             [alert addAction:okButton];
@@ -692,7 +721,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         NSLog(@"AlwaysRemindMe ISSUE: customHasIssue -> %@ ", customHasIssueText);
     }
 
-%end
+%end //hook SBHomeScreenViewController
 
 //setting text on LS
 %hook SBLockScreenViewControllerBase
@@ -706,6 +735,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         UIView* selfView = self.view;
 
 		if(twIsEnabled){
+            // if screen choice is ether 'Both' or 'Lockscreen'
 			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 2)){
 				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
                 //twIsViewPresented = YES;
@@ -727,7 +757,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         }
     }
 
-%end
+%end//hook SBLockScreenViewControllerBase
 
 void TimerExampleLoadTimer(){
 	NSDictionary *userInfoDictionary = nil;
