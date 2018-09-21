@@ -103,7 +103,7 @@
 		</dict>
 		<!-- Locations end -->
 		<!-- datePicker start -->
-		<!-- <dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
@@ -138,6 +138,10 @@
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
 		</dict>
 		<dict>
+			<key>key</key>
+			<string>pfTimeCurrent</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
@@ -160,7 +164,7 @@
 				<integer>2</integer>
 				<integer>3</integer>
 				<integer>4</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -188,7 +192,7 @@
 			<string>Custom 'timer' value:</string>
 			<key>PostNotification</key>
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
-		</dict> -->
+		</dict>
 		<!-- datePicker end -->
 		<!-- Pos start -->
 		<dict>
@@ -213,7 +217,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -319,7 +323,7 @@
 				<integer>14</integer>
 				<integer>20</integer>
 				<integer>30</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -361,7 +365,7 @@
 			<array>
 				<integer>1</integer>
 				<integer>2</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -425,7 +429,7 @@
 			<array>
 				<integer>1</integer>
 				<integer>2</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -546,7 +550,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -656,7 +660,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -732,7 +736,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -808,7 +812,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
@@ -850,7 +854,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
-				<integer>-999</integer>
+				<integer>999</integer>
 			</array>
 			<key>validTitles</key>
 			<array>

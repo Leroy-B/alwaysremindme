@@ -77,7 +77,7 @@
 	CGRect pickerFrame = CGRectMake(0, 0, self.view.frame.size.width, 220);
 	UIDatePicker *picker = [[UIDatePicker alloc] initWithFrame:pickerFrame];
 	[picker setDatePickerMode:UIDatePickerModeTime];
-	picker.minuteInterval=30;
+	//picker.minuteInterval=1;
 
 	[viewDatePicker addSubview:picker];
 	[alertController.view addSubview:viewDatePicker];
