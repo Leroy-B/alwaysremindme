@@ -471,7 +471,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varRotationSpeed = @4;
     			break;
     		case -999:// custom
-                if(!twRotationSpeed){
+                if([twRotationSpeed isKindOfClass:[NSNull class]]){
+                //if(twRotationSpeed == nil){
                     varRotationSpeed = @2;
                     customHasIssue = YES;
                     customHasIssueText = @"Your custom 'rotation speed' value is invalid!";
