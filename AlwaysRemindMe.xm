@@ -9,6 +9,7 @@ TODO:
 
 /*
 features:
+    - batman wirbel (phil fragen)
     - animation for n times?
     - touch on label [open action sheet(show all and share sheet), open pref panel, select time to be reminded at]
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
@@ -108,6 +109,8 @@ static bool twIsRotationEnabled = NO;
 static NSNumber *twRotationSpeedChoice = nil;
 static NSNumber *twRotationSpeed = nil;
 static NSNumber *twRotationDelay = nil;
+static NSNumber *twRotationCount = nil;
+static NSNumber *countInLoop = @1;
 
 static bool twIsBlinkEnabled = NO;
 static NSNumber *twBlinkSpeedChoice = nil;
@@ -197,6 +200,7 @@ static void loadPrefs(){
         twRotationSpeedChoice 	= ([prefs objectForKey:@"pfRotationSpeedChoice"] ? [prefs objectForKey:@"pfRotationSpeedChoice"] : twRotationSpeedChoice);
         twRotationSpeed			= ([prefs objectForKey:@"pfRotationSpeed"] ? [prefs objectForKey:@"pfRotationSpeed"] : twRotationSpeed);
         twRotationDelay			= ([prefs objectForKey:@"pfRotationDelay"] ? [prefs objectForKey:@"pfRotationDelay"] : twRotationDelay);
+        twRotationCount			= ([prefs objectForKey:@"pfRotationCount"] ? [prefs objectForKey:@"pfRotationCount"] : twRotationCount);
 
         twIsBlinkEnabled		= ([prefs objectForKey:@"pfIsBlinkEnabled"] ? [[prefs objectForKey:@"pfIsBlinkEnabled"] boolValue] : twIsBlinkEnabled);
         twBlinkSpeedChoice      = ([prefs objectForKey:@"pfBlinkSpeedChoice"] ? [prefs objectForKey:@"pfBlinkSpeedChoice"] : twBlinkSpeedChoice);
@@ -229,9 +233,13 @@ static void dealloc(UIView *currentView){
 // ############################# ANIMATIONS ### START ####################################
 
 // takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
-static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay){
+static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
 
-	[UIView animateWithDuration:([speed intValue]/2)
+    NSLog(@"AlwaysRemindMe DEBUG LOG: 1 count: %@", count);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: 1 countInLoop: %ld", (long)countInLoop);
+    // indefinitely if == 0
+
+    [UIView animateWithDuration:([speed intValue]/2)
                           delay:[delay floatValue]
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
@@ -245,9 +253,104 @@ static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNum
                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
                                           }
                                           completion:^(BOOL finished){
-                                              performRotationAnimated(twTextLabel, speed, delay);
+                                              NSLog(@"AlwaysRemindMe DEBUG LOG: 1 count: %@", count);
+                                              NSLog(@"AlwaysRemindMe DEBUG LOG: 1 countInLoop: %@", countInLoop);
+                                              NSLog(@"AlwaysRemindMe DEBUG LOG: 1 finished: %d", finished);
+                                              if([count intValue] == 0){
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: if count: %@", count);
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: if countInLoop: %@", countInLoop);
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: if finished: %d", finished);
+                                              } else if([count intValue] < [countInLoop intValue]){
+                                                  countInLoop = [NSNumber numberWithInt:[countInLoop intValue] + 1];
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: countInLoop++ count: %@", count);
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: countInLoop++ countInLoop: %@", countInLoop);
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: countInLoop++ finished: %d", finished);
+                                              } else if([count intValue] == [countInLoop intValue]){
+                                                  finished = true;
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: finished count: %@", count);
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: finished countInLoop: %@", countInLoop);
+                                                  NSLog(@"AlwaysRemindMe DEBUG LOG: finished finished: %d", finished);
+                                              }
+                                              //countInLoop++;
+                                              performRotationAnimated(twTextLabel, speed, delay, count);
                                           }];
                      }];
+    if([count intValue] == 0){
+
+    } else if([count intValue] < [countInLoop intValue]){
+    }
+
+    // if(count != 0){
+    //     do{
+    //         NSLog(@"AlwaysRemindMe DEBUG LOG: 2 count: %@", count);
+    //         NSLog(@"AlwaysRemindMe DEBUG LOG: 2 countInLoop: %ld", (long)countInLoop);
+    //         [UIView animateWithDuration:([speed intValue]/2)
+    //                               delay:[delay floatValue]
+    //                             options:UIViewAnimationOptionCurveLinear
+    //                          animations:^{
+    //                              twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+    //                          }
+    //                          completion:^(BOOL finished){
+    //                              [UIView animateWithDuration:([speed intValue]/2)
+    //                                                    delay:0
+    //                                                  options:UIViewAnimationOptionCurveLinear
+    //                                               animations:^{
+    //                                                   twTextLabel.transform = CGAffineTransformMakeRotation(0);
+    //                                               }
+    //                                               completion:^(BOOL finished){
+    //                                                   //countInLoop++;
+    //                                                   performRotationAnimated(twTextLabel, speed, delay, count);
+    //                                               }];
+    //                          }];
+    //     }while(countInLoop <= [count intValue]);
+    // } else {
+    //     [UIView animateWithDuration:([speed intValue]/2)
+    //                           delay:[delay floatValue]
+    //                         options:UIViewAnimationOptionCurveLinear
+    //                      animations:^{
+    //                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+    //                      }
+    //                      completion:^(BOOL finished){
+    //                          [UIView animateWithDuration:([speed intValue]/2)
+    //                                                delay:0
+    //                                              options:UIViewAnimationOptionCurveLinear
+    //                                           animations:^{
+    //                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
+    //                                           }
+    //                                           completion:^(BOOL finished){
+    //                                               performRotationAnimated(twTextLabel, speed, delay, count);
+    //                                           }];
+    //                      }];
+    // }
+
+
+
+    // do{
+    //     if(!(count == 0)){
+    //         NSLog(@"AlwaysRemindMe DEBUG LOG: 2 count: %@", count);
+    //         NSLog(@"AlwaysRemindMe DEBUG LOG: 2 countInLoop: %ld", (long)countInLoop);
+    //         countInLoop++;
+    //     }
+    //     NSLog(@"AlwaysRemindMe DEBUG LOG: 3 count: %@", count);
+    //     NSLog(@"AlwaysRemindMe DEBUG LOG: 3 countInLoop: %ld", (long)countInLoop);
+    //     [UIView animateWithDuration:([speed intValue]/2)
+    //                           delay:[delay floatValue]
+    //                         options:UIViewAnimationOptionCurveLinear
+    //                      animations:^{
+    //                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+    //                      }
+    //                      completion:^(BOOL finished){
+    //                          [UIView animateWithDuration:([speed intValue]/2)
+    //                                                delay:0
+    //                                              options:UIViewAnimationOptionCurveLinear
+    //                                           animations:^{
+    //                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
+    //                                           }
+    //                                           completion:^(BOOL finished){
+    //                                               performRotationAnimated(twTextLabel, speed, delay, count);
+    //                                           }];
+    //                      }];
+    // } while(countInLoop <= [count intValue]);
 
  }
 
@@ -457,6 +560,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     if(twIsRotationEnabled){
         NSNumber *varRotationDelay = nil;
         NSNumber *varRotationSpeed = nil;
+        NSNumber *varRotationCount = nil;
         switch ([twRotationSpeedChoice intValue]){
     		case 1://default
                 varRotationSpeed = @2;
@@ -481,8 +585,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varRotationSpeed = @2;
     			NSLog(@"AlwaysRemindMe ISSUE: switch -> twRotationSpeedChoice is default");
     			break;
-    	}
-    	//switch twPulseSpeed end
+    	}//switch twRotationSpeedChoice end
         if(!twRotationDelay){
             varRotationDelay = @2;
             customHasIssue = YES;
@@ -490,7 +593,17 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         } else {
             varRotationDelay = twRotationDelay;
         }
-        performRotationAnimated(twTextLabel, varRotationSpeed, varRotationDelay);
+        if([twRotationCount isKindOfClass:[NSNull class]]){
+            varRotationCount = @0;
+            customHasIssue = YES;
+            customHasIssueText = @"Your custom 'rotation count' value is invalid!";
+        } else if(twRotationCount == 0){
+            varRotationCount = @0;
+        } else {
+            varRotationCount = twRotationCount;
+        }
+        //twRotationCount
+        performRotationAnimated(twTextLabel, varRotationSpeed, varRotationDelay, varRotationCount);
     }
 
     if(twIsPulseEnabled){
