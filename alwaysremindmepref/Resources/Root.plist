@@ -604,7 +604,7 @@
 			<key>label</key>
 			<string>Shake Animation</string>
 			<key>footerText</key>
-			<string>Smaller 'duration' value means faster animation.</string>
+			<string>Smaller 'duration' value means faster animation. Use '0' as count to repeat the animtion indefinitely.</string>
 		</dict>
 		<dict>
 		 	<key>cell</key>
@@ -703,6 +703,22 @@
 			<string>pfShakeDuration</string>
 			<key>label</key>
 			<string>Custom 'duration' value:</string>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 0</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfShakeCount</string>
+			<key>label</key>
+			<string>Custom 'count' value:</string>
 			<key>PostNotification</key>
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
 		</dict>

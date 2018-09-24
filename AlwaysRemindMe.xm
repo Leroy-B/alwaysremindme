@@ -115,12 +115,14 @@ static NSInteger countInLoop = 1;
 static bool twIsBlinkEnabled = NO;
 static NSNumber *twBlinkSpeedChoice = nil;
 static NSNumber *twBlinkSpeed = nil;
+static NSNumber *twBlinkCount = nil;
 
 static bool twIsShakeEnabled = NO;
 static NSNumber *twShakeDurationChoice = nil;
 static NSNumber *twShakeDuration = nil;
 static NSNumber *twShakeXAmount = nil;
 static NSNumber *twShakeYAmount = nil;
+static NSNumber *twShakeCount = nil;
 
 static bool twIsPulseEnabled = NO;
 static NSNumber *twPulseSpeedChoice = nil;
@@ -206,6 +208,7 @@ static void loadPrefs(){
         twIsBlinkEnabled		= ([prefs objectForKey:@"pfIsBlinkEnabled"] ? [[prefs objectForKey:@"pfIsBlinkEnabled"] boolValue] : twIsBlinkEnabled);
         twBlinkSpeedChoice      = ([prefs objectForKey:@"pfBlinkSpeedChoice"] ? [prefs objectForKey:@"pfBlinkSpeedChoice"] : twBlinkSpeedChoice);
         twBlinkSpeed			= ([prefs objectForKey:@"pfBlinkSpeed"] ? [prefs objectForKey:@"pfBlinkSpeed"] : twBlinkSpeed);
+        twBlinkCount			= ([prefs objectForKey:@"pfBlinkCount"] ? [prefs objectForKey:@"pfBlinkCount"] : twBlinkCount);
 
         twIsPulseEnabled		= ([prefs objectForKey:@"pfIsPulseEnabled"] ? [[prefs objectForKey:@"pfIsPulseEnabled"] boolValue] : twIsPulseEnabled);
         twPulseSpeedChoice 	    = ([prefs objectForKey:@"pfPulseSpeedChoice"] ? [prefs objectForKey:@"pfPulseSpeedChoice"] : twPulseSpeedChoice);
@@ -219,6 +222,7 @@ static void loadPrefs(){
         twShakeDuration			= ([prefs objectForKey:@"pfShakeDuration"] ? [prefs objectForKey:@"pfShakeDuration"] : twShakeDuration);
         twShakeXAmount			= ([prefs objectForKey:@"pfShakeXAmount"] ? [prefs objectForKey:@"pfShakeXAmount"] : twShakeXAmount);
         twShakeYAmount 			= ([prefs objectForKey:@"pfShakeYAmount"] ? [prefs objectForKey:@"pfShakeYAmount"] : twShakeYAmount);
+        twShakeCount			= ([prefs objectForKey:@"pfShakeCount"] ? [prefs objectForKey:@"pfShakeCount"] : twShakeCount);
     }
 	NSLog(@"AlwaysRemindMe LOG: after prefs: %@", prefs);
     [prefs release];
@@ -233,6 +237,27 @@ static void dealloc(UIView *currentView){
 // ############################# GENERAL FUNC ### END ####################################
 
 // ############################# ANIMATIONS ### START ####################################
+
+// takes 'UIView' and changes the backgroundColor with delay after each change
+static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
+
+    CABasicAnimation* rainbowAnimation = [CABasicAnimation animationWithKeyPath:@"backgroundColor"];
+    rainbowAnimation.toValue = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
+    rainbowAnimation.repeatCount = HUGE_VALF;
+    [currentView.layer addAnimation:rainbowAnimation forKey:nil];
+
+    // [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
+    //     currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
+    // } completion:^(BOOL finished){
+    //     // executes block after delay has passed
+    //     double delayInSeconds = [delay floatValue];
+    //     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    //     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    //         performRainbowAnimated(currentView, delay);
+    //     });
+    // }];
+
+}// shake rainbow end
 
 // // takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
 // static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
@@ -261,6 +286,46 @@ static void dealloc(UIView *currentView){
 //                      }];
 //
 //  }
+// // takes a 'UIView' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
+static void performRotationAnimated(UIView *currentView, NSNumber *duration, NSNumber *delay, NSNumber *count){
+
+    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+    animationGroup.duration = [delay floatValue] + [duration floatValue];
+    animationGroup.repeatCount = HUGE_VALF;
+
+    CABasicAnimation* rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.beginTime = [delay floatValue];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* * rotations * duration */ ];
+    rotationAnimation.duration = [duration floatValue];
+    rotationAnimation.cumulative = YES;
+    if([count intValue] == 0){
+        rotationAnimation.repeatCount = HUGE_VALF;
+    } else {
+        rotationAnimation.repeatCount = [count floatValue];
+    }
+
+    animationGroup.animations = @[rotationAnimation];
+    [currentView.layer addAnimation:rotationAnimation forKey:nil];
+}// rotate func end
+
+// takes a 'UIView' and moves (x and or y or one one of thoes) it over time,
+static void performShakeAnimated(UIView *currentView, NSNumber *duration, NSNumber *xAmount, NSNumber *yAmount, NSNumber *count){
+
+    CABasicAnimation *shakeAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
+    shakeAnimation.duration = [duration floatValue];
+    shakeAnimation.fromValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x - [xAmount floatValue], [currentView center].y - [yAmount floatValue])];
+    shakeAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x + [xAmount floatValue], [currentView center].y + [yAmount floatValue])];
+
+    shakeAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    shakeAnimation.autoreverses = YES;
+    if([count intValue] == 0){
+        shakeAnimation.repeatCount = HUGE_VALF;
+    } else {
+        shakeAnimation.repeatCount = [count floatValue];
+    }
+    [currentView.layer addAnimation:shakeAnimation forKey:nil];
+
+}// shake func end
 
 // takes a 'UIView' and pulsates it to given size, duration of the animation can also be given
 static void performPulseAnimated(UIView *currentView, NSNumber *size, NSNumber *duration, NSNumber *count){
@@ -279,79 +344,24 @@ static void performPulseAnimated(UIView *currentView, NSNumber *size, NSNumber *
 
 }// Pulse func end
 
-// // takes a 'UIView' and pulsates it to given size, duration of the animation can also be given
-// static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
-//
-//     CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-//     rotateAnimation.duration = [speed floatValue];
-//     rotationAnimation.toValue = -Double.pi * 2;
-//     rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-//     //rotateAnimation.autoreverses = YES;
-//     if([count intValue] == 0){
-//         rotateAnimation.repeatCount = HUGE_VALF;
-//     } else {
-//         rotateAnimation.repeatCount = [count floatValue];
-//     }
-//     [currentView.layer addAnimation:rotateAnimation forKey:nil];
-//
-// }// Pulse func end
+// takes 'UIView' and fades it over time and back
+static void performBlinkAnimated(UIView *currentView, NSNumber *duration, NSNumber *count){
 
-static void performRotationAnimated(UIView *currentView, NSNumber *duration, NSNumber *delay, NSNumber *count){
-    CABasicAnimation* rotationAnimation;
-    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-    rotationAnimation.beginTime = [delay floatValue];
-    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* * rotations * duration */ ];
-    rotationAnimation.duration = [duration floatValue];
-    rotationAnimation.cumulative = YES;
-    if([count intValue] == 0){
-        rotationAnimation.repeatCount = HUGE_VALF;
-    } else {
-        rotationAnimation.repeatCount = [count floatValue];
-    }
-
-    [currentView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
-}
-
-// takes a 'UIView' and moves (x and or y or one one of thoes) it over time,
-static void performShakeAnimated(UIView *currentView, NSNumber *duration, NSNumber *xAmount, NSNumber *yAmount){
-
-    CABasicAnimation *shakeAnimation = [CABasicAnimation animationWithKeyPath:@"position"];
+    CABasicAnimation *shakeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
     shakeAnimation.duration = [duration floatValue];
-    shakeAnimation.fromValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x - [xAmount floatValue], [currentView center].y - [yAmount floatValue])];
-    shakeAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake([currentView center].x + [xAmount floatValue], [currentView center].y + [yAmount floatValue])];
+    shakeAnimation.fromValue = [NSNumber numberWithFloat: 1];
+    shakeAnimation.toValue = [NSNumber numberWithFloat: 0];
 
     shakeAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     shakeAnimation.autoreverses = YES;
-    shakeAnimation.repeatCount = HUGE_VALF;
-    [currentView.layer addAnimation:shakeAnimation forKey:@"position"];
+    if([count intValue] == 0){
+        shakeAnimation.repeatCount = HUGE_VALF;
+    } else {
+        shakeAnimation.repeatCount = [count floatValue];
+    }
+    [currentView.layer addAnimation:shakeAnimation forKey:nil];
 
-}// shake func end
-
-// takes 'UIView' and fades it over time and back
-static void performBlinkAnimated(UIView *currentView, NSNumber *duration){
-
-    currentView.alpha = 1;
-    [UIView animateWithDuration:[duration floatValue] delay:0.5 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-        currentView.alpha = 0;
-    } completion:nil];
-
-}
-
-// takes 'UIView' and changes the backgroundColor with delay after each change
-static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
-
-    [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
-        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
-    } completion:^(BOOL finished){
-        // executes block after delay has passed
-        double delayInSeconds = [delay floatValue];
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            performRainbowAnimated(currentView, delay);
-        });
-    }];
-
-}// shake rainbow end
+}// blink func end
 
 // ############################# ANIMATIONS ### END ####################################
 
@@ -370,9 +380,9 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
     [twTextLabel sizeToFit];
     if([twFontSize intValue] == 999){
-		[twTextLabel setFont:[UIFont fontWithName: twFontCustom size: [twFontSizeCustom floatValue]]];
+		[twTextLabel setFont:[UIFont fontWithName:twFontCustom size:[twFontSizeCustom floatValue]]];
 	} else {
-		[twTextLabel setFont:[UIFont fontWithName: twFontCustom size: [twFontSize floatValue]]];
+		[twTextLabel setFont:[UIFont fontWithName:twFontCustom size:[twFontSize floatValue]]];
 	}
 
     //gets text size
@@ -395,6 +405,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 			varFrameY = screenHeight/2;
 			break;
 		case 999:// custom
+
+        // ************************ this need working *******************************
             if(!twFrameX && !twFrameY){
                 varFrameX = absolutCenter;
                 varFrameY = (screenHeight/2)-twTextLabel.intrinsicContentSize.height;
@@ -417,7 +429,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 			break;
 		default:
 			NSLog(@"AlwaysRemindMe ISSUE: switch -> twFramePosChoice is default");
-			varFrameX = (screenWidth/2) - ([twFrameW intValue]/2);
+			varFrameX = (screenWidth/2) - (textSize.width/2);
 			varFrameY = 20;
 			break;
 	}//switch position end
@@ -622,6 +634,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         NSNumber *varShakeDuration = nil;
         NSNumber *varShakeXAmount = nil;
         NSNumber *varShakeYAmount = nil;
+        NSNumber *varShakeCount = nil;
         switch ([twShakeDurationChoice intValue]){
     		case 1://default
                 varShakeDuration = @1;
@@ -670,11 +683,21 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
             varShakeYAmount = twShakeYAmount;
 
         }
-        performShakeAnimated(twTextLabel, varShakeDuration, varShakeXAmount, varShakeYAmount);
+        if([twShakeCount isKindOfClass:[NSNull class]]){
+            varShakeCount = @0;
+            customHasIssue = YES;
+            customHasIssueText = @"Your custom 'shake count' value is invalid!";
+        } else if(twPulseCount == 0){
+            varShakeCount = @0;
+        } else {
+            varShakeCount = twShakeCount;
+        }
+        performShakeAnimated(twTextLabel, varShakeDuration, varShakeXAmount, varShakeYAmount, varShakeCount);
     }
 
     if(twIsBlinkEnabled){
         NSNumber *varBlinkSpeed = nil;
+        NSNumber *varBlinkCount = nil;
         switch ([twBlinkSpeedChoice intValue]){
     		case 1://default
     			varBlinkSpeed = @0.5;
@@ -699,7 +722,16 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varBlinkSpeed = @0.5;
     			break;
     	}//switch twBlinkSpeedChoice end
-        performBlinkAnimated(twTextLabel, varBlinkSpeed);
+        if([twBlinkCount isKindOfClass:[NSNull class]]){
+            varBlinkCount = @0;
+            customHasIssue = YES;
+            customHasIssueText = @"Your custom 'blink count' value is invalid!";
+        } else if(twPulseCount == 0){
+            varBlinkCount = @0;
+        } else {
+            varBlinkCount = twShakeCount;
+        }
+        performBlinkAnimated(twTextLabel, varBlinkSpeed, varBlinkCount);
     }
 
 }// draw func end
