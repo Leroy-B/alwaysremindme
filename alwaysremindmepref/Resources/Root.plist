@@ -789,6 +789,8 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Pulse Animation</string>
+			<key>footerText</key>
+			<string>Use '0' as count to repeat the animtion indefinitely.</string>
 		</dict>
 		<dict>
 		 	<key>cell</key>
@@ -897,6 +899,22 @@
 			<string>pfPulseSize</string>
 			<key>label</key>
 			<string>Custom 'size' value:</string>
+			<key>PostNotification</key>
+			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSEditTextCell</string>
+			<key>placeholder</key>
+			<string>Default: 0</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>ch.leroyb.AlwaysRemindMePref</string>
+			<key>key</key>
+			<string>pfPulseCount</string>
+			<key>label</key>
+			<string>Custom 'count' value:</string>
 			<key>PostNotification</key>
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
 		</dict>

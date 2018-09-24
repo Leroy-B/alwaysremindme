@@ -127,6 +127,7 @@ static NSNumber *twPulseSpeedChoice = nil;
 static NSNumber *twPulseSizeChoice = nil;
 static NSNumber *twPulseSpeed = nil;
 static NSNumber *twPulseSize = nil;
+static NSNumber *twPulseCount = nil;
 
 static bool twShouldDelete = NO;
 static bool customHasIssue = NO;
@@ -211,6 +212,7 @@ static void loadPrefs(){
         twPulseSpeed			= ([prefs objectForKey:@"pfPulseSpeed"] ? [prefs objectForKey:@"pfPulseSpeed"] : twPulseSpeed);
         twPulseSizeChoice 	    = ([prefs objectForKey:@"pfPulseSizeChoice"] ? [prefs objectForKey:@"pfPulseSizeChoice"] : twPulseSizeChoice);
         twPulseSize 			= ([prefs objectForKey:@"pfPulseSize"] ? [prefs objectForKey:@"pfPulseSize"] : twPulseSize);
+        twPulseCount			= ([prefs objectForKey:@"pfPulseCount"] ? [prefs objectForKey:@"pfPulseCount"] : twPulseCount);
 
         twIsShakeEnabled		= ([prefs objectForKey:@"pfIsShakeEnabled"] ? [[prefs objectForKey:@"pfIsShakeEnabled"] boolValue] : twIsShakeEnabled);
         twShakeDurationChoice 	= ([prefs objectForKey:@"pfShakeDurationChoice"] ? [prefs objectForKey:@"pfShakeDurationChoice"] : twShakeDurationChoice);
@@ -232,46 +234,83 @@ static void dealloc(UIView *currentView){
 
 // ############################# ANIMATIONS ### START ####################################
 
-// takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
-static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
-
-    [UIView animateWithDuration:([speed intValue]/2)
-                          delay:[delay floatValue]
-                        options:UIViewAnimationOptionCurveLinear
-                     animations:^{
-                         twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
-                     }
-                     completion:^(BOOL finished){
-                         [UIView animateWithDuration:([speed intValue]/2)
-                                               delay:0
-                                             options:UIViewAnimationOptionCurveLinear
-                                          animations:^{
-                                              twTextLabel.transform = CGAffineTransformMakeRotation(0);
-                                          }
-                                          completion:^(BOOL finished){
-                                              if([count intValue] == 0){
-                                                  performRotationAnimated(twTextLabel, speed, delay, count);
-                                              } else if(countInLoop <= [count intValue]){ // maybe this will show one to little ?
-                                                  performRotationAnimated(twTextLabel, speed, delay, count);
-                                                  countInLoop++;
-                                              }
-                                          }];
-                     }];
-                     
- }
+// // takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
+// static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
+//
+//     [UIView animateWithDuration:([speed intValue]/2)
+//                           delay:[delay floatValue]
+//                         options:UIViewAnimationOptionCurveLinear
+//                      animations:^{
+//                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+//                      }
+//                      completion:^(BOOL finished){
+//                          [UIView animateWithDuration:([speed intValue]/2)
+//                                                delay:0
+//                                              options:UIViewAnimationOptionCurveLinear
+//                                           animations:^{
+//                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
+//                                           }
+//                                           completion:^(BOOL finished){
+//                                               if([count intValue] == 0){
+//                                                   performRotationAnimated(twTextLabel, speed, delay, count);
+//                                               } else if(countInLoop <= [count intValue]){ // maybe this will show one to little ?
+//                                                   performRotationAnimated(twTextLabel, speed, delay, count);
+//                                                   countInLoop++;
+//                                               }
+//                                           }];
+//                      }];
+//
+//  }
 
 // takes a 'UIView' and pulsates it to given size, duration of the animation can also be given
-static void performPulseAnimated(UIView *currentView, NSNumber *size, NSNumber *duration){
+static void performPulseAnimated(UIView *currentView, NSNumber *size, NSNumber *duration, NSNumber *count){
 
     CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     pulseAnimation.duration = [duration floatValue];
     pulseAnimation.toValue = size;
     pulseAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     pulseAnimation.autoreverses = YES;
-    pulseAnimation.repeatCount = HUGE_VALF;
+    if([count intValue] == 0){
+        pulseAnimation.repeatCount = HUGE_VALF;
+    } else {
+        pulseAnimation.repeatCount = [count floatValue];
+    }
     [currentView.layer addAnimation:pulseAnimation forKey:nil];
 
 }// Pulse func end
+
+// // takes a 'UIView' and pulsates it to given size, duration of the animation can also be given
+// static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
+//
+//     CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+//     rotateAnimation.duration = [speed floatValue];
+//     rotationAnimation.toValue = -Double.pi * 2;
+//     rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//     //rotateAnimation.autoreverses = YES;
+//     if([count intValue] == 0){
+//         rotateAnimation.repeatCount = HUGE_VALF;
+//     } else {
+//         rotateAnimation.repeatCount = [count floatValue];
+//     }
+//     [currentView.layer addAnimation:rotateAnimation forKey:nil];
+//
+// }// Pulse func end
+
+static void performRotationAnimated(UIView *currentView, NSNumber *duration, NSNumber *delay, NSNumber *count){
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.beginTime = [delay floatValue];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* * rotations * duration */ ];
+    rotationAnimation.duration = [duration floatValue];
+    rotationAnimation.cumulative = YES;
+    if([count intValue] == 0){
+        rotationAnimation.repeatCount = HUGE_VALF;
+    } else {
+        rotationAnimation.repeatCount = [count floatValue];
+    }
+
+    [currentView.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+}
 
 // takes a 'UIView' and moves (x and or y or one one of thoes) it over time,
 static void performShakeAnimated(UIView *currentView, NSNumber *duration, NSNumber *xAmount, NSNumber *yAmount){
@@ -516,6 +555,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     if(twIsPulseEnabled){
         NSNumber *varPulseSize = nil;
         NSNumber *varPulseSpeed = nil;
+        NSNumber *varPulseCount = nil;
         switch ([twPulseSizeChoice intValue]){
     		case 1://default
     			varPulseSize = @2;
@@ -565,8 +605,17 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 varPulseSpeed = @1;
     			break;
     	}
+        if([twPulseCount isKindOfClass:[NSNull class]]){
+            varPulseCount = @0;
+            customHasIssue = YES;
+            customHasIssueText = @"Your custom 'pulse count' value is invalid!";
+        } else if(twPulseCount == 0){
+            varPulseCount = @0;
+        } else {
+            varPulseCount = twPulseCount;
+        }
     	//switch twPulseSpeed end
-        performPulseAnimated(twTextLabel, varPulseSize, varPulseSpeed);
+        performPulseAnimated(twTextLabel, varPulseSize, varPulseSpeed, varPulseCount);
     }
 
     if(twIsShakeEnabled){
