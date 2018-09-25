@@ -241,83 +241,108 @@ static void dealloc(UIView *currentView){
 // takes 'UIView' and changes the backgroundColor with delay after each change
 static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
 
-    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
-    animationGroup.duration = [delay floatValue];
-    animationGroup.repeatCount = HUGE_VALF;
+    // CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+    // animationGroup.duration = [delay floatValue];
+    // animationGroup.repeatCount = HUGE_VALF;
+    //
+    // CABasicAnimation* rainbowAnimation = [CABasicAnimation animationWithKeyPath:@"backgroundColor"];
+    // rainbowAnimation.fromValue = (id)[UIColor whiteColor].CGColor;
+    // rainbowAnimation.toValue = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
+    // rainbowAnimation.autoreverses = NO;
+    // rainbowAnimation.repeatCount = HUGE_VALF;
+    //
+    // animationGroup.animations = @[rainbowAnimation];
+    // [currentView.layer addAnimation:rainbowAnimation forKey:nil];
 
-    CABasicAnimation* rainbowAnimation = [CABasicAnimation animationWithKeyPath:@"backgroundColor"];
-    rainbowAnimation.fromValue = (id)[UIColor whiteColor].CGColor;
-    rainbowAnimation.toValue = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
-    rainbowAnimation.autoreverses = NO;
-    rainbowAnimation.repeatCount = HUGE_VALF;
-
-    animationGroup.animations = @[rainbowAnimation];
-    [currentView.layer addAnimation:rainbowAnimation forKey:nil];
-
-    // [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
-    //     currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
-    // } completion:^(BOOL finished){
-    //     // executes block after delay has passed
-    //     double delayInSeconds = [delay floatValue];
-    //     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    //     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-    //         performRainbowAnimated(currentView, delay);
-    //     });
-    // }];
+    [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
+        currentView.backgroundColor = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
+    } completion:^(BOOL finished){
+        // executes block after delay has passed
+        double delayInSeconds = [delay floatValue];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            performRainbowAnimated(currentView, delay);
+        });
+    }];
 
 }// shake rainbow end
 
-// // takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
-// static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
-//
-//     [UIView animateWithDuration:([speed intValue]/2)
-//                           delay:[delay floatValue]
-//                         options:UIViewAnimationOptionCurveLinear
-//                      animations:^{
-//                          twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
-//                      }
-//                      completion:^(BOOL finished){
-//                          [UIView animateWithDuration:([speed intValue]/2)
-//                                                delay:0
-//                                              options:UIViewAnimationOptionCurveLinear
-//                                           animations:^{
-//                                               twTextLabel.transform = CGAffineTransformMakeRotation(0);
-//                                           }
-//                                           completion:^(BOOL finished){
-//                                               if([count intValue] == 0){
-//                                                   performRotationAnimated(twTextLabel, speed, delay, count);
-//                                               } else if(countInLoop <= [count intValue]){ // maybe this will show one to little ?
-//                                                   performRotationAnimated(twTextLabel, speed, delay, count);
-//                                                   countInLoop++;
-//                                               }
-//                                           }];
-//                      }];
-//
-//  }
+// takes a 'UILabel' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
+static void performRotationAnimated(UILabel *twTextLabel, NSNumber *speed, NSNumber *delay, NSNumber *count){
+
+    [UIView animateWithDuration:([speed intValue]/2)
+                          delay:[delay floatValue]
+                        options:UIViewAnimationOptionCurveLinear
+                     animations:^{
+                         twTextLabel.transform = CGAffineTransformMakeRotation(M_PI);
+                     }
+                     completion:^(BOOL finished){
+                         [UIView animateWithDuration:([speed intValue]/2)
+                                               delay:0
+                                             options:UIViewAnimationOptionCurveLinear
+                                          animations:^{
+                                              twTextLabel.transform = CGAffineTransformMakeRotation(0);
+                                          }
+                                          completion:^(BOOL finished){
+                                              if([count intValue] == 0){
+                                                  performRotationAnimated(twTextLabel, speed, delay, count);
+                                              } else if(countInLoop <= [count intValue]){ // maybe this will show one to little ?
+                                                  performRotationAnimated(twTextLabel, speed, delay, count);
+                                                  countInLoop++;
+                                              }
+                                          }];
+                     }];
+
+ }
 // // takes a 'UIView' and roatates it by the given speed, delays by given value after completion before redoing it indefinitely
-static void performRotationAnimated(UIView *currentView, NSNumber *duration, NSNumber *delay, NSNumber *count){
-
-    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
-    NSLog(@"AlwaysRemindMe DEBUG LOG: duration: %f", [duration floatValue]);
-    NSLog(@"AlwaysRemindMe DEBUG LOG: delay: %f", [delay floatValue]);
-    animationGroup.duration = [delay floatValue] + [duration floatValue];
-    NSLog(@"AlwaysRemindMe DEBUG LOG: animationGroup.duration: %f", animationGroup.duration);
-    animationGroup.repeatCount = HUGE_VALF;
-
-    CABasicAnimation* rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-    rotationAnimation.beginTime = [delay floatValue];
-    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 * [duration floatValue]];
-    rotationAnimation.duration = [duration floatValue];
-    rotationAnimation.cumulative = YES;
-    if([count intValue] == 0){
-        rotationAnimation.repeatCount = HUGE_VALF;
-    } else {
-        rotationAnimation.repeatCount = [count floatValue];
-    }
-
-    animationGroup.animations = @[rotationAnimation];
-    [currentView.layer addAnimation:rotationAnimation forKey:nil];
-}// rotate func end
+// static void performRotationAnimated(UIView *currentView, NSNumber *duration, NSNumber *delay, NSNumber *count){
+//
+//     CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+//     animationGroup.duration = [delay floatValue] + [duration floatValue];
+//     if([count intValue] == 0){
+//         animationGroup.repeatCount = HUGE_VALF;
+//     } else {
+//         animationGroup.repeatCount = [count floatValue];
+//     }
+//
+//     CAMediaTimingFunction *easeOut = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+//
+//     CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+//     rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 * [duration floatValue]];
+//     rotationAnimation.duration = [duration floatValue];
+//     rotationAnimation.timingFunction = easeOut;
+//     if([count intValue] == 0){
+//         animationGroup.repeatCount = HUGE_VALF;
+//     } else {
+//         animationGroup.repeatCount = [count floatValue];
+//     }
+//
+//     animationGroup.animations = @[rotationAnimation];
+//     [currentView.layer addAnimation:rotationAnimation forKey:nil];
+//
+//
+//
+//     // CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+//     // NSLog(@"AlwaysRemindMe DEBUG LOG: duration: %f", [duration floatValue]);
+//     // NSLog(@"AlwaysRemindMe DEBUG LOG: delay: %f", [delay floatValue]);
+//     // animationGroup.duration = [delay floatValue] + [duration floatValue];
+//     // NSLog(@"AlwaysRemindMe DEBUG LOG: animationGroup.duration: %f", animationGroup.duration);
+//     // animationGroup.repeatCount = HUGE_VALF;
+//     //
+//     // CABasicAnimation* rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+//     // rotationAnimation.beginTime = [delay floatValue];
+//     // rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 * [duration floatValue]];
+//     // rotationAnimation.duration = [duration floatValue];
+//     // rotationAnimation.cumulative = YES;
+//     // if([count intValue] == 0){
+//     //     rotationAnimation.repeatCount = HUGE_VALF;
+//     // } else {
+//     //     rotationAnimation.repeatCount = [count floatValue];
+//     // }
+//     //
+//     // animationGroup.animations = @[rotationAnimation];
+//     // [currentView.layer addAnimation:rotationAnimation forKey:nil];
+// }// rotate func end
 
 // takes a 'UIView' and moves (x and or y or one one of thoes) it over time,
 static void performShakeAnimated(UIView *currentView, NSNumber *duration, NSNumber *xAmount, NSNumber *yAmount, NSNumber *count){
@@ -902,8 +927,8 @@ void TimerExampleLoadTimer(){
 	//NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
 	//activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:nil];
     NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - before initWithFireDate");
-    //activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:nil selector:nil userInfo:nil];
-    activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
+    activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:nil selector:nil userInfo:nil];
+    //activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
     //activeTimer = [[PCSimpleTimer alloc] initWithTimeInterval:seconds serviceIdentifier:@"com.joshdoctors.disturbmelater" target:self selector:@selector(fireAway) userInfo:nil];
 	// NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 	// [formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
