@@ -241,9 +241,17 @@ static void dealloc(UIView *currentView){
 // takes 'UIView' and changes the backgroundColor with delay after each change
 static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
 
+    CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+    animationGroup.duration = [delay floatValue];
+    animationGroup.repeatCount = HUGE_VALF;
+
     CABasicAnimation* rainbowAnimation = [CABasicAnimation animationWithKeyPath:@"backgroundColor"];
+    rainbowAnimation.fromValue = (id)[UIColor whiteColor].CGColor;
     rainbowAnimation.toValue = [UIColor colorWithHue:drand48() saturation:1.0 brightness:1.0 alpha:1.0];
+    rainbowAnimation.autoreverses = NO;
     rainbowAnimation.repeatCount = HUGE_VALF;
+
+    animationGroup.animations = @[rainbowAnimation];
     [currentView.layer addAnimation:rainbowAnimation forKey:nil];
 
     // [UIView animateWithDuration:0.01 delay:0 options:UIViewAnimationOptionTransitionNone animations:^{
@@ -290,12 +298,15 @@ static void performRainbowAnimated(UIView *currentView, NSNumber *delay){
 static void performRotationAnimated(UIView *currentView, NSNumber *duration, NSNumber *delay, NSNumber *count){
 
     CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+    NSLog(@"AlwaysRemindMe DEBUG LOG: duration: %f", [duration floatValue]);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: delay: %f", [delay floatValue]);
     animationGroup.duration = [delay floatValue] + [duration floatValue];
+    NSLog(@"AlwaysRemindMe DEBUG LOG: animationGroup.duration: %f", animationGroup.duration);
     animationGroup.repeatCount = HUGE_VALF;
 
     CABasicAnimation* rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotationAnimation.beginTime = [delay floatValue];
-    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* * rotations * duration */ ];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 * [duration floatValue]];
     rotationAnimation.duration = [duration floatValue];
     rotationAnimation.cumulative = YES;
     if([count intValue] == 0){
