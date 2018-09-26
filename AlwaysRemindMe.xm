@@ -16,24 +16,50 @@ features:
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
 */
 
+#import <UserNotifications/UserNotifications.h>
+
 // Defining all needed interfaces
+// @interface UNNotificationContent : NSObject
+// @end
+//
+// @interface UNMutableNotificationContent : UNNotificationContent
+//     @property (nonatomic,copy) NSString * body;
+//     @property (nonatomic,copy) NSString * title;
+// @end
+//
+// @interface UNNotificationRequest : NSObject
+// +(id)requestWithIdentifier:(id)arg1 content:(id)arg2 trigger:(id)arg3;
+// @end
+//
+// @interface UNNotificationTrigger : NSObject
+// @end
+//
+// @interface UNCalendarNotificationTrigger : UNNotificationTrigger
+//     +(id)triggerWithDateMatchingComponents:(id)arg1 repeats:(BOOL)arg2;
+// @end
+//
+// @interface UNUserNotificationCenter : NSObject
+//     +(id)currentNotificationCenter;
+//     -(void)addNotificationRequest:(id)arg1 withCompletionHandler:(id)arg2;
+// @end
+
 @interface SpringBoard
 @end
 
 @interface SBLockScreenViewControllerBase : UIViewController
--(void)showCustomHasIssueAlert;
+    -(void)showCustomHasIssueAlert;
 @end
 
 @interface SBHomeScreenViewController : UIViewController
 @end
 
 @interface SBClockDataProvider : NSObject
-+ (id)sharedInstance;
+    +(id)sharedInstance;
 @end
 
 @interface UIColor(Hexadecimal)
 
-+ (UIColor *)colorFromHex:(NSString *)hexString;
+    +(UIColor *)colorFromHex:(NSString *)hexString;
 
 @end
 
@@ -837,8 +863,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                                        style:UIAlertActionStyleDefault
                                      handler:^(UIAlertAction * _Nonnull action){
                                          // opens the settings.app to the tweak location
-                                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
-                                        //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
+                                         //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"]];
+                                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"Prefs:root=AlwaysRemindMe"] options:@{} completionHandler:nil];
                                      }];
         // if the issue alert is not showing
         if(!isAlertShowing){
@@ -902,10 +928,16 @@ void TimerExampleLoadTimer(){
 	}
 
 	NSDate *fireDate = [prefs objectForKey:@"pfTime24"];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:fireDate];
+    NSInteger hour = [components hour];
+    NSInteger minute = [components minute];
+    NSLog(@"AlwaysRemindMe DEBUG LOG: hour: %ld", (long)hour);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: minute: %ld", (long)minute);
 
     NSDate *currentDateTime = [NSDate date];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+    [dateFormatter setDateFormat:@"HH:mm"];
 
     [prefs setValue:[dateFormatter stringFromDate:currentDateTime] forKey:@"pfTimeCurrent"];
     NSDate *fireDateCurrent = [prefs objectForKey:@"pfTimeCurrent"];
@@ -916,6 +948,32 @@ void TimerExampleLoadTimer(){
 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
 		return;
 	}
+
+    UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+    content.title = @"Wake up!";
+    content.body = @"Rise and shine! It's morning time!";
+
+    NSDateComponents* date = [[NSDateComponents alloc] init];
+    date.hour = hour;
+    date.minute = minute;
+    NSLog(@"AlwaysRemindMe DEBUG LOG: date.hour: %ld", (long)date.hour);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: date.minute: %ld", (long)date.minute);
+    UNCalendarNotificationTrigger* trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date repeats:NO];
+
+    // Create the request object.
+    UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"MorningAlarm" content:content trigger:trigger];
+
+    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+       if(error != nil){
+           NSLog(@"%@", error.localizedDescription);
+       }
+    }];
+
+
+
+
+
     // if ([date1 compare:date2] == NSOrderedDescending) {
     // NSLog(@"date1 is later than date2");
     // } else if ([date1 compare:date2] == NSOrderedAscending) {
@@ -926,8 +984,8 @@ void TimerExampleLoadTimer(){
 
 	//NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
 	//activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:nil];
-    NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - before initWithFireDate");
-    activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:nil selector:nil userInfo:nil];
+    //NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - before initWithFireDate");
+    //activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:nil selector:nil userInfo:nil];
     //activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
     //activeTimer = [[PCSimpleTimer alloc] initWithTimeInterval:seconds serviceIdentifier:@"com.joshdoctors.disturbmelater" target:self selector:@selector(fireAway) userInfo:nil];
 	// NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
