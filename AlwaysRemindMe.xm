@@ -926,49 +926,78 @@ void TimerExampleLoadTimer(){
 	if (!prefs){
 		return;
 	}
+    NSLog(@"AlwaysRemindMe LOG: 3 in TimerExampleLoadTimer");
 
 	NSDate *fireDate = [prefs objectForKey:@"pfTime24"];
+    NSLog(@"AlwaysRemindMe DEBUG LOG: fireDate: %@", fireDate);
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *components = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:fireDate];
+    NSLog(@"AlwaysRemindMe LOG: 4 init cal: %@", calendar);
+    unsigned unitFlags = NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitHour | NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear;
+    NSLog(@"AlwaysRemindMe LOG: 5");
+    NSDateComponents *components = [calendar components:unitFlags fromDate:fireDate];
+    NSLog(@"AlwaysRemindMe LOG: 6");
+    NSInteger year = [components year];
+    NSInteger month = [components month];
+    NSInteger day = [components day];
     NSInteger hour = [components hour];
     NSInteger minute = [components minute];
+    NSLog(@"AlwaysRemindMe DEBUG LOG: year: %ld", (long)year);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: month: %ld", (long)month);
+    NSLog(@"AlwaysRemindMe DEBUG LOG: day: %ld", (long)day);
     NSLog(@"AlwaysRemindMe DEBUG LOG: hour: %ld", (long)hour);
     NSLog(@"AlwaysRemindMe DEBUG LOG: minute: %ld", (long)minute);
 
     NSDate *currentDateTime = [NSDate date];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"HH:mm"];
+    // NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    // [dateFormatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+    NSLog(@"AlwaysRemindMe LOG: 7");
 
-    [prefs setValue:[dateFormatter stringFromDate:currentDateTime] forKey:@"pfTimeCurrent"];
+    // [prefs setValue:[dateFormatter stringFromDate:currentDateTime] forKey:@"pfTimeCurrent"];
+    [prefs setValue:currentDateTime forKey:@"pfTimeCurrent"];
     NSDate *fireDateCurrent = [prefs objectForKey:@"pfTimeCurrent"];
+    NSLog(@"AlwaysRemindMe LOG: 8");
 
-    [dateFormatter release];
+    // [dateFormatter release];
 
 	if (!fireDate || [fireDateCurrent compare:fireDate] == NSOrderedDescending){
 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
 		return;
 	}
+    NSLog(@"AlwaysRemindMe LOG: 9");
+    //
+    // UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+    // content.title = @"Wake up!";
+    // content.body = @"Rise and shine! It's morning time!";
+    // NSLog(@"AlwaysRemindMe LOG: 10");
+    //
+    // NSDateComponents* date = [[NSDateComponents alloc] init];
+    // date.day = year;
+    // date.month = month;
+    // date.year = day;
+    // date.hour = hour;
+    // date.minute = minute;
+    // UNCalendarNotificationTrigger* trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date repeats:NO];
+    // NSLog(@"AlwaysRemindMe LOG: 11");
+    //
+    // UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound;
+    //
+    // // Create the request object.
+    // UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"MorningAlarm" content:content trigger:trigger];
+    // UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    // [center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
+    //     if(error != nil){
+    //         NSLog(@"AlwaysRemindMe ERROR: %@", error.localizedDescription);
+    //     } else {
+    //         [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    //            if(error != nil){
+    //                NSLog(@"AlwaysRemindMe ERROR: %@", error.localizedDescription);
+    //            } else {
+    //                NSLog(@"all good");
+    //            }
+    //         }];
+    //     }
+    // }];
 
-    UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-    content.title = @"Wake up!";
-    content.body = @"Rise and shine! It's morning time!";
-
-    NSDateComponents* date = [[NSDateComponents alloc] init];
-    date.hour = hour;
-    date.minute = minute;
-    NSLog(@"AlwaysRemindMe DEBUG LOG: date.hour: %ld", (long)date.hour);
-    NSLog(@"AlwaysRemindMe DEBUG LOG: date.minute: %ld", (long)date.minute);
-    UNCalendarNotificationTrigger* trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date repeats:NO];
-
-    // Create the request object.
-    UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"MorningAlarm" content:content trigger:trigger];
-
-    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-    [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-       if(error != nil){
-           NSLog(@"%@", error.localizedDescription);
-       }
-    }];
 
 
 
@@ -986,7 +1015,8 @@ void TimerExampleLoadTimer(){
 	//activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) self] selector:@selector(TimerExampleFired) userInfo:nil];
     //NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - before initWithFireDate");
     //activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:nil selector:nil userInfo:nil];
-    //activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
+    activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
+    NSLog(@"AlwaysRemindMe LOG: %@", activeTimer);
     //activeTimer = [[PCSimpleTimer alloc] initWithTimeInterval:seconds serviceIdentifier:@"com.joshdoctors.disturbmelater" target:self selector:@selector(fireAway) userInfo:nil];
 	// NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 	// [formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
@@ -1002,7 +1032,7 @@ static void TimerExampleNotified(CFNotificationCenterRef center, void *observer,
 		[activeTimer invalidate];
 		activeTimer = nil;
 	}
-    NSLog(@"AlwaysRemindMe LOG: 'TimerExampleLoadTimer' called in 'TimerExampleNotified'");
+    NSLog(@"AlwaysRemindMe LOG: 2 TimerExampleLoadTimer");
 	TimerExampleLoadTimer();
 }
 

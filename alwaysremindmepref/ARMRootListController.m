@@ -82,18 +82,20 @@
 	[viewDatePicker addSubview:picker];
 	[alertController.view addSubview:viewDatePicker];
 
-	NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
-	outputFormatter.dateFormat=@"yyyy/MM/dd HH:mm:ss";
+	// NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+	// outputFormatter.dateFormat=@"yyyy/MM/dd HH:mm:ss";
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
 
 	UIAlertAction* defaultAction = [UIAlertAction
 		actionWithTitle:@"OK"
 				  style:UIAlertActionStyleDefault
 	            handler:^(UIAlertAction * action){
-					  [prefs setValue:[outputFormatter stringFromDate:picker.date] forKey:@"pfTime24"];
+					  //[prefs setValue:[outputFormatter stringFromDate:picker.date] forKey:@"pfTime24"];
+					  [prefs setValue:picker.date forKey:@"pfTime24"];
 					  [prefs writeToFile:PLIST_PATH atomically:YES];
 					  [prefs release];
-					  [outputFormatter release];
+					  // [outputFormatter release];
+					  NSLog(@"AlwaysRemindMe LOG: 1 CFNotificationCenterPostNotification");
 					  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("ch.leroyb.AlwaysRemindMePref.timerChanged"), nil, nil, TRUE);
                 }];
 
