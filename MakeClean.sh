@@ -1,6 +1,6 @@
 #!/bin/bash
 
-find ../ -name ".DS_Store" -depth -exec rm {} -print \;
+find ../ -name ".DS_Store" -depth -exec rm {} \;
 
 echo "Cleaning..."
 make clean
