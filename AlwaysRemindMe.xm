@@ -16,33 +16,6 @@ features:
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
 */
 
-#import <UserNotifications/UserNotifications.h>
-
-// Defining all needed interfaces
-// @interface UNNotificationContent : NSObject
-// @end
-//
-// @interface UNMutableNotificationContent : UNNotificationContent
-//     @property (nonatomic,copy) NSString * body;
-//     @property (nonatomic,copy) NSString * title;
-// @end
-//
-// @interface UNNotificationRequest : NSObject
-// +(id)requestWithIdentifier:(id)arg1 content:(id)arg2 trigger:(id)arg3;
-// @end
-//
-// @interface UNNotificationTrigger : NSObject
-// @end
-//
-// @interface UNCalendarNotificationTrigger : UNNotificationTrigger
-//     +(id)triggerWithDateMatchingComponents:(id)arg1 repeats:(BOOL)arg2;
-// @end
-//
-// @interface UNUserNotificationCenter : NSObject
-//     +(id)currentNotificationCenter;
-//     -(void)addNotificationRequest:(id)arg1 withCompletionHandler:(id)arg2;
-// @end
-
 @interface SpringBoard
 @end
 
@@ -96,11 +69,15 @@ features:
 
 
 //define var and assign default or nil values
-
 #define PLIST_PATH @"/var/mobile/Library/Preferences/ch.leroyb.AlwaysRemindMePref.plist"
 
+static bool twShouldNotShowReminder = YES;
 static bool twIsEnabled = NO;
-//static bool twIsViewPresented = NO;
+static bool twIsViewPresented = NO;
+CGSize screenSize;
+UIView* selfViewHomescreen;
+UIView* selfViewLockscreen;
+
 static NSNumber *twWhichScreenChoice = nil;
 static NSString *twTextLabelVar = @"";
 static NSString *twTextLabelVar1 = @"";
@@ -108,9 +85,10 @@ static NSString *twTextLabelVar1 = @"";
 static bool twIsTimerEnabled = NO;
 static NSString *twTime24 = @"12:00";
 static NSString *twTimeCurrent = @"";
-static NSString *twTimerCustom = @"12";
-// static NSNumber *twTimerChoice = nil;
-static PCSimpleTimer *activeTimer = nil;
+static NSNumber *twTimerCustom = nil;
+static NSNumber *twTimerChoice = nil;
+static PCSimpleTimer *activateTimer = nil;
+static PCSimpleTimer *durationTimer = nil;
 
 static NSNumber *twFramePosChoice = nil;
 static NSNumber *twFrameX = nil;
@@ -203,8 +181,8 @@ static void loadPrefs(){
         twIsTimerEnabled		= ([prefs objectForKey:@"pfIsTimerEnabled"] ? [[prefs objectForKey:@"pfIsTimerEnabled"] boolValue] : twIsTimerEnabled);
         twTime24        		= ([prefs objectForKey:@"pfTime24"] ? [[prefs objectForKey:@"pfTime24"] description] : twTime24);
         twTimeCurrent      		= ([prefs objectForKey:@"pfTimeCurrent"] ? [[prefs objectForKey:@"pfTimeCurrent"] description] : twTimeCurrent);
-        // twTimerChoice           = ([prefs objectForKey:@"pfTimerChoice"] ? [prefs objectForKey:@"pfTimerChoice"] : twTimerChoice);
-        twTimerCustom        	= ([prefs objectForKey:@"pfTimerCustom"] ? [[prefs objectForKey:@"pfTimerCustom"] description] : twTimerCustom);
+        twTimerChoice           = ([prefs objectForKey:@"pfTimerChoice"] ? [prefs objectForKey:@"pfTimerChoice"] : twTimerChoice);
+        twTimerCustom        	= ([prefs objectForKey:@"pfTimerCustom"] ? [prefs objectForKey:@"pfTimerCustom"] : twTimerCustom);
 
 		twFramePosChoice		= ([prefs objectForKey:@"pfFramePosChoice"] ? [prefs objectForKey:@"pfFramePosChoice"] : twFramePosChoice);
 		twFrameX				= ([prefs objectForKey:@"pfFrameX"] ? [prefs objectForKey:@"pfFrameX"] : twFrameX);
@@ -653,8 +631,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			NSLog(@"AlwaysRemindMe ISSUE: switch -> twPulseSizeChoice is default");
                 varPulseSize = @2;
     			break;
-    	}
-    	//switch twPulseSize end
+    	}//switch twPulseSize end
         switch ([twPulseSpeedChoice intValue]){
     		case 1://default
     			varPulseSpeed = @1;
@@ -813,28 +790,48 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 %hook SBHomeScreenViewController
 
 	-(void)viewDidLoad{
-        %orig;
-        // NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
+        // gets the current screen size and view
+		screenSize = [UIScreen mainScreen].bounds.size;
+        selfViewHomescreen = self.view;
 
-        // gets the current screen width and height
-		CGSize screenSize = [UIScreen mainScreen].bounds.size;
-		CGFloat screenHeight = screenSize.height;
-		CGFloat screenWidth = screenSize.width;
-        // gets the current view
-        UIView* selfView = self.view;
-
-		if(twIsEnabled){
-            // if screen choice is ether 'Both' or 'Homescreen'
-			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
-				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
-                //drawAlwaysRemindMe(screenHeight/2, screenWidth/2, selfView);
-                //twIsViewPresented = YES;
-			}
-		}
         if(twShouldDelete){
-            dealloc(selfView);
+            NSLog(@"AlwaysRemindMe DEBUG LOG: *************************** twShouldDelete %d", twShouldDelete);
+            twShouldDelete = NO;
+            dealloc(selfViewHomescreen);
+        }
+
+        %orig;
+
+        if(twIsEnabled){
+            NSLog(@"AlwaysRemindMe DEBUG LOG: 1 twIsEnabled %d", twIsEnabled);
+            if(twIsTimerEnabled){
+                NSLog(@"AlwaysRemindMe DEBUG LOG: 2 twIsTimerEnabled %d", twIsTimerEnabled);
+                if(!twShouldNotShowReminder){
+                    NSLog(@"AlwaysRemindMe DEBUG LOG: 3 twShouldNotShowReminder %d", twShouldNotShowReminder);
+                    return;
+                } else {
+                    // if screen choice is ether 'Both' or 'Homescreen'
+        			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
+                        NSLog(@"AlwaysRemindMe DEBUG LOG: 4 twWhichScreenChoice");
+        				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
+                        twIsViewPresented = YES;
+        			}
+                }
+            } else {
+                // if screen choice is ether 'Both' or 'Homescreen'
+    			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
+                    NSLog(@"AlwaysRemindMe DEBUG LOG: 4 twWhichScreenChoice");
+    				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
+                    twIsViewPresented = YES;
+    			}
+            }
         }
 	}
+
+    %new
+    -(void)drawAlwaysRemindMeView{
+
+    }
 
     // new 'SBHomeScreenViewController' methode to show an alert if one or more user defined values are invalid
     %new
@@ -882,19 +879,20 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	-(void)viewDidLoad{
         %orig;
-
-        CGSize screenSize = [UIScreen mainScreen].bounds.size;
-		CGFloat screenHeight = screenSize.height;
-		CGFloat screenWidth = screenSize.width;
         UIView* selfView = self.view;
 
 		if(twIsEnabled){
+            if(twIsTimerEnabled){
+                if(!twShouldNotShowReminder){
+                    return;
+                }
+            }
             // if screen choice is ether 'Both' or 'Lockscreen'
 			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 2)){
-				drawAlwaysRemindMe(screenHeight, screenWidth, selfView);
-                //twIsViewPresented = YES;
+				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfView);
+                twIsViewPresented = YES;
 			}
-		}
+        }
         if(twShouldDelete){
             dealloc(selfView);
         }
@@ -914,11 +912,50 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 %hook SBClockDataProvider
 
+    %new
+    -(void)TimerExampleFired1{
+        NSLog(@"AlwaysRemindMe DEBUG LOG: ############### TimerExampleFired1 ##################");
+        twShouldNotShowReminder = YES;
+        [[%c(SBHomeScreenViewController) alloc] viewDidLoad];
+    }
+
     %new - (void)TimerExampleFired{
     	NSLog(@"AlwaysRemindMe DEBUG LOG: ############### TimerExampleFired ##################");
+        twShouldNotShowReminder = NO;
+        [[%c(SBHomeScreenViewController) alloc] viewDidLoad];
+        NSNumber *varTimerCustom = nil;
+        switch ([twTimerChoice intValue]){
+    		case 1://5min
+    			varTimerCustom = @5;
+    			break;
+    		case 2://15min
+    			varTimerCustom = @15;
+    			break;
+            case 3://30min
+    			varTimerCustom = @30;
+    			break;
+            case 4://60min
+    			varTimerCustom = @60;
+    			break;
+    		case 999://Custom
+                if([twTimerCustom isKindOfClass:[NSNull class]]){
+                    varTimerCustom = @60;
+                    customHasIssue = YES;
+                    customHasIssueText = @"Your custom 'timer' value is invalid!";
+                } else {
+                    varTimerCustom = twTimerCustom;
+                }
+    			break;
+    		default:
+    			NSLog(@"AlwaysRemindMe ISSUE: switch -> twTimerChoice is default");
+                varTimerCustom = @60;
+    			break;
+    	}//switch twPulseSize end
+        durationTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:[varTimerCustom doubleValue] serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired1) userInfo:nil];
+        [durationTimer scheduleInRunLoop:[NSRunLoop mainRunLoop]];
 
         // draw reminder and show for choise lenght
-        // make timer for repeat 
+        // make timer for repeat
     }
 
 %end //hook SBClockDataProvider
@@ -938,17 +975,17 @@ void TimerExampleLoadTimer(){
 		NSLog(@"AlwaysRemindMe LOG: TimerExampleLoadTimer - invalid or in the past");
 		return;
 	}
-    activeTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
-    [activeTimer scheduleInRunLoop:[NSRunLoop mainRunLoop]];
+    activateTimer = [[%c(PCSimpleTimer) alloc] initWithFireDate:fireDate serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired) userInfo:nil];
+    [activateTimer scheduleInRunLoop:[NSRunLoop mainRunLoop]];
 
 }
 
 static void TimerExampleNotified(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
 
 	// kill old timer
-	if (activeTimer){
-		[activeTimer invalidate];
-		activeTimer = nil;
+	if (activateTimer){
+		[activateTimer invalidate];
+		activateTimer = nil;
 	}
 	TimerExampleLoadTimer();
 }
@@ -956,6 +993,8 @@ static void TimerExampleNotified(CFNotificationCenterRef center, void *observer,
 static void preferencesChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferencesChanged'");
+    // twShouldDelete = YES;
+    // [[%c(SBHomeScreenViewController) alloc] viewDidLoad];
 }
 
 %ctor{

@@ -138,10 +138,6 @@
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>
 		</dict>
 		<dict>
-			<key>key</key>
-			<string>pfTimeCurrent</string>
-		</dict>
-		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
@@ -153,7 +149,7 @@
 			<key>cell</key>
 			<string>PSSegmentCell</string>
 			<key>default</key>
-			<string>Default</string>
+			<integer>1</integer>
 			<key>defaults</key>
 			<string>ch.leroyb.AlwaysRemindMePref</string>
 			<key>key</key>
