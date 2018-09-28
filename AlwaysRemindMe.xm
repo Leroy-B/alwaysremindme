@@ -868,6 +868,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         } else {
             isAlertShowing = NO;
             [alert dismissViewControllerAnimated:YES completion:^{}];
+            [alert release];
         }
         //NSLog(@"AlwaysRemindMe ISSUE: customHasIssue -> %@ ", customHasIssueText);
     }

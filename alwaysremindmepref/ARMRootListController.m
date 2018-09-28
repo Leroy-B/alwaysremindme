@@ -95,6 +95,7 @@
 
 	[alertController addAction:defaultAction];
 	[self presentViewController:alertController animated:YES completion:nil];
+	[alertController release];
 
 }
 
@@ -126,6 +127,7 @@
 						}];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
+	[alert release];
 }
 
 -(void)showMonero{
@@ -143,6 +145,7 @@
 						}];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
+	[alert release];
 }
 
 -(void)showPayPal{
@@ -170,7 +173,7 @@
                             }];
 	[alert addAction:okButton];
 	[self presentViewController:alert animated:YES completion:nil];
-
+	[alert release];
 }
 
 -(void)respring{
@@ -181,7 +184,7 @@
 		posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
 		waitpid(pid, &status, WEXITED);
 	} else {
-		UIAlertController *alert=   [UIAlertController
+		UIAlertController *alert = [UIAlertController
 								alertControllerWithTitle:@"AlwaysRemindMe: PIRACY"
 								message:@"Piracy hurts :(\nyou have to wait 15sec!"
 								preferredStyle:UIAlertControllerStyleAlert];
@@ -195,6 +198,7 @@
 				posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
 				waitpid(pid, &status, WEXITED);
 			}];
+			[alert release];
 		});
 
 	}
