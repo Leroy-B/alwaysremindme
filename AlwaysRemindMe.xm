@@ -817,7 +817,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 } else {
                     NSLog(@"AlwaysRemindMe DEBUG LOG: 3b");
                     // if screen choice is ether 'Both' or 'Homescreen'
-        			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
+        			if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
         				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
                         twIsViewPresented = YES;
         			}
@@ -825,7 +825,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
             } else {
                 NSLog(@"AlwaysRemindMe DEBUG LOG: 3c (no timer)");
                 // if screen choice is ether 'Both' or 'Homescreen'
-    			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
+    			if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)){
     				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
                     twIsViewPresented = YES;
     			}
@@ -903,7 +903,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         %orig(arg1);
         if(customHasIssue){
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [[[%c(SBHomeScreenViewController) alloc] autorelease] showCustomHasIssueAlert];
+                [[%c(SBHomeScreenViewController) alloc] showCustomHasIssueAlert];
             });
 
         }
@@ -917,7 +917,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     -(void)TimerExampleFired1{
         //NSLog(@"AlwaysRemindMe DEBUG LOG: ############### TimerExampleFired1 ##################");
         twShouldNotShowReminder = YES;
-        //[[[%c(SBHomeScreenViewController) alloc] autorelease] drawAlwaysRemindMeView];
+        //[[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
     }
 
     %new
