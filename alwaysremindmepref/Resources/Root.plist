@@ -938,14 +938,14 @@
 			<key>label</key>
 			<string>actions</string>
 		</dict>
-		<dict>
+		<!-- <dict>
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
 			<string>Apply settings and respring!</string>
 			<key>action</key>
 			<string>respring</string>
-		</dict>
+		</dict> -->
 		<dict>
 			<key>cell</key>
 			<string>PSButtonCell</string>

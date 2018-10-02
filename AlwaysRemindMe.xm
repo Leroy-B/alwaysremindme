@@ -30,6 +30,7 @@ features:
 
 @interface SBClockDataProvider : NSObject
     +(id)sharedInstance;
+    -(void)TimerExampleFired;
 @end
 
 @interface UIColor(Hexadecimal)
@@ -77,8 +78,9 @@ static bool twShouldNotShowReminder = YES;
 static bool twIsEnabled = NO;
 static bool twIsViewPresented = NO;
 CGSize screenSize;
-UIView* selfViewHomescreen;
-UIView* selfViewLockscreen;
+UIView *selfViewHomescreen;
+UIView *selfViewLockscreen;
+UILabel *twTextLabel;
 
 static NSNumber *twWhichScreenChoice = nil;
 static NSString *twTextLabelVar = @"";
@@ -137,7 +139,6 @@ static NSNumber *twPulseSpeed = nil;
 static NSNumber *twPulseSize = nil;
 static NSNumber *twPulseCount = nil;
 
-static bool twShouldDelete = NO;
 static bool customHasIssue = NO;
 static NSString *customHasIssueText = @"";
 static bool isAlertShowing = NO;
@@ -233,15 +234,6 @@ static void loadPrefs(){
 	//NSLog(@"AlwaysRemindMe LOG: after prefs: %@", prefs);
     [prefs release];
 }
-
-// ############################# GENERAL FUNC ### START ####################################
-
-static void dealloc(UIView *currentView){
-    // [currentView release], currentView = nil;
-    [currentView release]; //causes crash
-}
-
-// ############################# GENERAL FUNC ### END ####################################
 
 // ############################# ANIMATIONS ### START ####################################
 
@@ -413,8 +405,11 @@ static void performBlinkAnimated(UIView *currentView, NSNumber *duration, NSNumb
 // creates 'UILabel' on the selected screen
 static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView *currentView){
 
-    UILabel *twTextLabel = [[UILabel alloc] init];
-    twTextLabel.numberOfLines=0;
+    // removes the old label
+    [twTextLabel removeFromSuperview];
+
+    twTextLabel = [[UILabel alloc] init];
+    twTextLabel.numberOfLines = 0;
     if ([twTextLabelVar1 isEqualToString:@""]){
         twTextLabel.text = twTextLabelVar;
     } else {
@@ -539,7 +534,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	} else {
 		[twTextLabel setBackgroundColor: [UIColor clearColor]];
     }
-
+    // add the label view to the superView
 	[currentView addSubview:twTextLabel];
 
     //rainbow
@@ -586,13 +581,14 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			//NSLog(@"AlwaysRemindMe ISSUE: switch -> twRotationSpeedChoice is default");
     			break;
     	}//switch twRotationSpeedChoice end
-        if(!twRotationDelay){
+        if([twRotationDelay isKindOfClass:[NSNull class]]){
             varRotationDelay = @2;
             customHasIssue = YES;
             customHasIssueText = @"Your custom 'rotation delay' value is invalid!";
         } else {
             varRotationDelay = twRotationDelay;
         }
+
         if([twRotationCount isKindOfClass:[NSNull class]]){
             varRotationCount = @0;
             customHasIssue = YES;
@@ -646,7 +642,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varPulseSpeed = @2;
     			break;
     		case 999:// custom
-                if(!twPulseSpeed){
+                if([twPulseSpeed isKindOfClass:[NSNull class]]){
                     varPulseSpeed = @1;
                     customHasIssue = YES;
                     customHasIssueText = @"Your custom 'pulse speed' value is invalid!";
@@ -703,19 +699,17 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			break;
     	}//switch twShakeDurationChoice end
 
-        // //NSLog(@"AlwaysRemindMe LOG: twShakeXAmount: %@", twShakeXAmount);
-        // //NSLog(@"AlwaysRemindMe LOG: twShakeYAmount: %@", twShakeYAmount);
-        if(!twShakeXAmount && !twShakeYAmount){
+        if([twShakeXAmount isKindOfClass:[NSNull class]] && [twShakeYAmount isKindOfClass:[NSNull class]]){
             varShakeXAmount = @10;
             varShakeYAmount = @0;
             customHasIssue = YES;
             customHasIssueText = @"Your custom 'shake position' values is invalid!";
-        } else if(!twShakeXAmount && twShakeXAmount != 0){
+        } else if([twShakeXAmount isKindOfClass:[NSNull class]] && twShakeXAmount != 0){
             varShakeXAmount = @0;
             varShakeYAmount = twShakeYAmount;
             customHasIssue = YES;
             customHasIssueText = @"Your custom 'X shake' value is invalid!";
-        } else if(!twShakeYAmount && twShakeYAmount != 0){
+        } else if([twShakeYAmount isKindOfClass:[NSNull class]] && twShakeYAmount != 0){
             varShakeXAmount = twShakeXAmount;
             varShakeYAmount = @0;
             customHasIssue = YES;
@@ -751,7 +745,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			varBlinkSpeed = @1;
     			break;
     		case 999:// custom
-                if(!twBlinkSpeed){
+                if([twBlinkSpeed isKindOfClass:[NSNull class]]){
                     varBlinkSpeed = @0.5;
                     customHasIssue = YES;
                     customHasIssueText = @"Your custom 'blink speed' value is invalid!";
@@ -792,7 +786,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 //setting text on SB
 %hook SBHomeScreenViewController
 
-	-(void)viewDidLoad{
+	-(void)viewDidLoad {
         // gets the current screen size and view
 		screenSize = [UIScreen mainScreen].bounds.size;
         selfViewHomescreen = self.view;
@@ -801,13 +795,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	}
 
     %new
-    -(void)drawAlwaysRemindMeView{
-        if(twShouldDelete){
-            NSLog(@"AlwaysRemindMe DEBUG LOG: 2");
-            //NSLog(@"AlwaysRemindMe DEBUG LOG: *************************** twShouldDelete %d", twShouldDelete);
-            twShouldDelete = NO;
-            dealloc(self.view);
-        }
+    -(void)drawAlwaysRemindMeView {
 
         if(twIsEnabled){
             if(twIsTimerEnabled){
@@ -894,9 +882,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
                 twIsViewPresented = YES;
 			}
         }
-        // if(twShouldDelete){
-        //     dealloc(selfView);
-        // }
 	}
 
     -(void)viewDidDisappear:(BOOL)arg1{
@@ -914,15 +899,8 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 %hook SBClockDataProvider
 
     %new
-    -(void)TimerExampleFired1{
-        //NSLog(@"AlwaysRemindMe DEBUG LOG: ############### TimerExampleFired1 ##################");
-        twShouldNotShowReminder = YES;
-        //[[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
-    }
-
-    %new
-    -(void)TimerExampleFired{
-    	//NSLog(@"AlwaysRemindMe DEBUG LOG: ############### TimerExampleFired ##################");
+    -(void)TimerExampleFired {
+    	NSLog(@"AlwaysRemindMe DEBUG LOG: ############### TimerExampleFired ##################");
         twShouldNotShowReminder = NO;
         [[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
         NSNumber *varTimerCustom = nil;
@@ -952,7 +930,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     			//NSLog(@"AlwaysRemindMe ISSUE: switch -> twTimerChoice is default");
                 varTimerCustom = @60;
     			break;
-    	}//switch twPulseSize end
+    	}//switch twTimerChoice end
         durationTimer = [[%c(PCSimpleTimer) alloc] initWithTimeInterval:[varTimerCustom doubleValue] serviceIdentifier:@"ch.leroyb.AlwaysRemindMePref" target:[%c(SBClockDataProvider) sharedInstance] selector:@selector(TimerExampleFired1) userInfo:nil];
         [durationTimer scheduleInRunLoop:[NSRunLoop mainRunLoop]];
 
@@ -994,9 +972,7 @@ static void TimerExampleNotified(CFNotificationCenterRef center, void *observer,
 
 static void preferencesChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
     loadPrefs();
-	//NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferencesChanged'");
-    NSLog(@"AlwaysRemindMe DEBUG LOG: 1");
-    twShouldDelete = YES;
+	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferencesChanged'");
     [[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
 }
 
