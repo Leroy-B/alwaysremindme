@@ -725,6 +725,8 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>blinking Animation</string>
+			<key>footerText</key>
+			<string>Smaller 'speed' value means faster animation. Value is in seconds.</string>
 		</dict>
 		<dict>
 		 	<key>cell</key>
@@ -802,7 +804,7 @@
 			<key>label</key>
 			<string>Pulse Animation</string>
 			<key>footerText</key>
-			<string>Use '0' as count to repeat the animtion indefinitely.</string>
+			<string>Smaller 'speed' value means faster animation. Value is in seconds. Use '0' as count to repeat the animtion indefinitely.</string>
 		</dict>
 		<dict>
 		 	<key>cell</key>
