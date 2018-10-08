@@ -34,9 +34,7 @@ features:
 @end
 
 @interface UIColor(Hexadecimal)
-
     +(UIColor *)colorFromHex:(NSString *)hexString;
-
 @end
 
 @implementation UIColor(Hexadecimal)
@@ -80,6 +78,7 @@ static bool twIsViewPresented = NO;
 CGSize screenSize;
 UIView *selfViewHomescreen;
 UIView *selfViewLockscreen;
+UIWindow *selfViewAboveAll;
 UILabel *twTextLabel;
 
 static NSNumber *twWhichScreenChoice = nil;

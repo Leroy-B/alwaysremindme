@@ -91,12 +91,14 @@
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+				<integer>3</integer>
 			</array>
 			<key>validTitles</key>
 			<array>
-				<string>Both</string>
+				<string>Home and Lock</string>
 				<string>Homescreen</string>
 				<string>Lockscreen</string>
+				<string>Above all</string>
 			</array>
 			<key>PostNotification</key>
 			<string>ch.leroyb.AlwaysRemindMePref.preferencesChanged</string>

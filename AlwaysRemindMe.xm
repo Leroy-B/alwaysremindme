@@ -134,7 +134,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
         		varFrameX = absolutCenter;
         		varFrameY = screenHeight/2;
         		break;
-        	case 999:// custom
+        	case 999://custom
 
             // ************************ this need working *******************************
                 if(!twFrameX && !twFrameY){
@@ -492,22 +492,25 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
         if(twIsTimerEnabled) {
             if(!twShouldNotShowReminder) {
-                NSLog(@"AlwaysRemindMe DEBUG LOG: 3a twShouldNotShowReminder %d", twShouldNotShowReminder);
                 return;
             } else {
-                NSLog(@"AlwaysRemindMe DEBUG LOG: 3b");
                 // if screen choice is ether 'Both' or 'Homescreen'
     			if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)) {
     				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
                     twIsViewPresented = YES;
-    			}
+    			} else if([twWhichScreenChoice intValue] == 3){
+					drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewAboveAll);
+                    twIsViewPresented = YES;
+				}
             }
         } else {
-            NSLog(@"AlwaysRemindMe DEBUG LOG: 3c (no timer)");
             // if screen choice is ether 'Both' or 'Homescreen'
 			if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)) {
 				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
                 twIsViewPresented = YES;
+			} else if([twWhichScreenChoice intValue] == 3){
+				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewAboveAll);
+				twIsViewPresented = YES;
 			}
         }
     }
@@ -549,7 +552,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
             [alert dismissViewControllerAnimated:YES completion:^{}];
             [alert release];
         }
-        //NSLog(@"AlwaysRemindMe ISSUE: customHasIssue -> %@ ", customHasIssueText);
     }
 
 %end //hook SBHomeScreenViewController
@@ -557,23 +559,51 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 //setting text on LS
 %hook SBLockScreenViewControllerBase
 
-	-(void)viewDidLoad{
-        %orig;
-        UIView* selfView = self.view;
+	-(void)viewDidLoad {
 
-		if(twIsEnabled){
-            if(twIsTimerEnabled){
-                if(!twShouldNotShowReminder){
-                    return;
-                }
+		%orig;
+        // gets the current screen size and view
+		screenSize = [UIScreen mainScreen].bounds.size;
+        selfViewLockscreen = self.view;
+
+		selfViewAboveAll = [[UIWindow alloc] initWithFrame: [[UIScreen mainScreen] bounds]];
+		selfViewAboveAll.windowLevel = UIWindowLevelStatusBar + 100;
+    	selfViewAboveAll.hidden = NO;
+		selfViewAboveAll.userInteractionEnabled = NO;
+		//[selfViewAboveAll _setSecure:YES];
+		selfViewAboveAll._setSecure = YES;
+
+        [[%c(SBLockScreenViewControllerBase) alloc] drawAlwaysRemindMeView];
+
+	}
+
+    %new
+    -(void)drawAlwaysRemindMeView {
+
+        if(twIsTimerEnabled) {
+            if(!twShouldNotShowReminder) {
+                return;
+            } else {
+                // if screen choice is ether 'Both' or 'Homescreen'
+    			if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)) {
+    				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewLockscreen);
+                    twIsViewPresented = YES;
+    			} else if([twWhichScreenChoice intValue] == 3){
+					drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewAboveAll);
+                    twIsViewPresented = YES;
+				}
             }
-            // if screen choice is ether 'Both' or 'Lockscreen'
-			if (([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 2)){
-				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfView);
+        } else {
+            // if screen choice is ether 'Both' or 'Homescreen'
+			if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)) {
+				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewLockscreen);
                 twIsViewPresented = YES;
+			} else if([twWhichScreenChoice intValue] == 3){
+				drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewAboveAll);
+				twIsViewPresented = YES;
 			}
         }
-	}
+    }
 
     -(void)viewDidDisappear:(BOOL)arg1{
         %orig(arg1);
