@@ -1,21 +1,3 @@
-/*
-TODO:
-    - show drawAlwaysRemindMeView opon respring
-    - combine all switch() into one func
-    - can copy pref panel text -> fix me
-    - combine all show func in Root Controller into one func
-    - default text and background color are both black
-    - switch 2 background colors custom speed
-*/
-
-/*
-features:
-    - batman wirbel (phil fragen)
-    - touch on label [open action sheet(show all and share sheet), open pref panel, select time to be reminded at]
-    - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
-    - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
-*/
-
 @interface SpringBoard
 @end
 
@@ -31,6 +13,10 @@ features:
 @interface SBClockDataProvider : NSObject
     +(id)sharedInstance;
     -(void)TimerExampleFired;
+@end
+
+@interface UIWindow (Private)
+	@property (getter=_isSecure, setter=_setSecure:) BOOL _secure;
 @end
 
 @interface UIColor(Hexadecimal)
