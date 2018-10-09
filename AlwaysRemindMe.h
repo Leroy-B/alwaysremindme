@@ -58,7 +58,7 @@
 //define var and assign default or nil values
 #define PLIST_PATH @"/var/mobile/Library/Preferences/ch.leroyb.AlwaysRemindMePref.plist"
 
-static bool twShouldNotShowReminder = YES;
+static bool twShouldShowReminder = YES;
 static bool twIsEnabled = NO;
 static bool twIsViewPresented = NO;
 CGSize screenSize;

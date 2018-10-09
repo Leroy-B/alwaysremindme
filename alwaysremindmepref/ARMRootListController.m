@@ -89,7 +89,6 @@
 					  [prefs setValue:picker.date forKey:@"pfTime24"];
 					  [prefs writeToFile:PLIST_PATH atomically:YES];
 					  [prefs release];
-					  NSLog(@"AlwaysRemindMe LOG: 1 CFNotificationCenterPostNotification");
 					  CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("ch.leroyb.AlwaysRemindMePref.timerChanged"), nil, nil, TRUE);
                 }];
 
