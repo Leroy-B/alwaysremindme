@@ -59,7 +59,7 @@
 }
 
 -(IBAction)share:(UIBarButtonItem *)sender{
-	NSString *textToShare = @"Click the link below to add LeroyB's repository to Cydia!";
+	NSString *textToShare = @"Click the link below to add LeroyB's beta repository to Cydia!";
     NSURL *myWebsite = [NSURL URLWithString:@"cydia://url/https://cydia.saurik.com/api/share#?source=https://leroy-b.github.io/home/repo/"];
     NSArray *activityItems = @[textToShare, myWebsite];
     UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
@@ -175,32 +175,32 @@
 	[alert release];
 }
 
--(void)respring{
-	if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/ch.leroyb.alwaysremindme.list"]){
-		pid_t pid;
-		int status;
-		const char* argv[] ={"killall", "SpringBoard", NULL};
-		posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
-		waitpid(pid, &status, WEXITED);
-	} else {
-		UIAlertController *alert = [UIAlertController
-								alertControllerWithTitle:@"AlwaysRemindMe: PIRACY"
-								message:@"Piracy hurts :(\nyou have to wait 15sec!"
-								preferredStyle:UIAlertControllerStyleAlert];
-								[self presentViewController:alert animated:YES completion:nil];
-
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-			[alert dismissViewControllerAnimated:YES completion:^{
-				pid_t pid;
-				int status;
-				const char* argv[] ={"killall", "SpringBoard", NULL};
-				posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
-				waitpid(pid, &status, WEXITED);
-			}];
-			[alert release];
-		});
-
-	}
-}
+// -(void)respring{
+// 	if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/ch.leroyb.alwaysremindme.list"]){
+// 		pid_t pid;
+// 		int status;
+// 		const char* argv[] ={"killall", "SpringBoard", NULL};
+// 		posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
+// 		waitpid(pid, &status, WEXITED);
+// 	} else {
+// 		UIAlertController *alert = [UIAlertController
+// 								alertControllerWithTitle:@"AlwaysRemindMe: PIRACY"
+// 								message:@"Piracy hurts :(\nyou have to wait 15sec!"
+// 								preferredStyle:UIAlertControllerStyleAlert];
+// 								[self presentViewController:alert animated:YES completion:nil];
+//
+// 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+// 			[alert dismissViewControllerAnimated:YES completion:^{
+// 				pid_t pid;
+// 				int status;
+// 				const char* argv[] ={"killall", "SpringBoard", NULL};
+// 				posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
+// 				waitpid(pid, &status, WEXITED);
+// 			}];
+// 			[alert release];
+// 		});
+//
+// 	}
+// }
 
 @end //ARMRootListController

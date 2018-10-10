@@ -965,6 +965,8 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>infos</string>
+			<key>footerText</key>
+			<string>AlwaysRemindMe by LeroyB. Version 1.0.1 Build Wed 10.10.18</string>
 		</dict>
 		<dict>
 			<key>icon</key>
