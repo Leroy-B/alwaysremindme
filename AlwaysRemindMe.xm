@@ -9,7 +9,8 @@ TODO:
 */
 
 /*
-features:
+features TODO:
+	- Animation: glow background/radius example in the beginig of drawFunc
     - touch on label [open action sheet(show all and share sheet), open pref panel, select time to be reminded at]
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
@@ -17,11 +18,33 @@ features:
 	- location based
 */
 
+/*
+Current features:
+	- Create a label with max 2 rows
+	- Choose a onscreen location [ Homescreen, Lockscreen, Both, AboveAll ]
+	- Show label at a timestamp for n min
+	- Choose a onscreen position [ Below StatusBar, Above the Dock, Center, Custom ]
+	- Custom font [ familie, size, color ]
+	- Custom background color or rainbow (changes background every n seconds)
+
+	- Animations:
+		- Rotation [ speed, delay, count ]
+		- Shake/Move [ x and y position, duration, count ]
+		- Blinking [ speed ]
+		- Pulsing [ speed, size, count ]
+*/
+
+/*
+Idea credits:
+	- u/RapingTheWilling [changing the animations and adding more precision settings]
+	- u/brkr1 [scheduling the appearance of the label]
+*/
+
 #include "AlwaysRemindMe.h"
 #include "animations.xm"
 
 // function for loading values from the tweak's plist
-static void loadPrefs(){
+static void loadPrefs() {
     // storing in a key and value fashon for easy access
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
     if(prefs){
@@ -110,7 +133,7 @@ static void loadPrefs(){
     [prefs release];
 }
 
-void TimerLoadTimer(){
+void TimerLoadTimer() {
 	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:PLIST_PATH];
 	if (!prefs){
 		return;
@@ -135,86 +158,33 @@ void TimerLoadTimer(){
 
 }
 
+static void removeAllLabelSubviews(UIView *parentView) {
+	for (UIView *subView in parentView.subviews) {
+		if ([subView isKindOfClass:[UILabel class]]) {
+			[subView removeFromSuperview];
+		}
+	}
+}
+
 // ############################# DRAW LABEL ### START ####################################
 
 // creates 'UILabel' on the selected screen
 static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView *currentView){
 
-	// if([twWhichScreenChoice intValue] == 0) {
-	// 	NSLog(@"AlwaysRemindMe DEBUG: currentView.subviews %@", currentView.subviews);
-	// 	for (UIView *subView in currentView.subviews) {
-	//         if ([subView isKindOfClass:[UILabel class]]) {
-	// 			NSLog(@"AlwaysRemindMe DEBUG: subView %@", subView);
-	//             [subView removeFromSuperview];
-	//         }
-	//     }
-	//
-	// } else {
-	// 	for (UIView *subView in currentView.subviews) {
-	//         if ([subView isKindOfClass:[UILabel class]]) {
-	// 			NSLog(@"AlwaysRemindMe DEBUG 1: subView %@", subView);
-	//             [subView removeFromSuperview];
-	//         }
-	//     }
-	// }
-
 	if([twWhichScreenChoice intValue] == 0) {
 		if(shouldRemoveLabel) {
+			removeAllLabelSubviews(selfViewHomescreen);
+			removeAllLabelSubviews(selfViewLockscreen);
+			removeAllLabelSubviews(selfViewAboveAll);
 			shouldRemoveLabel = NO;
-			for (UIView *subView in selfViewHomescreen.subviews) {
-				if ([subView isKindOfClass:[UILabel class]]) {
-					NSLog(@"AlwaysRemindMe DEBUG: Home removed subView: %@", subView);
-					[subView removeFromSuperview];
-				}
-			}
-
-			// [selfViewLockscreen removeFromSuperview];
-			for (UIView *subView in selfViewLockscreen.subviews) {
-				if ([subView isKindOfClass:[UILabel class]]) {
-					NSLog(@"AlwaysRemindMe DEBUG: Lock removed subView: %@", subView);
-					[subView removeFromSuperview];
-				}
-				// break;
-			}
-
-			for (UIView *subView in selfViewAboveAll.subviews) {
-				if ([subView isKindOfClass:[UILabel class]]) {
-					NSLog(@"AlwaysRemindMe DEBUG: AboveAll removed subView: %@", subView);
-					[subView removeFromSuperview];
-				}
-			}
 		} else {
 			shouldRemoveLabel = YES;
 		}
 	} else {
-		for (UIView *subView in selfViewHomescreen.subviews) {
-			if ([subView isKindOfClass:[UILabel class]]) {
-				NSLog(@"AlwaysRemindMe DEBUG: Home removed subView: %@", subView);
-				[subView removeFromSuperview];
-			}
-		}
-
-		for (UIView *subView in selfViewLockscreen.subviews) {
-			if ([subView isKindOfClass:[UILabel class]]) {
-				NSLog(@"AlwaysRemindMe DEBUG: Lock removed subView: %@", subView);
-				[subView removeFromSuperview];
-			}
-		}
-
-		for (UIView *subView in selfViewAboveAll.subviews) {
-			if ([subView isKindOfClass:[UILabel class]]) {
-				NSLog(@"AlwaysRemindMe DEBUG: AboveAll removed subView: %@", subView);
-				[subView removeFromSuperview];
-			}
-		}
+		removeAllLabelSubviews(selfViewHomescreen);
+		removeAllLabelSubviews(selfViewLockscreen);
+		removeAllLabelSubviews(selfViewAboveAll);
 	}
-
-	// if([myNum intValue] > 0) {
-	// 	[twTextLabel removeFromSuperview];
-	// 	myNum = @([myNum intValue] - 1);
-	// } else {
-	// 	myNum = @([myNum intValue] + 1);
-	// }
 
 	// if the timer is enabled but the reminder should not show -> return
 	if(twIsTimerEnabled) {
@@ -226,6 +196,15 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
     if(twIsEnabled) {
         twTextLabel = [[UILabel alloc] init];
         twTextLabel.numberOfLines = 0;
+
+		// UIColor *color = [UIColor colorWithRed:(255/255.0) green:(0/255.0) blue:(0/255.0) alpha:(255/255.0)];
+		// twTextLabel.layer.shadowColor = [color CGColor];
+	    // twTextLabel.layer.shadowRadius = 100.0f;
+	    // twTextLabel.layer.shadowOpacity = .9;
+	    // twTextLabel.layer.shadowOffset = CGSizeZero;
+	    // twTextLabel.layer.masksToBounds = NO;
+
+
         if ([twTextLabelVar1 isEqualToString:@""]){
             twTextLabel.text = twTextLabelVar;
         } else {
