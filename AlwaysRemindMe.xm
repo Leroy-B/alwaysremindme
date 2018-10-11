@@ -140,27 +140,81 @@ void TimerLoadTimer(){
 // creates 'UILabel' on the selected screen
 static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView *currentView){
 
-	// NSLog(@"AlwaysRemindMe DEBUG: start if [twWhichScreenChoice intValue] %d", [twWhichScreenChoice intValue]);
 	// if([twWhichScreenChoice intValue] == 0) {
-	// 	NSLog(@"AlwaysRemindMe DEBUG: if [myNum intValue] %d", [myNum intValue]);
-	// 	if([myNum intValue] > 0) {
-	// 		NSLog(@"AlwaysRemindMe DEBUG: if > 0 [myNum intValue] %d", [myNum intValue]);
-	// 		// removes the old label
-	// 		[twTextLabel removeFromSuperview];
-	// 		myNum = @0;
-	// 	} else {
-	// 		NSLog(@"AlwaysRemindMe DEBUG: else [myNum intValue] %d", [myNum intValue]);
-	// 		myNum = @([myNum intValue] + 1);
-	// 	}
+	// 	NSLog(@"AlwaysRemindMe DEBUG: currentView.subviews %@", currentView.subviews);
+	// 	for (UIView *subView in currentView.subviews) {
+	//         if ([subView isKindOfClass:[UILabel class]]) {
+	// 			NSLog(@"AlwaysRemindMe DEBUG: subView %@", subView);
+	//             [subView removeFromSuperview];
+	//         }
+	//     }
+	//
 	// } else {
-	// 	NSLog(@"AlwaysRemindMe DEBUG: else [twWhichScreenChoice intValue] %d", [twWhichScreenChoice intValue]);
-	// 	// removes the old label
-	// 	[twTextLabel removeFromSuperview];
+	// 	for (UIView *subView in currentView.subviews) {
+	//         if ([subView isKindOfClass:[UILabel class]]) {
+	// 			NSLog(@"AlwaysRemindMe DEBUG 1: subView %@", subView);
+	//             [subView removeFromSuperview];
+	//         }
+	//     }
 	// }
 
-	if([twWhichScreenChoice intValue] != 0) {
-		[twTextLabel removeFromSuperview];
+	if([twWhichScreenChoice intValue] == 0) {
+		if(shouldRemoveLabel) {
+			shouldRemoveLabel = NO;
+			for (UIView *subView in selfViewHomescreen.subviews) {
+				if ([subView isKindOfClass:[UILabel class]]) {
+					NSLog(@"AlwaysRemindMe DEBUG: Home removed subView: %@", subView);
+					[subView removeFromSuperview];
+				}
+			}
+
+			// [selfViewLockscreen removeFromSuperview];
+			for (UIView *subView in selfViewLockscreen.subviews) {
+				if ([subView isKindOfClass:[UILabel class]]) {
+					NSLog(@"AlwaysRemindMe DEBUG: Lock removed subView: %@", subView);
+					[subView removeFromSuperview];
+				}
+				// break;
+			}
+
+			for (UIView *subView in selfViewAboveAll.subviews) {
+				if ([subView isKindOfClass:[UILabel class]]) {
+					NSLog(@"AlwaysRemindMe DEBUG: AboveAll removed subView: %@", subView);
+					[subView removeFromSuperview];
+				}
+			}
+		} else {
+			shouldRemoveLabel = YES;
+		}
+	} else {
+		for (UIView *subView in selfViewHomescreen.subviews) {
+			if ([subView isKindOfClass:[UILabel class]]) {
+				NSLog(@"AlwaysRemindMe DEBUG: Home removed subView: %@", subView);
+				[subView removeFromSuperview];
+			}
+		}
+
+		for (UIView *subView in selfViewLockscreen.subviews) {
+			if ([subView isKindOfClass:[UILabel class]]) {
+				NSLog(@"AlwaysRemindMe DEBUG: Lock removed subView: %@", subView);
+				[subView removeFromSuperview];
+			}
+		}
+
+		for (UIView *subView in selfViewAboveAll.subviews) {
+			if ([subView isKindOfClass:[UILabel class]]) {
+				NSLog(@"AlwaysRemindMe DEBUG: AboveAll removed subView: %@", subView);
+				[subView removeFromSuperview];
+			}
+		}
 	}
+
+	// if([myNum intValue] > 0) {
+	// 	[twTextLabel removeFromSuperview];
+	// 	myNum = @([myNum intValue] - 1);
+	// } else {
+	// 	myNum = @([myNum intValue] + 1);
+	// }
 
 	// if the timer is enabled but the reminder should not show -> return
 	if(twIsTimerEnabled) {
@@ -560,11 +614,10 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 	// new 'SBHomeScreenViewController' methode to call the draw func
     %new
     -(void)drawAlwaysRemindMeView {
-		NSLog(@"AlwaysRemindMe DEBUG: drawAlwaysRemindMeView home");
 		if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 1)) {
 			drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewHomescreen);
 			twIsViewPresented = YES;
-		} else if([twWhichScreenChoice intValue] == 3){
+		} else if([twWhichScreenChoice intValue] == 3) {
 			drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewAboveAll);
 			twIsViewPresented = YES;
 		}
@@ -633,7 +686,6 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 
 	%new
     -(void)drawAlwaysRemindMeView {
-		NSLog(@"AlwaysRemindMe DEBUG: drawAlwaysRemindMeView lock");
 		if(([twWhichScreenChoice intValue] == 0) || ([twWhichScreenChoice intValue] == 2)) {
 			drawAlwaysRemindMe(screenSize.height, screenSize.width, selfViewLockscreen);
 			twIsViewPresented = YES;
@@ -723,8 +775,8 @@ static void TimerChanged(CFNotificationCenterRef center, void *observer, CFStrin
 static void preferencesChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
     loadPrefs();
 	NSLog(@"AlwaysRemindMe LOG: 'loadPrefs' called in 'preferencesChanged'");
-    [[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
-	[[%c(SBLockScreenViewControllerBase) alloc] drawAlwaysRemindMeView];
+    [[%c(SBLockScreenViewControllerBase) alloc] drawAlwaysRemindMeView];
+	[[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
 }
 
 %ctor {

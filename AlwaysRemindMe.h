@@ -128,6 +128,6 @@ static bool customHasIssue = NO;
 static NSString *customHasIssueText = @"";
 static bool isAlertShowing = NO;
 
-static NSNumber *myNum = 0;
+static bool shouldRemoveLabel = NO;
 
 void TimerLoadTimer();
