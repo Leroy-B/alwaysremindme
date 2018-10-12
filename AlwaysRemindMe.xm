@@ -696,7 +696,7 @@ static void drawAlwaysRemindMe(CGFloat screenHeight, CGFloat screenWidth, UIView
 		[[%c(SBHomeScreenViewController) alloc] drawAlwaysRemindMeView];
         [[%c(SBLockScreenViewControllerBase) alloc] drawAlwaysRemindMeView];
         NSNumber *varTimerCustom = nil;
-        switch ([twTimerChoice intValue]){
+        switch ([twTimerChoice intValue]) {
     		case 1://5min
     			varTimerCustom = @5;
     			break;
