@@ -5,17 +5,18 @@ TODO:
     - can copy pref panel text -> fix me
     - combine all show func in Root Controller into one func
     - (✔) default text and background color are both black
-    - switch 2 background colors custom speed
+
 */
 
 /*
-features TODO:
+features TODO maybe:
 	- Animation: glow background/radius example in the beginig of drawFunc
     - touch on label [open action sheet(show all and share sheet), open pref panel, select time to be reminded at]
     - multiable textViews: in settings.app specific subViewController based on rootViewController listView selected value
     - time based (example code as pic on phone) -> how long?(0.5h,1h,6h,custom)
 		-> repeat time (every day, once a week)
 	- location based
+	- switch 2 background colors custom speed
 */
 
 /*
@@ -36,7 +37,7 @@ Current features:
 
 /*
 Idea credits:
-	- u/RapingTheWilling [changing the animations and adding more precision settings]
+	- u/RapingTheWilling [changing the animations and adding more precision settings for rotation]
 	- u/brkr1 [scheduling the appearance of the label]
 */
 
